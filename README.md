@@ -5,7 +5,7 @@ This is the repo for Team CSD3156's Group 7.
 - Clementine Shamaney - 2001341
 - Lau Yong Hui - 2001037
 - Keith Lua - 2101223
-
+- Anderson Phua - 2101159
 # Game Pitch 1
 The game concept to be pitched simple AR 'collection' game similar to [Pokemon Go](https://en.wikipedia.org/wiki/Pok%C3%A9mon_Go). 
 The player will be able to go around the SIT@SP campus in order to collect objects using their phone camera. Their goal is to obtain AR collectables that are generated on the map, which they can collect using the phone camera system.
