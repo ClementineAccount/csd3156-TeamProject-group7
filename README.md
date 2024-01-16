@@ -16,7 +16,7 @@ By choosing to make a Pokemon Go style game, this allows the project's scope to 
 The following mobile features are proposed, using images from the reference game of Pokemon Go as examples.
 
 ### Sensors (GPS)
-The GPS of the phone may be used to indicate where the collectables are in the SIT@SP campus.
+The GPS of the phone may be used to indicate where the collectables are in the SIT@SP campus. (Does not have to be a 3D Map)
 ![image](https://github.com/ClementineAccount/csd3156-TeamProject-group7/assets/26779639/c7d02f48-16f7-4877-9afe-4091fed0d453)
 
 ### Camera
