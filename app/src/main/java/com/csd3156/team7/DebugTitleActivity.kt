@@ -18,12 +18,25 @@ class DebugTitleActivity : AppCompatActivity() {
                 Log.d("BUTTONS", "User tapped the buttonAR")
                 openARScene()
             }
+
+        findViewById<Button>(R.id.buttonMap)
+            .setOnClickListener {
+                Log.d("BUTTONS", "User tapped the buttonMap")
+                openMapScene()
+            }
     }
 
     fun openARScene()
     {
         Log.d("DEBUG TITLE", "openARScene() function called")
         val intent = Intent(this, HelloArActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun openMapScene()
+    {
+        Log.d("DEBUG TITLE", "openMapScene() function called")
+        val intent = Intent(this, MapsActivity::class.java)
         startActivity(intent)
     }
 }

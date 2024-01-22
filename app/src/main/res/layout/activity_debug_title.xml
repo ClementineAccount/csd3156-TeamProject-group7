@@ -32,6 +32,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="AR SCENE" />
+
+        <Button
+            android:id="@+id/buttonMap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MAP SCENE" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
