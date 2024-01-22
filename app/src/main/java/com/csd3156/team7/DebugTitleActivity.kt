@@ -22,7 +22,7 @@ class DebugTitleActivity : AppCompatActivity() {
         findViewById<Button>(R.id.buttonMap)
             .setOnClickListener {
                 Log.d("BUTTONS", "User tapped the buttonMap")
-                openARScene()
+                openMapScene()
             }
     }
 

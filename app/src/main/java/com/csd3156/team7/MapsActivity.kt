@@ -10,6 +10,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.ar.core.examples.kotlin.helloar.databinding.ActivityMapsBinding
+import com.google.ar.core.examples.kotlin.helloar.R
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
