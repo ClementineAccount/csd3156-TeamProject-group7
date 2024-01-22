@@ -11,12 +11,21 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="173dp" />
+
         <TextView
             android:id="@+id/titleTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Debug Title Screen" />
+            android:text="Debug Title Screen"
+            android:textSize="34sp" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="94dp" />
 
         <Button
             android:id="@+id/buttonAR"
