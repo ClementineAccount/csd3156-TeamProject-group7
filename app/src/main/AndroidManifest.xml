@@ -24,7 +24,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name="com.csd3156.team7.DebugTitleActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".HelloArActivity"
             android:configChanges="orientation|screenSize"
