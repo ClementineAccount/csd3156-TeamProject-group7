@@ -15,8 +15,10 @@
  */
 package com.google.ar.core.examples.kotlin.helloar
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.ar.core.Config
@@ -53,7 +55,6 @@ class HelloArActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
     // Setup ARCore session lifecycle helper and configuration.
     arCoreSessionHelper = ARCoreSessionLifecycleHelper(this)
     // If Session creation or Session.resume() fails, display a message and log detailed
@@ -73,7 +74,6 @@ class HelloArActivity : AppCompatActivity() {
         Log.e(TAG, "ARCore threw an exception", exception)
         view.snackbarHelper.showError(this, message)
       }
-
     // Configure session features, including: Lighting Estimation, Depth mode, Instant Placement.
     arCoreSessionHelper.beforeSessionResume = ::configureSession
     lifecycle.addObserver(arCoreSessionHelper)
@@ -92,6 +92,13 @@ class HelloArActivity : AppCompatActivity() {
 
     depthSettings.onCreate(this)
     instantPlacementSettings.onCreate(this)
+
+    val nfcButton = findViewById<Button>(R.id.NFCButton)
+    nfcButton.setOnClickListener {
+      val Intent = Intent(this, NFCActivity::class.java)
+      startActivity(Intent);
+    }
+
   }
 
   // Configure the session, using Lighting Estimation, and Depth mode.
