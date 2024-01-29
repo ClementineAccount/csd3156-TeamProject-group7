@@ -1,0 +1,84 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/item_image"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:src= "@drawable/square_placeholder"/>
+        <TextView
+            android:id="@+id/item_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:text="@string/quantity" />/>
+
+
+    </FrameLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"
+        android:padding="4dp">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="4dp">
+
+            <TextView
+                android:id="@+id/item_name"
+                android:text="@string/farm_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/item_description"
+                android:text="@string/farm_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/item_price"
+                android:text="@string/farm_cost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width= "wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:orientation="vertical">
+            <Button
+                android:id="@+id/buy_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Buy" />
+
+            <Button
+                android:id="@+id/sell_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sell" />
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
