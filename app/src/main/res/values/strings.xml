@@ -37,7 +37,6 @@
     <string name="farm_description">Produces 1 every 1 second</string>
     <string name="farm_cost">Cost: 0</string>
     <string name="shop_title">Shop</string>
-    <string name="GoogleCloudApiKey" />
     <string name="quantity">5</string>
     <string name="currency">1000</string>
     <string name="filename">data.txt</string>
