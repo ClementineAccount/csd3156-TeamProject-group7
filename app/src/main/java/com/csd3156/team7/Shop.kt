@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.accessibility.AccessibilityViewCommand.SetTextArguments
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.ar.core.examples.kotlin.helloar.R
@@ -20,9 +22,14 @@ class Shop : AppCompatActivity() {
 
     var playerCurrency: Int = 1000
 
+    lateinit var viewModel : PlayerInventoryViewModel
 
     fun setCurrencyText() {
         val currency: TextView = findViewById(R.id.shop_currency)
+
+        // Update from previous instance of app
+        val pc : Int = viewModel.repository.getPlayerCurrency().toString().toInt() // error
+//        playerCurrency = pc
         currency.text = "$playerCurrency Shapes"
     }
 
@@ -34,6 +41,11 @@ class Shop : AppCompatActivity() {
 
         val sharedPref = getSharedPreferences("Player", Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPref.edit()
+
+//        viewModel = ViewModelProvider(this).get(PlayerInventoryViewModel::class.java)
+//        viewModel.listShopItem.observe(this) {
+//             TODO: items-side data changes?
+//        }
 
         //val currency:TextView = findViewById(R.id.shop_currency)
         setCurrencyText()

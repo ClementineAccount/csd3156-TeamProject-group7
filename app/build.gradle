@@ -18,7 +18,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
     defaultConfig {
         applicationId "com.google.ar.core.examples.kotlin.helloar"
 
@@ -45,6 +45,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.google.ar.core.examples.kotlin.helloar'
 }
 
 dependencies {
@@ -66,9 +67,13 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.gms:play-services-maps:18.2.0'
+    implementation 'androidx.datastore:datastore-core:1.0.0'
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
-    annotationProcessor 'androidx.room:room-compiler:2.5.0'
-    implementation 'androidx.room:room-runtime:2.5.0'
-    implementation 'androidx.room:room-ktx:2.5.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1'
+    annotationProcessor 'androidx.room:room-compiler:2.6.1'
+
+    // any higher versions for these 3 and they'll cause errors
+    implementation 'androidx.room:room-runtime:2.5.1'
+    implementation 'androidx.room:room-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0'
 }

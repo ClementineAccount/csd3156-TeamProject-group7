@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.ar.core.examples.kotlin.helloar.R
 
@@ -19,6 +20,8 @@ class ItemViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
     val buyButton: Button = itemView.findViewById(R.id.buy_button)
     val sellButton: Button = itemView.findViewById(R.id.sell_button)
 
+//    val viewModel = ViewModelProvider(this).get(PlayerInventoryViewModel::class.java)
+//    viewModel.listShopItem.observe(this) {    }
 
     fun bind(item: ShopItem) {
         itemName.text = item.name
