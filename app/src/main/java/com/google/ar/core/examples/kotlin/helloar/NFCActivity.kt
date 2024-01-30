@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.widget.Toast
 import java.lang.StringBuilder
 
+//https://abhishekbagdare.medium.com/reading-nfc-tags-with-android-kotlin-9ee8f82223b8
 class NFCActivity : AppCompatActivity() {
 
     private lateinit var nfcAdapter: NfcAdapter
@@ -35,7 +36,7 @@ class NFCActivity : AppCompatActivity() {
         super.onResume()
         val nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         val pendingIntent = PendingIntent.getActivity(
-            this, 0, Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0
+            this, 0, Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), PendingIntent.FLAG_MUTABLE
         )
         val intentFilters = arrayOf<IntentFilter>(
             IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED),
