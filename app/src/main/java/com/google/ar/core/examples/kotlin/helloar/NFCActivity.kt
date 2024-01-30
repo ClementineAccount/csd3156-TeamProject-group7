@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import java.lang.StringBuilder
 
 class NFCActivity : AppCompatActivity() {
 
@@ -17,7 +18,7 @@ class NFCActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nfc)
 
-        nfcAdapter - NfcAdapter.getDefaultAdapter(this)
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
     }
 
     private fun createNFCIntentFilter(): Array<IntentFilter> {
@@ -29,11 +30,6 @@ class NFCActivity : AppCompatActivity() {
         }
         return arrayOf(intentFilter)
     }
-
-    private fun ProcessNFC(): Intent<intent>{
-
-    }
-
 
     override fun onResume() {
         super.onResume()
@@ -58,18 +54,33 @@ class NFCActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         if (intent?.action == NfcAdapter.ACTION_TAG_DISCOVERED) {
-            val tag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.) {
+            val tag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 intent.getParcelableExtra(NfcAdapter.EXTRA_TAG, Tag::class.java)
             } else {
-                intent.(NfcAdapter.EXTRA_TAG)
+                intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
             }
             tag?.id?.let {
-                val tagValue = it.hex()
+                val tagValue = it.toHexString()
                 Toast.makeText(this, "NFC tag detected: $tagValue", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    fun ByteArray.toHexString() : String
+    {
+        val hexChars = "0123456789ABCDEF"
+        val result = StringBuilder(size * 2)
+
+        map{byte ->
+            val value = byte.toInt()
+            val hexChar1 = hexChars[value shr 4 and 0x0F]
+            val hexChar2 = hexChars[value and 0x0F]
+            result.append(hexChar1)
+            result.append(hexChar2)
+        }
+        return result.toString();
+
+    }
 
 
 }
