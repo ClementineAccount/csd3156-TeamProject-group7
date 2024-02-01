@@ -20,8 +20,6 @@ class ItemViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
     val buyButton: Button = itemView.findViewById(R.id.buy_button)
     val sellButton: Button = itemView.findViewById(R.id.sell_button)
 
-//    val viewModel = ViewModelProvider(this).get(PlayerInventoryViewModel::class.java)
-//    viewModel.listShopItem.observe(this) {    }
 
     fun bind(item: ShopItem) {
         itemName.text = item.name

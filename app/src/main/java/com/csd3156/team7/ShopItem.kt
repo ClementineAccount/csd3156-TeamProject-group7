@@ -1,6 +1,9 @@
 package com.csd3156.team7
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.Entity
+
+@Entity(tableName = "itemTable")
 data class ShopItem(
     val name: String,
     val imageResourceId: Int,
@@ -10,6 +13,13 @@ data class ShopItem(
 {
 
 
+    var itemName = name
+
+    var itemQuantity = quantity
+
+    var itemDescription = description
+
+    var buyPrice = price
 
 
     override fun describeContents(): Int {

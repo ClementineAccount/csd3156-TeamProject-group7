@@ -3,9 +3,9 @@ package com.csd3156.team7
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.accessibility.AccessibilityViewCommand.SetTextArguments
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,29 +22,35 @@ class Shop : AppCompatActivity() {
 
     var playerCurrency: Int = 1000
 
-    lateinit var viewModel : PlayerInventoryViewModel
+    lateinit var vModel : PlayerInventoryViewModel
 
     fun setCurrencyText() {
         val currency: TextView = findViewById(R.id.shop_currency)
 
         // Update from previous instance of app
-        val pc : Int = viewModel.repository.getPlayerCurrency().toString().toInt() // error
+//        val pc : Int = vModel.repository.getPlayerCurrency().toString().toInt()
+        /// error
 //        playerCurrency = pc
         currency.text = "$playerCurrency Shapes"
     }
 
+    //private val viewModel: PlayerInventoryViewModel by viewModels { PlayerInventoryViewModel.Factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.shop)
         viewManager = LinearLayoutManager(this)
 
-        val sharedPref = getSharedPreferences("Player", Context.MODE_PRIVATE)
+//        vModel = ViewModelProvider(this)[PlayerInventoryViewModel::class.java]
+        vModel = ViewModelProvider.AndroidViewModelFactory(application).create(PlayerInventoryViewModel::class.java)
+//        vModel.currentPlayerCurrency.observe(this) {
+//            Log.d("D",vModel.currentPlayerCurrency.value.toString())
+//        }
+        val sharedPref = getSharedPreferences("Player", MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPref.edit()
 
-//        viewModel = ViewModelProvider(this).get(PlayerInventoryViewModel::class.java)
 //        viewModel.listShopItem.observe(this) {
-//             TODO: items-side data changes?
+             // TODO: items-side data changes?
 //        }
 
         //val currency:TextView = findViewById(R.id.shop_currency)

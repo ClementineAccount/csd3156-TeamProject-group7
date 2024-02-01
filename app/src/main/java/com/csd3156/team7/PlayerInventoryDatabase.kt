@@ -21,7 +21,7 @@ abstract class PlayerInventoryDatabase : RoomDatabase()
                 val instance = Room.databaseBuilder (
                     context.applicationContext,
                     PlayerInventoryDatabase::class.java,
-                    "app_database"
+                    "playerDatabase"
                 ).build()
                 INSTANCE = instance
                 instance

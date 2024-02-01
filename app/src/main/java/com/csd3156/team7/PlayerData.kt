@@ -4,16 +4,16 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "playerDatabase")
-data class PlayerData(var name: String,var startingCurrency: Int)
+data class PlayerData(var name: String,var startingCurrency: Int = 1000)
 {
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo
+    var uid : Int = 0
+
     var playerName : String = name ?: "Player"
 
     @ColumnInfo(name = "currency")
     var currentCurrency : Int = startingCurrency
 
-    @ColumnInfo("PlayerItems")
-    var itemsOnHand : Array<ShopItem>
-    = arrayOf(ShopItem("S",0,0,"",0))
+//    @ColumnInfo("playerItems")
+//    var itemsOnHand : Array<ShopItem> = items
 }

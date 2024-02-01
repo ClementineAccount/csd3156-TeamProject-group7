@@ -70,10 +70,13 @@ dependencies {
     implementation 'androidx.datastore:datastore-core:1.0.0'
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
-    annotationProcessor 'androidx.room:room-compiler:2.6.1'
+    apply plugin: 'kotlin-kapt'
+
+    kapt "androidx.room:room-compiler:2.6.1"
 
     // any higher versions for these 3 and they'll cause errors
-    implementation 'androidx.room:room-runtime:2.5.1'
-    implementation 'androidx.room:room-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0'
+    implementation 'androidx.room:room-runtime:2.5.2'
+    implementation 'androidx.room:room-ktx:2.5.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1'
+
 }

@@ -14,11 +14,11 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 import androidx.datastore.preferences.core.intPreferencesKey
 
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "PlayerCurrency")
 
 class PlayerRepository(private val context: Context) {
 
     companion object {
-        private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "Settings")
         private val PLAYER_CURRENCY = intPreferencesKey("PlayerCurrency")
     }
 
@@ -31,8 +31,8 @@ class PlayerRepository(private val context: Context) {
                 throw exception
             }
         }.map { preferences ->
-            val pCurrency = preferences[PLAYER_CURRENCY] ?: 0
-            pCurrency
+            val playerCurrency = preferences[PLAYER_CURRENCY] ?: 0
+            playerCurrency
         }
     }
 
