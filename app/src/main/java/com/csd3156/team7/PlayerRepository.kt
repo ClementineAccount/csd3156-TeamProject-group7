@@ -14,9 +14,9 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 import androidx.datastore.preferences.core.intPreferencesKey
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "PlayerCurrency")
 
 class PlayerRepository(private val context: Context) {
+    val Context.dataStore by preferencesDataStore(name = "PlayerCurrency")
 
     companion object {
         private val PLAYER_CURRENCY = intPreferencesKey("PlayerCurrency")

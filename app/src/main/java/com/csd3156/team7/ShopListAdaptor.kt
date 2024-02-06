@@ -1,17 +1,13 @@
 package com.csd3156.team7
 
-import android.app.Activity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.ar.core.examples.kotlin.helloar.R
-import android.content.Context
-import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 
 
-
-class ShopListAdaptor(var shop: Shop, private var dataSource: List<ShopItem>): RecyclerView.Adapter<ItemViewHolder>() {
+class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: List<ShopItem>, var player: Player)
+    : RecyclerView.Adapter<ItemViewHolder>() {
     //val sharedPreferences: SharedPreferences = context.getSharedPreferences("player", Context.MODE_PRIVATE)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -32,13 +28,14 @@ class ShopListAdaptor(var shop: Shop, private var dataSource: List<ShopItem>): R
 
         holder.buyButton.setOnClickListener{
 
-            if(shop.playerCurrency - item.price > 0)
+            if(shopActivity.player.currentCurrency - item.price > 0)
             {
-                shop.playerCurrency -= item.price
+                //shop.playerCurrency -= item.price
+                player.currentCurrency -= item.price
 
                 item.quantity++
                 holder.itemQuantity.text = item.quantity.toString()
-                shop.setCurrencyText()
+                shopActivity.setCurrencyText()
 
             }
 
@@ -46,10 +43,12 @@ class ShopListAdaptor(var shop: Shop, private var dataSource: List<ShopItem>): R
 
         holder.sellButton.setOnClickListener{
             if(item.quantity > 0) {
-                shop.playerCurrency += item.price / 2
+                //shop.playerCurrency += item.price / 2
+                player.currentCurrency += item.price / 2
+
                 item.quantity--
                 holder.itemQuantity.text = item.quantity.toString()
-                shop.setCurrencyText()
+                shopActivity.setCurrencyText()
 
             }
 
@@ -63,7 +62,7 @@ class ShopListAdaptor(var shop: Shop, private var dataSource: List<ShopItem>): R
 
     fun setItems(items: List<ShopItem>) {
         dataSource = items
-        shop.setCurrencyText()
+        shopActivity.setCurrencyText()
         notifyDataSetChanged()
     }
 
