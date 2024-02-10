@@ -23,9 +23,9 @@ class ShopActivity : AppCompatActivity() {
 
     lateinit var playerViewModel: PlayerInventoryViewModel
 
-    fun setCurrencyText() {
-        val currency: TextView = findViewById(R.id.shop_currency)
-        currency.text = "${player.currentCurrency} Shapes"
+    fun setCurrencyText(currency : Int) {
+        val currencyTextView: TextView = findViewById(R.id.shop_currency)
+        currencyTextView.text = "${currency} Shapes"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,17 +34,15 @@ class ShopActivity : AppCompatActivity() {
         viewManager = LinearLayoutManager(this)
         playerViewModel = ViewModelProvider(this)[PlayerInventoryViewModel::class.java]
 
-        val currencyText: TextView = findViewById(R.id.shop_currency)
-
         playerViewModel.currentPlayerCurrency.observe(this) {
-
-            currencyText.text = "${player.currentCurrency} Shapes"
-//            val test : LiveData<Int> = playerViewModel.repository.getPlayerCurrency().asLiveData()
-//            Log.d("DEBUG1", test.value.toString())
+            // if the datastore has the currency from the last time the app was run, use that
+            // set the player's currency to the value from the datastore
+            player.currentCurrency = it
+            setCurrencyText(player.currentCurrency)
         }
 
 //        val sharedPref = getSharedPreferences("Player", MODE_PRIVATE)
-        setCurrencyText()
+
 
         val imageResId: Int = R.drawable.square_placeholder
         inventoryList.add(ShopItem("Cube", imageResId, 5, "Produces 10 per 1 second", 10))

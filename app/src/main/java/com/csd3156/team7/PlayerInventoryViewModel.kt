@@ -35,6 +35,9 @@ class PlayerInventoryViewModel(application: Application) : AndroidViewModel(appl
     fun delete(value: Player) { dao.delete(value) }
 
     fun deleteTable() { DeleteTableAsyncTask(dao).execute() }
+    suspend fun savePlayerCurrency(currentCurrency: Int) {
+        repository.setPlayerCurrency(currentCurrency)
+    }
 
     private class DeleteTableAsyncTask(private val dao: PlayerDao) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg params: Void): Void? { dao.deleteTable(); return null }

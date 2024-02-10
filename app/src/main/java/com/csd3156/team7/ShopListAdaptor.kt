@@ -1,9 +1,14 @@
 package com.csd3156.team7
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.ar.core.examples.kotlin.helloar.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 
 class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: List<ShopItem>, var player: Player)
@@ -35,7 +40,17 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
 
                 item.quantity++
                 holder.itemQuantity.text = item.quantity.toString()
-                shopActivity.setCurrencyText()
+                shopActivity.setCurrencyText(player.currentCurrency)
+
+                shopActivity.playerViewModel.viewModelScope.launch {
+                    shopActivity.playerViewModel.repository.setPlayerCurrency(player.currentCurrency)
+
+                    val sharedPref = shopActivity.getSharedPreferences("Player", Context.MODE_PRIVATE)
+                    with(sharedPref.edit()) {
+                        putInt("PlayerCurrency", player.currentCurrency) // save the player's currency to the datastore
+                        apply() // apply is asynchronous, commit is synchronous
+                    }
+                }
 
             }
 
@@ -48,11 +63,19 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
 
                 item.quantity--
                 holder.itemQuantity.text = item.quantity.toString()
-                shopActivity.setCurrencyText()
+                shopActivity.setCurrencyText(player.currentCurrency)
+
+                shopActivity.playerViewModel.viewModelScope.launch {
+                    shopActivity.playerViewModel.repository.setPlayerCurrency(player.currentCurrency)
+
+                    val sharedPref = shopActivity.getSharedPreferences("Player", Context.MODE_PRIVATE)
+                    with(sharedPref.edit()) {
+                        putInt("PlayerCurrency", player.currentCurrency) // save the player's currency to the datastore
+                        apply() // apply is asynchronous, commit is synchronous
+                    }
+                }
 
             }
-
-
         }
     }
 
@@ -62,7 +85,7 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
 
     fun setItems(items: List<ShopItem>) {
         dataSource = items
-        shopActivity.setCurrencyText()
+        shopActivity.setCurrencyText(player.currentCurrency)
         notifyDataSetChanged()
     }
 
