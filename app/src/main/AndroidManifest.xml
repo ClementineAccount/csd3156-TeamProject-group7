@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
         tools:ignore="CoarseFineLocation" />
+    <uses-permission android:name="android.permission.NFC"/>
 
     <!--
  Limits app visibility in the Google Play Store to ARCore supported devices
@@ -26,6 +27,9 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="true" />
 
 
     <application
@@ -35,7 +39,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false"
         tools:ignore="GoogleAppIndexingWarning">
-
+        <activity
+            android:name=".NFCActivity"
+            android:exported="true" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -75,13 +81,13 @@
         <meta-data
             android:name="com.google.ar.core"
             android:value="required" />
-
         <meta-data
             android:name="com.google.android.ar.API_KEY"
             android:value="@string/GoogleCloudApiKey" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GoogleCloudApiKey" />
+
 
     </application>
 
