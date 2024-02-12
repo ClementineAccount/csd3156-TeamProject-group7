@@ -1,7 +1,9 @@
 package com.csd3156.team7
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 @Entity(tableName = "itemTable")
 data class ShopItem(
@@ -11,14 +13,19 @@ data class ShopItem(
     val description: String,
     val price: Int) : Parcelable
 {
+    @PrimaryKey(autoGenerate = true)
+    var itemId = 0
 
-
+    @ColumnInfo(name = "itemName")
     var itemName = name
 
+    @ColumnInfo(name = "itemImage")
     var itemQuantity = quantity
 
+    @ColumnInfo(name = "itemDescription")
     var itemDescription = description
 
+    @ColumnInfo(name = "itemPrice")
     var buyPrice = price
 
 
