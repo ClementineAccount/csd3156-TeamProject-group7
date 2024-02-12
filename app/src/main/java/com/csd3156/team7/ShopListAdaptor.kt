@@ -48,7 +48,16 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
                         putInt("PlayerCurrency", player.currentCurrency) // save the player's currency to the datastore
                         apply() // apply is asynchronous, commit is synchronous
                     }
+
+                    // save item quantity to the datastore
+                    val itemQuantity = sharedPref.getInt(item.name, 0)
+                    with(sharedPref.edit()) {
+                        putInt(item.name, itemQuantity + 1)
+                        apply()
+                    }
+
                 }
+
 
             }
 
@@ -71,6 +80,14 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
                         putInt("PlayerCurrency", player.currentCurrency) // save the player's currency to the datastore
                         apply() // apply is asynchronous, commit is synchronous
                     }
+
+                    // save item quantity to the datastore
+                    val itemQuantity = sharedPref.getInt(item.name, 0)
+                    with(sharedPref.edit()) {
+                        putInt(item.name, itemQuantity - 1)
+                        apply()
+                    }
+
                 }
 
             }

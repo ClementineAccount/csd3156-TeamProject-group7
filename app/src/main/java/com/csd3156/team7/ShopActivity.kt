@@ -38,12 +38,16 @@ class ShopActivity : AppCompatActivity() {
             setCurrencyText(player.currentCurrency)
         }
 
-//        val sharedPref = getSharedPreferences("Player", MODE_PRIVATE)
-
-
         val imageResId: Int = R.drawable.square_placeholder
-        inventoryList.add(ShopItem("Cube", imageResId, 5, "Produces 10 per 1 second", 10))
-        inventoryList.add(ShopItem("Sphere", imageResId, 1, "Produces 5 per 1 second", 5))
+
+        val cubeQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Cube", 0)
+        inventoryList.add(ShopItem("Cube", imageResId, cubeQuantity,
+            "Produces 10 per 1 second", 10))
+
+        val sphereQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Sphere", 0)
+        inventoryList.add(ShopItem("Sphere", imageResId, sphereQuantity,
+            "Produces 5 per 1 second", 5))
+
         viewAdaptor = ShopListAdaptor(this, inventoryList, player)
         recyclerView = findViewById<RecyclerView>(R.id.recyclerViewInventoryList).apply {
             setHasFixedSize(true)
