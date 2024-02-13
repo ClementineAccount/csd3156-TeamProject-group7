@@ -15,10 +15,12 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
 
         binding.buyButton.setOnClickListener {
+            ShopActivity.playerViewModel.updateItemQuantity(item.name, item.quantity)
 
         }
 
         binding.sellButton.setOnClickListener {
+            ShopActivity.playerViewModel.updateItemQuantity(item.name, item.quantity)
             // Handle sell action
         }
     }

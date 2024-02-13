@@ -8,7 +8,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.ar.core.examples.kotlin.helloar.R
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -21,7 +20,9 @@ class ShopActivity : AppCompatActivity() {
 
     var player: Player = Player("Test", 1000)
 
-    lateinit var playerViewModel: PlayerShopViewModel
+    companion object {
+        lateinit var playerViewModel: PlayerShopViewModel
+    }
 
     fun setCurrencyText(currency : Int) {
         val currencyTextView: TextView = findViewById(R.id.shop_currency)
