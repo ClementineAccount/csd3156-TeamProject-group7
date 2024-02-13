@@ -40,5 +40,6 @@
     <string name="quantity">5</string>
     <string name="currency">1000</string>
     <string name="filename">data.txt</string>
+    <string translatable="false" name="GoogleCloudApiKey">AIzaSyA555ZrDarF796sQ2NO6yXnl6o0HlvKwoI</string>
 
 </resources>
