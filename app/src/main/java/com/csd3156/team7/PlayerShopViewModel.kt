@@ -4,27 +4,29 @@ import android.app.Application
 import android.os.AsyncTask
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class PlayerInventoryViewModel(application: Application) : AndroidViewModel(application) {
+class PlayerShopViewModel(application: Application) : AndroidViewModel(application) {
     private val dao: PlayerDao
     var repository = PlayerRepository(application)
     lateinit var currentPlayerCurrency : LiveData<Int>
+
+    private val itemDao: ShopItemDao
+    val shopRepository: ShopItemRepository
+    val allItems: LiveData<List<ShopItem>>
 
     init {
         val database = PlayerInventoryDatabase.getDatabase(application)
         dao = database.playerDao()
         currentPlayerCurrency = repository.getPlayerCurrency().asLiveData()
+
+        val shopDatabase = ShopItemDatabase.getDatabase(application)
+        itemDao = shopDatabase.shopItemDao()
+        shopRepository = ShopItemRepository(itemDao, dao)
+        allItems = shopRepository.allItems
     }
 
     fun setPlayerCurrency(newCurrency: Int) {viewModelScope.launch(Dispatchers.IO) {repository.setPlayerCurrency(newCurrency)}}
@@ -34,6 +36,35 @@ class PlayerInventoryViewModel(application: Application) : AndroidViewModel(appl
     fun delete(value: Player) { dao.delete(value) }
 
     fun deleteTable() { DeleteTableAsyncTask(dao).execute() }
+    fun insertItem(shopItem: ShopItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (shopRepository.getItemByName(shopItem.name).name == "") {
+                shopRepository.insert(shopItem)
+            }
+        }
+    }
+
+    fun findItem(name : String) : ShopItem {
+        return shopRepository.getItemByName(name)
+    }
+
+    fun deleteItem(shopItem: ShopItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            shopRepository.delete(shopItem)
+        }
+    }
+
+    fun deleteItemTable() {
+        viewModelScope.launch(Dispatchers.IO) {
+            shopRepository.deleteTable()
+        }
+    }
+
+    fun updateItemQuantity(name: String, quantity: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            shopRepository.updateQuantity(name, quantity)
+        }
+    }
 
     private class DeleteTableAsyncTask(private val dao: PlayerDao) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg params: Void): Void? { dao.deleteTable(); return null }
@@ -44,25 +75,6 @@ class PlayerInventoryViewModel(application: Application) : AndroidViewModel(appl
         public override fun doInBackground(vararg params: Player): Void? {
 //            dao.insert(params[0])
             return null
-        }
-    }
-
-//     If you need to pass dependencies, consider using a Factory define ViewModel factory in a companion object
-    companion object {
-        val Factory : ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(
-                modelClass: Class<T>,
-                extras: CreationExtras
-            ): T {
-                // Get the Application object from extras
-                val application = checkNotNull(extras[APPLICATION_KEY])
-                // Create a SavedStateHandle for this ViewModel from extras
-                val savedStateHandle = extras.createSavedStateHandle()
-
-                return PlayerInventoryViewModel(
-                    application) as T
-            }
         }
     }
 }

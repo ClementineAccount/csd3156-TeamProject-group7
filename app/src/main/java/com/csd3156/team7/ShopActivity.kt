@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.ar.core.examples.kotlin.helloar.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
 class ShopActivity : AppCompatActivity() {
@@ -18,7 +21,7 @@ class ShopActivity : AppCompatActivity() {
 
     var player: Player = Player("Test", 1000)
 
-    lateinit var playerViewModel: PlayerInventoryViewModel
+    lateinit var playerViewModel: PlayerShopViewModel
 
     fun setCurrencyText(currency : Int) {
         val currencyTextView: TextView = findViewById(R.id.shop_currency)
@@ -29,7 +32,7 @@ class ShopActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.shop)
         viewManager = LinearLayoutManager(this)
-        playerViewModel = ViewModelProvider(this)[PlayerInventoryViewModel::class.java]
+        playerViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
 
         playerViewModel.currentPlayerCurrency.observe(this) {
             // if the datastore has the currency from the last time the app was run, use that
@@ -38,15 +41,29 @@ class ShopActivity : AppCompatActivity() {
             setCurrencyText(player.currentCurrency)
         }
 
+        val cubeQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Cube", 0)
+        val sphereQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Sphere", 0)
         val imageResId: Int = R.drawable.square_placeholder
 
-        val cubeQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Cube", 0)
-        inventoryList.add(ShopItem("Cube", imageResId, cubeQuantity,
-            "Produces 10 per 1 second", 10))
+        lifecycleScope.launch {
+            playerViewModel.insertItem(ShopItem("Cube", imageResId, cubeQuantity,
+                "Produces 10 per 1 second", 10))
+            playerViewModel.insertItem(ShopItem("Sphere", imageResId, sphereQuantity,
+                "Produces 5 per 1 second", 5))
+        }
 
-        val sphereQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Sphere", 0)
-        inventoryList.add(ShopItem("Sphere", imageResId, sphereQuantity,
-            "Produces 5 per 1 second", 5))
+        // copy viewModel data to this inventory list
+        playerViewModel.allItems.observe(this) {
+            // the inventory list is updated
+            inventoryList = it.toMutableList()
+            (viewAdaptor as ShopListAdaptor).setItems(inventoryList)
+        }
+
+//        inventoryList.add(ShopItem("Cube", imageResId, cubeQuantity,
+//            "Produces 10 per 1 second", 10))
+//
+//        inventoryList.add(ShopItem("Sphere", imageResId, sphereQuantity,
+//            "Produces 5 per 1 second", 5))
 
         viewAdaptor = ShopListAdaptor(this, inventoryList, player)
         recyclerView = findViewById<RecyclerView>(R.id.recyclerViewInventoryList).apply {
