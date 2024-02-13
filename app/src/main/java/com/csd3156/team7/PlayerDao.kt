@@ -7,15 +7,8 @@ import androidx.room.Dao
 
 @Dao
 interface PlayerDao {
-
-    //@Query("SELECT playerItems FROM playerDatabase")
-    //fun getAllItems(): LiveData<List<ShopItem>>
-
     @Query("SELECT startingCurrency FROM playerDatabase")
     fun getPlayerCurrency() : LiveData<Int>
-
-    //@Insert
-    //fun updateCurrency(player: Player)
 
     @Delete
     fun delete(digit: Player)
