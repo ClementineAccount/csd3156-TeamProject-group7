@@ -14,7 +14,8 @@ import java.io.IOException
 
 
 
-class PlayerRepository(private val context: Context) {
+class PlayerRepository(private val context: Context)
+{
     val Context.dataStore by preferencesDataStore(name = "PlayerCurrency")
 
     companion object {
@@ -36,7 +37,8 @@ class PlayerRepository(private val context: Context) {
     }
 
     suspend fun setPlayerCurrency(newCurrency : Int) {
-        context.dataStore.edit { preferences -> preferences[PLAYER_CURRENCY] = newCurrency
+        context.dataStore.edit { preferences ->
+            preferences[PLAYER_CURRENCY] = newCurrency
         }
     }
 }
