@@ -16,6 +16,8 @@ The player will be able to place cube objects into the game world as 'farms' and
 
 ![image](https://github.com/ClementineAccount/csd3156-TeamProject-group7/assets/26779639/4e802643-d894-436c-bd96-99d382384db0)
 
+# Figma
+https://www.figma.com/file/pTjoJ43P1GrfIPtrr67FRE/Untitled?type=design&node-id=1-20&mode=design&t=iGUBU0Sf1PouCpuO-0
 
 
 ## Proposed Mobile Features
