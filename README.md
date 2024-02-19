@@ -12,6 +12,7 @@ This is the repo for Team CSD3156's Group 7.
 The game concept to be pitched simple AR 'collection' game similar to [Pokemon Go](https://en.wikipedia.org/wiki/Pok%C3%A9mon_Go) but using the ['cookie clicker' concept.](https://en.wikipedia.org/wiki/Cookie_Clicker)
 
 The player will be able to place cube objects into the game world as 'farms' and use them to gather objects that will be added to a database, similar to the photo below.
+
 ![image](https://github.com/ClementineAccount/csd3156-TeamProject-group7/assets/26779639/4e802643-d894-436c-bd96-99d382384db0)
 
 
