@@ -8,11 +8,13 @@ This is the repo for Team CSD3156's Group 7.
 - Anderson Phua - 2101159
 - Wee Chong - 2002834
 
-# Game Pitch 1
-The game concept to be pitched simple AR 'collection' game similar to [Pokemon Go](https://en.wikipedia.org/wiki/Pok%C3%A9mon_Go). 
-The player will be able to go around the SIT@SP campus in order to collect objects using their phone camera. Their goal is to obtain AR collectables that are generated on the map, which they can collect using the phone camera system.
+# Game Pitch
+The game concept to be pitched simple AR 'collection' game similar to [Pokemon Go](https://en.wikipedia.org/wiki/Pok%C3%A9mon_Go) but using the ['cookie clicker' concept.](https://en.wikipedia.org/wiki/Cookie_Clicker)
 
-By choosing to make a Pokemon Go style game, this allows the project's scope to be very focused to mobile features. The gameplay will be very derivative of Pokemon Go as the project serves as a tech demonstration, but will use fully original assets that we own the copyright of. By making the game in the AR collectable genre, it also serves to prevent the scope of the game from being focused on non-mobile features, such as 'gameplay feeling', player controls, game balance and so on, which would be irrelevant for this Project's goals.
+The player will be able to place cube objects into the game world as 'farms' and use them to gather objects that will be added to a database, similar to the photo below.
+![image](https://github.com/ClementineAccount/csd3156-TeamProject-group7/assets/26779639/4e802643-d894-436c-bd96-99d382384db0)
+
+
 
 ## Proposed Mobile Features
 The following mobile features are proposed, using images from the reference game of Pokemon Go as examples.
