@@ -34,3 +34,6 @@ The player's save data, such as their inventory and the collectables they have o
 
 ### OpenGL ES
 The graphical assets of the collectables may be drawn using OpenGL ES ontop of a camera view. Whether the assets are in 3D or 2D will be determined at a later date.
+
+### Time and Date
+The price of shapes change through the day and according to the day of the week, which uses the phone's Time and Date features.
