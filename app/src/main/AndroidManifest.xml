@@ -4,8 +4,9 @@
     package="com.google.ar.core.examples.kotlin.helloar">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.NFC"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!--
  Limits app visibility in the Google Play Store to ARCore supported devices
@@ -17,7 +18,9 @@
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
-
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="true" />
 
 
     <application
@@ -27,7 +30,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false"
         tools:ignore="GoogleAppIndexingWarning">
-
+        <activity
+            android:name=".NFCActivity"
+            android:exported="true" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -39,7 +44,6 @@
              project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
              "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
         -->
-
         <activity
             android:name="com.csd3156.team7.MapsActivity"
             android:exported="true"
@@ -62,13 +66,13 @@
         <meta-data
             android:name="com.google.ar.core"
             android:value="required" />
-
         <meta-data
             android:name="com.google.android.ar.API_KEY"
             android:value="@string/GoogleCloudApiKey" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GoogleCloudApiKey" />
+
 
     </application>
 
