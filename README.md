@@ -2,11 +2,11 @@
 This is the repo for Team CSD3156's Group 7.
 
 # Members
-Anderson Phua - 2101159
-Clementine Shamaney - 2001341
-Keith Lua - 2101223
-Lau Yong Hui - 2001037
-Wee Chong - 2002834
+- Anderson Phua - 2101159 
+- Clementine Shamaney - 2001341
+- Keith Lua - 2101223
+- Lau Yong Hui - 2001037
+- Wee Chong - 2002834
 
 
 # Game Pitch
