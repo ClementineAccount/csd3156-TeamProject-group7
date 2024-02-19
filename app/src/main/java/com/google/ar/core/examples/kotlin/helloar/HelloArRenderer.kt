@@ -208,12 +208,12 @@ class HelloArRenderer(val activity: HelloArActivity) :
       virtualObjectAlbedoTexture =
         Texture.createFromAsset(
           render,
-          "models/pawn_albedo.png",
+          "models/TestCube.png",
           Texture.WrapMode.CLAMP_TO_EDGE,
           Texture.ColorFormat.SRGB
         )
 
-      virtualObjectAlbedoInstantPlacementTexture =
+     /* virtualObjectAlbedoInstantPlacementTexture =
         Texture.createFromAsset(
           render,
           "models/pawn_albedo_instant_placement.png",
@@ -227,8 +227,8 @@ class HelloArRenderer(val activity: HelloArActivity) :
           "models/pawn_roughness_metallic_ao.png",
           Texture.WrapMode.CLAMP_TO_EDGE,
           Texture.ColorFormat.LINEAR
-        )
-      virtualObjectMesh = Mesh.createFromAsset(render, "models/pawn.obj")
+        )*/
+      virtualObjectMesh = Mesh.createFromAsset(render, "models/TestCube.obj")
       virtualObjectShader =
         Shader.createFromAssets(
             render,
@@ -237,7 +237,7 @@ class HelloArRenderer(val activity: HelloArActivity) :
             mapOf("NUMBER_OF_MIPMAP_LEVELS" to cubemapFilter.numberOfMipmapLevels.toString())
           )
           .setTexture("u_AlbedoTexture", virtualObjectAlbedoTexture)
-          .setTexture("u_RoughnessMetallicAmbientOcclusionTexture", virtualObjectPbrTexture)
+         // .setTexture("u_RoughnessMetallicAmbientOcclusionTexture", virtualObjectPbrTexture)
           .setTexture("u_Cubemap", cubemapFilter.filteredCubemapTexture)
           .setTexture("u_DfgTexture", dfgTexture)
     } catch (e: IOException) {
@@ -386,6 +386,7 @@ class HelloArRenderer(val activity: HelloArActivity) :
       wrappedAnchors.filter { it.anchor.trackingState == TrackingState.TRACKING }) {
       // Get the current pose of an Anchor in world space. The Anchor pose is updated
       // during calls to session.update() as ARCore refines its estimate of the world.
+
       anchor.pose.toMatrix(modelMatrix, 0)
 
       // Calculate model/view/projection matrices
