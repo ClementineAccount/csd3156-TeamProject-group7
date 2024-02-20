@@ -35,23 +35,26 @@ class ShopActivity : AppCompatActivity() {
         viewManager = LinearLayoutManager(this)
         playerViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
 
-        playerViewModel.currentPlayerCurrency.observe(this) {
-            // if the datastore has the currency from the last time the app was run, use that
-            // set the player's currency to the value from the datastore
-            player.currentCurrency = it
-            setCurrencyText(player.currentCurrency)
-        }
-
         val cubeQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Cube", 0)
         val sphereQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Sphere", 0)
         val imageResId: Int = R.drawable.square_placeholder
 
-        lifecycleScope.launch {
-            playerViewModel.insertItem(ShopItem("Cube", imageResId, cubeQuantity,
-                "Produces 10 per 1 second", 10))
-            playerViewModel.insertItem(ShopItem("Sphere", imageResId, sphereQuantity,
-                "Produces 5 per 1 second", 5))
+        val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE).getBoolean("FirstLaunch", true)
+        if (firstLaunch) {
+            lifecycleScope.launch {
+                playerViewModel.insertItem(ShopItem("Cube", imageResId, cubeQuantity,
+                    "Produces 10 per 1 second", 10))
+                playerViewModel.insertItem(ShopItem("Sphere", imageResId, sphereQuantity,
+                    "Produces 5 per 1 second", 5))
+            }
+            getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()
         }
+
+        playerViewModel.currentPlayerCurrency.observe(this)
+        {
+            setCurrencyText(it)
+        }
+
 
         // copy viewModel data to this inventory list
         playerViewModel.allItems.observe(this) {

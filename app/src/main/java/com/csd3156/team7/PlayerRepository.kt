@@ -12,11 +12,9 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 
-
-
-class PlayerRepository(private val context: Context)
+class PlayerRepository(private val context: Context, private val playerDao: PlayerDao)
 {
-    val Context.dataStore by preferencesDataStore(name = "PlayerCurrency")
+    private val Context.dataStore by preferencesDataStore(name = "PlayerCurrency")
 
     companion object {
         private val PLAYER_CURRENCY = intPreferencesKey("PlayerCurrency")
@@ -40,5 +38,9 @@ class PlayerRepository(private val context: Context)
         context.dataStore.edit { preferences ->
             preferences[PLAYER_CURRENCY] = newCurrency
         }
+    }
+
+    suspend fun updatePlayerCurrency(newCurrency: Int) {
+        playerDao.updatePlayerCurrency(newCurrency)
     }
 }
