@@ -15,6 +15,7 @@
  */
 package com.google.ar.core.examples.kotlin.helloar
 
+import android.media.MediaPlayer
 import android.opengl.GLES30
 import android.opengl.Matrix
 import android.util.Log
@@ -48,6 +49,7 @@ import com.google.ar.core.exceptions.CameraNotAvailableException
 import com.google.ar.core.exceptions.NotYetAvailableException
 import java.io.IOException
 import java.nio.ByteBuffer
+import java.util.Random
 
 /** Renders the HelloAR application using our example Renderer. */
 class HelloArRenderer(val activity: HelloArActivity) :
@@ -110,6 +112,15 @@ class HelloArRenderer(val activity: HelloArActivity) :
   lateinit var virtualObjectAlbedoInstantPlacementTexture: Texture
 
   private val wrappedAnchors = mutableListOf<WrappedAnchor>()
+
+  private var mediaPlayer: MediaPlayer? = null
+  private val audioResources = arrayOf(
+    R.raw.drop1,
+    R.raw.drop2,
+    R.raw.drop3,
+    R.raw.drop4,
+    R.raw.drop5
+  )
 
   // Environmental HDR
   lateinit var dfgTexture: Texture
@@ -516,7 +527,7 @@ class HelloArRenderer(val activity: HelloArActivity) :
       // space. This anchor is created on the Plane to place the 3D model
       // in the correct position relative both to the world and to the plane.
       wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable))
-
+      playObjectPlacedSound()
       // For devices that support the Depth API, shows a dialog to suggest enabling
       // depth-based occlusion. This dialog needs to be spawned on the UI thread.
       activity.runOnUiThread { activity.view.showOcclusionDialogIfNeeded() }
@@ -525,6 +536,21 @@ class HelloArRenderer(val activity: HelloArActivity) :
 
   private fun showError(errorMessage: String) =
     activity.view.snackbarHelper.showError(activity, errorMessage)
+
+  private fun playObjectPlacedSound() {
+    val randomIndex = Random().nextInt(audioResources.size)
+    val audioResource = audioResources[randomIndex]
+
+    mediaPlayer?.release()
+
+
+
+    mediaPlayer = MediaPlayer.create(activity.applicationContext, audioResource)
+    mediaPlayer?.setOnCompletionListener {
+      it.release()
+    }
+    mediaPlayer?.start()
+  }
 }
 
 /**
@@ -535,3 +561,5 @@ private data class WrappedAnchor(
   val anchor: Anchor,
   val trackable: Trackable,
 )
+
+
