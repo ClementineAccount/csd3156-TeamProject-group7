@@ -1,12 +1,12 @@
 package com.csd3156.team7
 
-import androidx.appcompat.app.AppCompatActivity
+import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
-import android.Manifest
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
