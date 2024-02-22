@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
     defaultConfig {
         applicationId "com.google.ar.core.examples.kotlin.helloar"
 
@@ -45,6 +47,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.google.ar.core.examples.kotlin.helloar'
 }
 
 dependencies {
@@ -66,4 +69,33 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.gms:play-services-maps:18.2.0'
+
+    // DataStore dependencies
+    implementation 'androidx.datastore:datastore-core:1.0.0'
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.preference:preference-ktx:1.2.1")
+
+    // Activity / Fragment
+    implementation("androidx.activity:activity-ktx:1.5.1")
+    implementation("androidx.fragment:fragment-ktx:1.5.1")
+
+    // Room
+    kapt "androidx.room:room-compiler:2.6.1"
+    // any higher versions for these 3 and they'll cause errors
+    implementation 'androidx.room:room-runtime:2.5.2'
+    implementation 'androidx.room:room-ktx:2.5.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1'
+
+    // Lifetime dependencies
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
+
+    implementation("com.google.code.gson:gson:2.10")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 }

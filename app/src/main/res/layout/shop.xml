@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.csd3156.team7.ShopActivity">
+
+<!--    <androidx.appcompat.widget.Toolbar-->
+<!--        android:id="@+id/toolbar_custom"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="?attr/actionBarSize"-->
+<!--        android:background="@drawable/square_placeholder"-->
+<!--        android:backgroundTint="@color/teal"-->
+<!--        android:elevation="4dp">-->
+
+<!--        &lt;!&ndash; Add your custom views here. For example, a title TextView &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:id="@+id/headerTextView"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/inventory_title"-->
+<!--            android:textColor="@android:color/white"-->
+<!--            android:textSize="20sp" />-->
+
+
+
+<!--        &lt;!&ndash; You can add more views as needed &ndash;&gt;-->
+
+<!--    </androidx.appcompat.widget.Toolbar>-->
+    <TextView
+        android:id="@+id/shop_currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/currency"
+        android:layout_gravity="right"
+        android:padding="4dp"
+        android:textSize="20sp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewInventoryList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </RelativeLayout>
+
+
+</LinearLayout>

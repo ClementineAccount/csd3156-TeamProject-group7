@@ -1,6 +1,6 @@
 # Android Studio configuration.
 *.iml
-.idea/
+build/.idea/
 
 # Gradle configuration.
 .gradle/
