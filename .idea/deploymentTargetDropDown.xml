@@ -2,16 +2,16 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="DebugTitleActivity">
+      <entry key="HelloArActivity">
         <State />
       </entry>
-      <entry key="HelloArActivity">
+      <entry key="MapsActivity">
         <State />
       </entry>
       <entry key="NFCActivity">
         <State />
       </entry>
-      <entry key="app">
+      <entry key="ShopActivity">
         <State />
       </entry>
     </value>
