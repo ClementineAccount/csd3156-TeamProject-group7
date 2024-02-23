@@ -37,7 +37,11 @@ class PlayerShopViewModel(application: Application) : AndroidViewModel(applicati
         allItems = shopRepository.allItems
     }
 
-    fun setPlayerCurrency(newCurrency: Int) {viewModelScope.launch(Dispatchers.IO) { repository.setPlayerCurrency(newCurrency)} }
+    fun setPlayerCurrency(newCurrency: Int)
+    {
+        viewModelScope.launch(Dispatchers.IO) { repository.setPlayerCurrency(newCurrency)}
+        playerCurrencyObject.currency = newCurrency
+    }
 
     fun updatePlayerCurrency(newCurrency: Int) {viewModelScope.launch(Dispatchers.IO) {dao.updatePlayerCurrency(newCurrency)}}
 
