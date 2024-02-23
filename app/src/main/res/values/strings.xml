@@ -40,5 +40,6 @@
     <string name="quantity">5</string>
     <string name="currency">1000</string>
     <string name="filename">data.txt</string>
+    <string name="how_to_play_use_credit_to_buy_shapes_plant_shape_to_get_more_shape">How To Play: Use credit to buy shapes, plant shape to get more shape.\n\nUse Shape and credits to get more shapes.\n\nShape prices change all the time.</string>
 
 </resources>
