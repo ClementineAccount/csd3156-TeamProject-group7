@@ -15,6 +15,12 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         binding.itemPrice.text = "Cost: ${item.price}"
 
         binding.buyButton.setOnClickListener {
+
+            if (ShopActivity.playerViewModel.playerCurrencyObject.currency - item.price < 0) {
+                Log.d("ItemViewHolder", "Not enough currency")
+                return@setOnClickListener
+            }
+
             ShopActivity.playerViewModel.updateItemQuantity(item.name, item.quantity + 1)
 
             ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price
@@ -26,6 +32,12 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
 
         binding.sellButton.setOnClickListener {
+
+            if (item.quantity == 0) {
+                Log.d("ItemViewHolder", "No items to sell")
+                return@setOnClickListener
+            }
+
             ShopActivity.playerViewModel.updateItemQuantity(item.name, item.quantity - 1)
 
             ShopActivity.playerViewModel.playerCurrencyObject.currency += item.price / 2

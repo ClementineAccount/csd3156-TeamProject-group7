@@ -52,6 +52,8 @@ class ShopActivity : AppCompatActivity() {
 
         playerViewModel.currentPlayerCurrency.observe(this)
         {
+            player.currentCurrency = it
+            playerViewModel.playerCurrencyObject.currency = it
             setCurrencyText(it)
         }
 
