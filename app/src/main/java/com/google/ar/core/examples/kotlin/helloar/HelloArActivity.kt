@@ -21,6 +21,11 @@ import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.csd3156.team7.FarmItem
+import com.csd3156.team7.PlayerInventoryViewModel
 import com.google.ar.core.Config
 import com.google.ar.core.Config.InstantPlacementMode
 import com.google.ar.core.Session
@@ -53,6 +58,11 @@ class HelloArActivity : AppCompatActivity() {
   val instantPlacementSettings = InstantPlacementSettings()
   val depthSettings = DepthSettings()
 
+  lateinit var playerViewModel: PlayerInventoryViewModel
+
+
+
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     // Setup ARCore session lifecycle helper and configuration.
@@ -77,6 +87,10 @@ class HelloArActivity : AppCompatActivity() {
     // Configure session features, including: Lighting Estimation, Depth mode, Instant Placement.
     arCoreSessionHelper.beforeSessionResume = ::configureSession
     lifecycle.addObserver(arCoreSessionHelper)
+
+    playerViewModel = ViewModelProvider(this)[PlayerInventoryViewModel::class.java]
+
+
 
     // Set up the Hello AR renderer.
     renderer = HelloArRenderer(this)
@@ -124,6 +138,25 @@ class HelloArActivity : AppCompatActivity() {
           }
       }
     )
+  }
+
+  public fun printAllFarmItem(allEntity: LiveData<List<FarmItem>>) {
+    runOnUiThread {
+      var farmList: MutableList<FarmItem> = mutableListOf()
+      allEntity.observe(this, Observer { farmList ->
+        // The observer will be notified when the LiveData changes
+
+        // Check if the list is not null and not empty before looping
+        if (farmList != null && farmList.isNotEmpty()) {
+          // Loop through the FourDigit objects in the list
+          for (farm in farmList) {
+            println("Farm ID: ${farm.uid}")
+            println("Farm Name: ${farm.farmName}")
+            //farmList.add(newEntity)
+          }
+        }
+      })
+    }
   }
 
   override fun onRequestPermissionsResult(

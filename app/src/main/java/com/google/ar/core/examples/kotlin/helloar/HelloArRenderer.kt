@@ -21,6 +21,7 @@ import android.opengl.Matrix
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.csd3156.team7.FarmItem
 import com.google.ar.core.Anchor
 import com.google.ar.core.Camera
 import com.google.ar.core.DepthPoint
@@ -528,6 +529,7 @@ class HelloArRenderer(val activity: HelloArActivity) :
       // in the correct position relative both to the world and to the plane.
       wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable))
       playObjectPlacedSound()
+      addFarmToDatabase()
       // For devices that support the Depth API, shows a dialog to suggest enabling
       // depth-based occlusion. This dialog needs to be spawned on the UI thread.
       activity.runOnUiThread { activity.view.showOcclusionDialogIfNeeded() }
@@ -551,6 +553,17 @@ class HelloArRenderer(val activity: HelloArActivity) :
     }
     mediaPlayer?.start()
   }
+
+  private fun addFarmToDatabase() {
+    val newFarm = FarmItem(name = "Test Farm", 0.0, 0.0)
+    activity.playerViewModel.insert(newFarm)
+
+    // For testing
+    activity.printAllFarmItem(activity.playerViewModel.allFarm)
+  }
+
+
+
 }
 
 /**

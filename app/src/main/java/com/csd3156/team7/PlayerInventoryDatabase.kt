@@ -8,9 +8,13 @@ import androidx.room.RoomDatabase
 // The player's save data, such as their inventory and the collectables
 // they have obtained, may be saved in a database.
 
-@Database(entities = [Player::class], version = 1, exportSchema = false)
+// Currently this is named 'PlayerInventoryDatabase' but it also store the Farm Item.
+// The name is a bit wrong but it is kept for backwards compatbility.
+@Database(entities = [Player::class, FarmItem::class], version = 1, exportSchema = false)
 abstract class PlayerInventoryDatabase : RoomDatabase()
 {
+    abstract fun farmDao(): FarmDao
+
     abstract fun playerDao(): PlayerDao
     companion object {
         @Volatile
