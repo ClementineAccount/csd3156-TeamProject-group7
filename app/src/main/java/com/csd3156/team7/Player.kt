@@ -13,8 +13,6 @@ data class Player(var name: String, var startingCurrency: Int = 1000)
     var playerName : String = name ?: "Player"
 
     @ColumnInfo(name = "currency")
-    var currentCurrency : Int = startingCurrency
+    var currentCurrency : Int = startingCurrency ?: 1000
 
-//    @ColumnInfo("playerItems")
-//    var itemsOnHand = itemList
 }
