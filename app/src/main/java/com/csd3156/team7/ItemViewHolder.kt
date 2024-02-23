@@ -21,7 +21,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
                 return@setOnClickListener
             }
 
-            ShopActivity.playerViewModel.updateItemQuantity(item.name, item.quantity + 1)
+            ShopActivity.playerViewModel.updateItemQuantity(item.itemId, item.quantity + 1)
 
             ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price
             ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
@@ -38,7 +38,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
                 return@setOnClickListener
             }
 
-            ShopActivity.playerViewModel.updateItemQuantity(item.name, item.quantity - 1)
+            ShopActivity.playerViewModel.updateItemQuantity(item.itemId, item.quantity - 1)
 
             ShopActivity.playerViewModel.playerCurrencyObject.currency += item.price / 2
             ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)

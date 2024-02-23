@@ -1,6 +1,7 @@
 package com.csd3156.team7
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -39,13 +40,15 @@ class ShopActivity : AppCompatActivity() {
         val sphereQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Sphere", 0)
         val imageResId: Int = R.drawable.square_placeholder
 
+
+
         val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE).getBoolean("FirstLaunch", true)
         if (firstLaunch) {
             lifecycleScope.launch {
                 playerViewModel.insertItem(ShopItem("Cube", imageResId, cubeQuantity,
-                    "Produces 10 per 1 second", 10))
+                    "Produces 10 per 1 second", 10, true))
                 playerViewModel.insertItem(ShopItem("Sphere", imageResId, sphereQuantity,
-                    "Produces 5 per 1 second", 5))
+                    "Produces 5 per 1 second", 5, true))
             }
             getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()
         }
@@ -94,6 +97,7 @@ class ShopActivity : AppCompatActivity() {
             (viewAdaptor as ShopListAdaptor).setItems(inventoryList)
         }
 
+        Log.d("ShopActivity", "1213Test: $cubeQuantity")
 
     }
 

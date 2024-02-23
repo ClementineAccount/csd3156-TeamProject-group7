@@ -18,10 +18,11 @@ interface ShopItemDao {
      @Query("SELECT * FROM itemTable WHERE itemName = :name")
      fun getItemByName(name: String): ShopItem
 
+     @Query("UPDATE itemTable SET quantity = :quantity WHERE itemID = :id")
+     fun updateQuantity(id: Int, quantity: Int)
 
-     // update quantity of item
-     @Query("UPDATE itemTable SET quantity = :quantity WHERE itemName = :name")
-     fun updateQuantity(name: String, quantity: Int)
+     @Query("UPDATE itemTable SET researched = :isResearched WHERE itemID = :id")
+     fun updateResearched(id: Int, isResearched: Boolean)
 
      @Insert
      fun insert(item: ShopItem)
