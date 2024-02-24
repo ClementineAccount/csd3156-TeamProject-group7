@@ -112,6 +112,7 @@ class HelloArRenderer(val activity: HelloArActivity) :
   lateinit var virtualObjectAlbedoInstantPlacementTexture: Texture
 
   private val wrappedAnchors = mutableListOf<WrappedAnchor>()
+  private val gpsAnchors = mutableListOf<Anchor>()
 
   private var mediaPlayer: MediaPlayer? = null
   private val audioResources = arrayOf(
@@ -391,6 +392,8 @@ class HelloArRenderer(val activity: HelloArActivity) :
     // Update lighting parameters in the shader
     updateLightEstimation(frame.lightEstimate, viewMatrix)
 
+
+
     // Visualize anchors created by touch.
     render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f)
     for ((anchor, trackable) in
@@ -415,6 +418,28 @@ class HelloArRenderer(val activity: HelloArActivity) :
         } else {
           virtualObjectAlbedoTexture
         }
+      virtualObjectShader.setTexture("u_AlbedoTexture", texture)
+      render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+    }
+
+
+    // Visualize anchors created by GPS
+    for (anchor in gpsAnchors) {
+      // Get the current pose of an Anchor in world space. The Anchor pose is updated
+      // during calls to session.update() as ARCore refines its estimate of the world.
+
+      anchor.pose.toMatrix(modelMatrix, 0)
+
+      // Calculate model/view/projection matrices
+      Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
+      Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
+
+      // Update shader properties and draw
+      virtualObjectShader.setMat4("u_ModelView", modelViewMatrix)
+      virtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix)
+
+      // Just do only Albedo for now
+      val texture = virtualObjectAlbedoTexture
       virtualObjectShader.setTexture("u_AlbedoTexture", texture)
       render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
     }
@@ -539,6 +564,11 @@ class HelloArRenderer(val activity: HelloArActivity) :
       // depth-based occlusion. This dialog needs to be spawned on the UI thread.
       activity.runOnUiThread { activity.view.showOcclusionDialogIfNeeded() }
     }
+  }
+
+  public fun addAnchorGPS(anchor : Anchor)
+  {
+    gpsAnchors.add(anchor)
   }
 
   private fun showError(errorMessage: String) =

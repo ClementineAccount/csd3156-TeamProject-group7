@@ -1,6 +1,7 @@
 package com.csd3156.team7
 
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
 import kotlinx.coroutines.flow.Flow
 
 class FarmListRepository(private val farmDao: FarmDao) {
@@ -23,5 +24,9 @@ class FarmListRepository(private val farmDao: FarmDao) {
     suspend fun delete()
     {
         farmDao.deleteAllFarm()
+    }
+
+    fun GetFirstFarm(): LiveData<FarmItem> {
+        return farmDao.getFirstFarm()
     }
 }

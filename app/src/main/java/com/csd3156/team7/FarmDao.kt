@@ -1,5 +1,6 @@
 package com.csd3156.team7
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -16,4 +17,7 @@ interface FarmDao {
 
     @Query("DELETE FROM farmTable")
     suspend fun deleteAllFarm()
+
+    @Query("SELECT * FROM farmTable LIMIT 1")
+    fun getFirstFarm(): LiveData<FarmItem>
 }

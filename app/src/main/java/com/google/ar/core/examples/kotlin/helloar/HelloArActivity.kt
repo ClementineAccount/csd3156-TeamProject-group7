@@ -36,6 +36,7 @@ import com.csd3156.team7.FarmItem
 import com.csd3156.team7.PlayerInventoryViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.ar.core.Anchor
 import com.google.ar.core.Config
 import com.google.ar.core.Config.InstantPlacementMode
 import com.google.ar.core.Earth
@@ -254,7 +255,40 @@ class HelloArActivity : AppCompatActivity() {
 
     val debugFarmPlaceButton = findViewById<Button>(R.id.debugFarm)
     debugFarmPlaceButton.setOnClickListener {
-      // get farm from database and place them using the geospatial
+
+
+      runOnUiThread {
+        var farmList: MutableList<FarmItem> = mutableListOf()
+        playerViewModel.allFarm.observe(this, Observer { farmList ->
+          // The observer will be notified when the LiveData changes
+
+          // Check if the list is not null and not empty before looping
+          if (farmList != null && farmList.isNotEmpty()) {
+            // Loop through the FourDigit objects in the list
+            for (farm in farmList) {
+              println("Farm ID: ${farm.uid}")
+              println("Farm Name: ${farm.farmName}")
+              println("Farm latitude: ${farm.latitude}")
+              println("Farm longitude: ${farm.longitude}")
+              println("Farm Altitude: ${farm.altitude}")
+
+
+              // Test only first farm
+              // TODO: Test if place all the farms
+              val anchor : Anchor = earth.createAnchor(farm.latitude, farm.longitude, farm.altitude,
+                0.0f, 0.0f, 0.0f, 0.0f)
+
+              // TODO: Handle exception if farm is empty
+              renderer.addAnchorGPS(anchor)
+              //farmList.add(newEntity)
+            }
+          }
+        })
+
+
+      }
+
+
     }
 
 

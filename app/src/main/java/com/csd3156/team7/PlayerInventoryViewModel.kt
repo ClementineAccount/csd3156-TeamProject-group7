@@ -32,6 +32,8 @@ class PlayerInventoryViewModel(application: Application) : AndroidViewModel(appl
         farmRepository.delete()
     }
 
+    fun getFirstFarm() = farmRepository.GetFirstFarm()
+
 
     init {
         val database = PlayerInventoryDatabase.getDatabase(application)
