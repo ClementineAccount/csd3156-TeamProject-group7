@@ -21,7 +21,11 @@ class ShopItemRepository (private val shopItemDao: ShopItemDao, private val play
         return shopItemDao.getItemByName(name)
     }
 
-    fun updateQuantity(name: String, quantity: Int) {
-        shopItemDao.updateQuantity(name, quantity)
+    fun updateQuantity(id: Int, quantity: Int) {
+        shopItemDao.updateQuantity(id, quantity)
+    }
+
+    fun updateResearched(id: Int, researched: Boolean) {
+        shopItemDao.updateResearched(id, researched)
     }
 }

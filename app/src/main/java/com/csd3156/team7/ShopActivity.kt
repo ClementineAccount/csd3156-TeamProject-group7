@@ -1,6 +1,7 @@
 package com.csd3156.team7
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -26,7 +27,7 @@ class ShopActivity : AppCompatActivity() {
 
     fun setCurrencyText(currency : Int) {
         val currencyTextView: TextView = findViewById(R.id.shop_currency)
-        currencyTextView.text = "${currency} Credits"
+        currencyTextView.text = "${currency} Shapes"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,13 +40,15 @@ class ShopActivity : AppCompatActivity() {
         val sphereQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Sphere", 0)
         val imageResId: Int = R.drawable.square_placeholder
 
+
+
         val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE).getBoolean("FirstLaunch", true)
         if (firstLaunch) {
             lifecycleScope.launch {
                 playerViewModel.insertItem(ShopItem("Cube", imageResId, cubeQuantity,
-                    "Produces 10 per 1 second", 10, isUnlocked = true))
+                    "Produces 5 per 1 second", 5, true))
                 playerViewModel.insertItem(ShopItem("Sphere", imageResId, sphereQuantity,
-                    "Produces 5 per 1 second", 5, isUnlocked = false))
+                    "Produces 10 per 1 second", 10, false))
             }
             getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()
         }
@@ -53,12 +56,13 @@ class ShopActivity : AppCompatActivity() {
         playerViewModel.currentPlayerCurrency.observe(this)
         {
             if (it == 0) {
-                playerViewModel.setPlayerCurrency(1000)
                 player.currentCurrency = 1000
-            } else {
+                setCurrencyText(player.currentCurrency)
+            }
+            else {
                 player.currentCurrency = it
                 playerViewModel.playerCurrencyObject.currency = it
-                setCurrencyText(it)
+                setCurrencyText(player.currentCurrency)
             }
         }
 
@@ -93,6 +97,7 @@ class ShopActivity : AppCompatActivity() {
             (viewAdaptor as ShopListAdaptor).setItems(inventoryList)
         }
 
+        Log.d("ShopActivity", "1213Test: $cubeQuantity")
 
     }
 

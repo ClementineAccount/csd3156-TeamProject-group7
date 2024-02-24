@@ -1,6 +1,7 @@
 package com.csd3156.team7
 
 import android.util.Log
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.google.ar.core.examples.kotlin.helloar.databinding.ShopItemBinding
 
@@ -13,6 +14,10 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         binding.itemQuantity.text = item.quantity.toString()
         binding.itemDescription.text = item.description
         binding.itemPrice.text = "Cost: ${item.price}"
+        binding.unlockButton.visibility = if (item.researched) View.GONE else View.VISIBLE
+        binding.unlockButton.setOnClickListener {
+            onUnlockAttempt(item)
+        }
 
         binding.buyButton.setOnClickListener {
 
@@ -21,7 +26,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
                 return@setOnClickListener
             }
 
-            ShopActivity.playerViewModel.updateItemQuantity(item.name, item.quantity + 1)
+            ShopActivity.playerViewModel.updateItemQuantity(item.itemId, item.quantity + 1)
 
             ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price
             ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
@@ -38,7 +43,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
                 return@setOnClickListener
             }
 
-            ShopActivity.playerViewModel.updateItemQuantity(item.name, item.quantity - 1)
+            ShopActivity.playerViewModel.updateItemQuantity(item.itemId, item.quantity - 1)
 
             ShopActivity.playerViewModel.playerCurrencyObject.currency += item.price / 2
             ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
@@ -47,6 +52,20 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
             Log.d("ItemViewHolder", "Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}")
 
 //            ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.currentPlayerCurrency.value?.plus(item.price)!!)
+        }
+    }
+    fun onUnlockAttempt(item: ShopItem)
+    {
+        if(ShopActivity.playerViewModel.playerCurrencyObject.currency  >= item.price)
+        {
+
+            ShopActivity.playerViewModel.updateItemResearchState(item.itemId, true)
+
+
+        }
+        else
+        {
+
         }
     }
 }

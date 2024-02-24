@@ -12,7 +12,7 @@ data class ShopItem(
     var quantity: Int,
     val description: String,
     val price: Int,
-    var isUnlocked: Boolean) : Parcelable
+    var researched: Boolean) : Parcelable
 {
     @PrimaryKey(autoGenerate = true)
     var itemId = 0
@@ -29,9 +29,8 @@ data class ShopItem(
     @ColumnInfo(name = "itemPrice")
     var buyPrice = price
 
-    @ColumnInfo(name = "itemPrice")
-    var itemisUnlocked = isUnlocked
-
+    @ColumnInfo(name = "itemResearched")
+    var itemResearched = researched
 
     override fun describeContents(): Int {
         return 0
@@ -42,7 +41,7 @@ data class ShopItem(
         dest.writeString(name)
         dest.writeInt(quantity)
         dest.writeInt(price)
-        dest.writeByte(if (itemisUnlocked) 1 else 0)
+        dest.writeBoolean(researched)
     }
 
     companion object CREATOR : Parcelable.Creator<ShopItem> {
@@ -52,9 +51,8 @@ data class ShopItem(
             val quantity = parcel.readInt()
             val description = parcel.readString()?: ""
             val price = parcel.readInt()
-            val isUnlocked = parcel.readByte() != 0.toByte()
-            return ShopItem(name,imageResourceId, quantity, description, price, isUnlocked)
-
+            val researched = parcel.readBoolean()
+            return ShopItem(name,imageResourceId, quantity, description, price, researched)
         }
 
         override fun newArray(size: Int): Array<ShopItem?> {
