@@ -15,6 +15,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         binding.itemDescription.text = item.description
         binding.itemPrice.text = "Cost: ${item.price}"
         binding.unlockButton.visibility = if (item.researched) View.GONE else View.VISIBLE
+        binding.unlockButton.text = "Unlock: ${item.creditsToResearch} CREDIT"
         binding.unlockButton.setOnClickListener {
             onUnlockAttempt(item)
         }
@@ -60,12 +61,13 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         {
 
             ShopActivity.playerViewModel.updateItemResearchState(item.itemId, true)
-
+            ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.creditsToResearch
+            ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
         }
         else
         {
-
+            Log.d("ItemViewHolder", "Not enough currency")
         }
     }
 }
