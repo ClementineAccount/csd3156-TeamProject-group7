@@ -28,7 +28,7 @@ class PlayerInventoryViewModel(application: Application) : AndroidViewModel(appl
         farmRepository.insert(farm)
     }
 
-    fun delete() = viewModelScope.launch {
+    fun deleteAllFarm() = viewModelScope.launch {
         farmRepository.delete()
     }
 
@@ -46,7 +46,7 @@ class PlayerInventoryViewModel(application: Application) : AndroidViewModel(appl
 
     fun insertPlayer(value: Player) { InsertAsyncTask(dao).execute(value) }
 
-    fun delete(value: Player) { dao.delete(value) }
+    fun deleteAllFarm(value: Player) { dao.delete(value) }
 
     fun deleteTable() { DeleteTableAsyncTask(dao).execute() }
 

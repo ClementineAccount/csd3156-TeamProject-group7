@@ -22,6 +22,6 @@ class FarmListRepository(private val farmDao: FarmDao) {
     @WorkerThread
     suspend fun delete()
     {
-        farmDao.deleteAll()
+        farmDao.deleteAllFarm()
     }
 }

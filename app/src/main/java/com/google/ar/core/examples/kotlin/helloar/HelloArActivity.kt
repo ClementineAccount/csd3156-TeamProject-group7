@@ -40,6 +40,7 @@ import com.google.ar.core.Config
 import com.google.ar.core.Config.InstantPlacementMode
 import com.google.ar.core.Earth
 import com.google.ar.core.GeospatialPose
+import com.google.ar.core.HitResult
 import com.google.ar.core.Session
 import com.google.ar.core.examples.java.common.helpers.CameraPermissionHelper
 import com.google.ar.core.examples.java.common.helpers.DepthSettings
@@ -93,6 +94,7 @@ class HelloArActivity : AppCompatActivity() {
   public lateinit var earth : Earth
 
   lateinit var cameraGeospatialPose : GeospatialPose
+
 
 
   private fun checkPermission(permission: String, requestCode: Int) {
@@ -245,6 +247,18 @@ class HelloArActivity : AppCompatActivity() {
       startActivity(Intent);
     }
 
+    val clearDatabaseDebugButton = findViewById<Button>(R.id.clearFarm)
+    clearDatabaseDebugButton.setOnClickListener {
+      playerViewModel.deleteAllFarm()
+    }
+
+    val debugFarmPlaceButton = findViewById<Button>(R.id.debugFarm)
+    debugFarmPlaceButton.setOnClickListener {
+      // get farm from database and place them using the geospatial
+    }
+
+
+
 
 
   }
@@ -278,12 +292,6 @@ class HelloArActivity : AppCompatActivity() {
     )
   }
 
-  public fun addFarm() {
-
-    var locationValueList : MutableList<Double> = mutableListOf()
-    getGPSLocation(locationValueList)
-
-  }
 
   public fun printAllFarmItem(allEntity: LiveData<List<FarmItem>>) {
     runOnUiThread {
@@ -306,6 +314,24 @@ class HelloArActivity : AppCompatActivity() {
       })
     }
   }
+
+  public fun addFarm(result : HitResult) {
+
+    //TODO: Get pose from firstHitResult and send it to do GPS stuff
+    var pose : GeospatialPose = earth.getGeospatialPose(result.hitPose)
+    Log.d("Hit Result (Geospatial Pose)", "longitude: ${pose.longitude}")
+    Log.d("Hit Result (Geospatial Pose)", "latitude: ${pose.latitude}")
+    Log.d("Hit Result (Geospatial Pose)", "altitude: ${pose.altitude}")
+
+    val newFarm = FarmItem(name = "Test Farm", lat = pose.latitude, long =  pose.longitude, alt = pose.altitude)
+    playerViewModel.insert(newFarm)
+
+    // For testing
+    printAllFarmItem(playerViewModel.allFarm)
+    //var locationValueList : MutableList<Double> = mutableListOf()
+    //getGPSLocation(locationValueList)
+  }
+
 
   override fun onRequestPermissionsResult(
     requestCode: Int,
