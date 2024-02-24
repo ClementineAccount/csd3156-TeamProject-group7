@@ -259,7 +259,7 @@ class HelloArActivity : AppCompatActivity() {
     val debugFarmPlaceButton = findViewById<Button>(R.id.debugFarm)
     debugFarmPlaceButton.setOnClickListener {
 
-      renderer.clearAnchorGPS()
+
 
       runOnUiThread {
         var farmList: MutableList<FarmItem> = mutableListOf()
@@ -280,9 +280,13 @@ class HelloArActivity : AppCompatActivity() {
               println("Farm qz: ${farm.qz}")
               println("Farm qw: ${farm.qw}")
 
+              val cameraGeospatialPose = earth.cameraGeospatialPose
+
+              //Use altitude of camera for testing for now.
+
               // Test only first farm
               // TODO: Test if place all the farms
-              val anchor : Anchor = earth.createAnchor(farm.latitude, farm.longitude, farm.altitude,
+              val anchor : Anchor = earth.createAnchor(farm.latitude, farm.longitude, cameraGeospatialPose.altitude,
                 farm.qx, farm.qy, farm.qz, farm.qw)
 
               // TODO: Handle exception if farm is empty

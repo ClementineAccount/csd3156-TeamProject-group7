@@ -29,6 +29,7 @@ import com.google.ar.core.InstantPlacementPoint
 import com.google.ar.core.LightEstimate
 import com.google.ar.core.Plane
 import com.google.ar.core.Point
+import com.google.ar.core.Pose
 import com.google.ar.core.Session
 import com.google.ar.core.Trackable
 import com.google.ar.core.TrackingFailureReason
@@ -110,6 +111,7 @@ class HelloArRenderer(val activity: HelloArActivity) :
   lateinit var virtualObjectShader: Shader
   lateinit var virtualObjectAlbedoTexture: Texture
   lateinit var virtualObjectAlbedoInstantPlacementTexture: Texture
+  lateinit var geospatialAnchorVirtualObjectShader: Shader
 
   private val wrappedAnchors = mutableListOf<WrappedAnchor>()
   private val gpsAnchors = mutableListOf<Anchor>()
@@ -139,6 +141,7 @@ class HelloArRenderer(val activity: HelloArActivity) :
   val viewInverseMatrix = FloatArray(16)
   val worldLightDirection = floatArrayOf(0.0f, 0.0f, 0.0f, 0.0f)
   val viewLightDirection = FloatArray(4) // view x world light direction
+
 
   val session
     get() = activity.arCoreSessionHelper.session
@@ -252,6 +255,15 @@ class HelloArRenderer(val activity: HelloArActivity) :
          // .setTexture("u_RoughnessMetallicAmbientOcclusionTexture", virtualObjectPbrTexture)
           .setTexture("u_Cubemap", cubemapFilter.filteredCubemapTexture)
           .setTexture("u_DfgTexture", dfgTexture)
+
+      geospatialAnchorVirtualObjectShader = Shader.createFromAssets(
+        render,
+        "shaders/ar_unlit_object.vert",
+        "shaders/ar_unlit_object.frag",  /* defines= */
+        null
+      )
+        .setTexture("u_Texture", virtualObjectAlbedoTexture)
+
     } catch (e: IOException) {
       Log.e(TAG, "Failed to read a required asset file", e)
       showError("Failed to read a required asset file: $e")
@@ -262,6 +274,17 @@ class HelloArRenderer(val activity: HelloArActivity) :
     displayRotationHelper.onSurfaceChanged(width, height)
     virtualSceneFramebuffer.resize(width, height)
   }
+
+  private fun getScale(anchorPose: Pose, cameraPose: Pose): Float {
+    val distance = Math.sqrt(
+      Math.pow((anchorPose.tx() - cameraPose.tx()).toDouble(), 2.0)
+              + Math.pow((anchorPose.ty() - cameraPose.ty()).toDouble(), 2.0)
+              + Math.pow((anchorPose.tz() - cameraPose.tz()).toDouble(), 2.0)
+    )
+    val mapDistance = Math.min(Math.max(2.0, distance), 20.0)
+    return (mapDistance - 2).toFloat() / (20 - 2) + 1
+  }
+
 
   override fun onDrawFrame(render: SampleRender) {
     val session = session ?: return
@@ -424,21 +447,46 @@ class HelloArRenderer(val activity: HelloArActivity) :
 
 
     // Visualize anchors created by GPS
+    // I copy from geospatial_java from the samples
     for (anchor in gpsAnchors) {
-      anchor.pose.toMatrix(modelMatrix, 0)
+  // Get the current pose of an Anchor in world space. The Anchor pose is updated
+        // during calls to session.update() as ARCore refines its estimate of the world.
+        // Only render resolved Terrain & Rooftop anchors and Geospatial anchors.
 
+        // Get the current pose of an Anchor in world space. The Anchor pose is updated
+        // during calls to session.update() as ARCore refines its estimate of the world.
+        // Only render resolved Terrain & Rooftop anchors and Geospatial anchors.
+      if (anchor.trackingState != TrackingState.TRACKING) {
+        continue
+      }
+      anchor.pose.toMatrix(modelMatrix, 0)
+      val scaleMatrix = FloatArray(16)
+      Matrix.setIdentityM(scaleMatrix, 0)
+      val scale: Float = getScale(anchor.pose, camera.displayOrientedPose)
+      scaleMatrix[0] = scale
+      scaleMatrix[5] = scale
+      scaleMatrix[10] = scale
+      Matrix.multiplyMM(modelMatrix, 0, modelMatrix, 0, scaleMatrix, 0)
+      // Rotate the virtual object 180 degrees around the Y axis to make the object face the GL
+      // camera -Z axis, since camera Z axis faces toward users.
+      // Rotate the virtual object 180 degrees around the Y axis to make the object face the GL
+      // camera -Z axis, since camera Z axis faces toward users.
+      val rotationMatrix = FloatArray(16)
+      Matrix.setRotateM(rotationMatrix, 0, 180f, 0.0f, 1.0f, 0.0f)
+      val rotationModelMatrix = FloatArray(16)
+      Matrix.multiplyMM(rotationModelMatrix, 0, modelMatrix, 0, rotationMatrix, 0)
       // Calculate model/view/projection matrices
-      Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
+      // Calculate model/view/projection matrices
+      Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, rotationModelMatrix, 0)
       Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
 
-      // Update shader properties and draw
-      virtualObjectShader.setMat4("u_ModelView", modelViewMatrix)
-      virtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix)
+      geospatialAnchorVirtualObjectShader.setMat4(
+        "u_ModelViewProjection", modelViewProjectionMatrix
+      )
+      render.draw(
+        virtualObjectMesh, geospatialAnchorVirtualObjectShader, virtualSceneFramebuffer
+      )
 
-      // Just do only Albedo for now
-      val texture = virtualObjectAlbedoTexture
-      virtualObjectShader.setTexture("u_AlbedoTexture", texture)
-      render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
     }
 
     // Compose the virtual scene with the background.
