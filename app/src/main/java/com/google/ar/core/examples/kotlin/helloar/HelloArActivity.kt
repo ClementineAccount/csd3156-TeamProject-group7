@@ -262,6 +262,10 @@ class HelloArActivity : AppCompatActivity() {
           } else {
             InstantPlacementMode.DISABLED
           }
+
+        // Enable the Geospatial API to retrieve anchor positions from database using GPS
+        session.configure(session.config.apply { geospatialMode = Config.GeospatialMode.ENABLED })
+
       }
     )
   }
