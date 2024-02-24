@@ -48,4 +48,20 @@
       android:layout_marginBottom="25dp"
       android:text="Button" />
 
+  <Button
+      android:id="@+id/clearFarm"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="(DEBUG) Clear Database" />
+
+  <Button
+      android:id="@+id/debugFarm"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="50dp"
+      android:layout_marginTop="50dp"
+      android:layout_marginEnd="50dp"
+      android:layout_marginBottom="50dp"
+      android:text="(DEBUG) PLACE FARM FROM DATABASE" />
+
 </RelativeLayout>
