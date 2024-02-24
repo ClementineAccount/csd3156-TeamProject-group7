@@ -25,6 +25,7 @@ import com.google.ar.core.Anchor
 import com.google.ar.core.Camera
 import com.google.ar.core.DepthPoint
 import com.google.ar.core.Frame
+import com.google.ar.core.GeospatialPose
 import com.google.ar.core.InstantPlacementPoint
 import com.google.ar.core.LightEstimate
 import com.google.ar.core.Plane
@@ -527,6 +528,12 @@ class HelloArRenderer(val activity: HelloArActivity) :
       // space. This anchor is created on the Plane to place the 3D model
       // in the correct position relative both to the world and to the plane.
       wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable))
+      //TODO: Get pose from firstHitResult and send it to do GPS stuff
+      var pose : GeospatialPose = activity.earth.getGeospatialPose(firstHitResult.hitPose)
+      Log.d("Hit Result (Geospatial Pose)", "longitude: ${pose.longitude}")
+      Log.d("Hit Result (Geospatial Pose)", "latitude: ${pose.latitude}")
+      Log.d("Hit Result (Geospatial Pose)", "altitude: ${pose.altitude}")
+
       playObjectPlacedSound()
 
       activity.runOnUiThread {
