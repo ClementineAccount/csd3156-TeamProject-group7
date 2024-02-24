@@ -425,9 +425,6 @@ class HelloArRenderer(val activity: HelloArActivity) :
 
     // Visualize anchors created by GPS
     for (anchor in gpsAnchors) {
-      // Get the current pose of an Anchor in world space. The Anchor pose is updated
-      // during calls to session.update() as ARCore refines its estimate of the world.
-
       anchor.pose.toMatrix(modelMatrix, 0)
 
       // Calculate model/view/projection matrices
@@ -569,6 +566,11 @@ class HelloArRenderer(val activity: HelloArActivity) :
   public fun addAnchorGPS(anchor : Anchor)
   {
     gpsAnchors.add(anchor)
+  }
+
+  public fun clearAnchorGPS()
+  {
+    gpsAnchors.clear()
   }
 
   private fun showError(errorMessage: String) =

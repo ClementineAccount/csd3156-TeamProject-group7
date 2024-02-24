@@ -250,12 +250,16 @@ class HelloArActivity : AppCompatActivity() {
 
     val clearDatabaseDebugButton = findViewById<Button>(R.id.clearFarm)
     clearDatabaseDebugButton.setOnClickListener {
+
+      renderer.clearAnchorGPS()
       playerViewModel.deleteAllFarm()
+
     }
 
     val debugFarmPlaceButton = findViewById<Button>(R.id.debugFarm)
     debugFarmPlaceButton.setOnClickListener {
 
+      renderer.clearAnchorGPS()
 
       runOnUiThread {
         var farmList: MutableList<FarmItem> = mutableListOf()
@@ -271,12 +275,15 @@ class HelloArActivity : AppCompatActivity() {
               println("Farm latitude: ${farm.latitude}")
               println("Farm longitude: ${farm.longitude}")
               println("Farm Altitude: ${farm.altitude}")
-
+              println("Farm qx: ${farm.qx}")
+              println("Farm qy: ${farm.qy}")
+              println("Farm qz: ${farm.qz}")
+              println("Farm qw: ${farm.qw}")
 
               // Test only first farm
               // TODO: Test if place all the farms
               val anchor : Anchor = earth.createAnchor(farm.latitude, farm.longitude, farm.altitude,
-                0.0f, 0.0f, 0.0f, 0.0f)
+                farm.qx, farm.qy, farm.qz, farm.qw)
 
               // TODO: Handle exception if farm is empty
               renderer.addAnchorGPS(anchor)
@@ -356,8 +363,10 @@ class HelloArActivity : AppCompatActivity() {
     Log.d("Hit Result (Geospatial Pose)", "longitude: ${pose.longitude}")
     Log.d("Hit Result (Geospatial Pose)", "latitude: ${pose.latitude}")
     Log.d("Hit Result (Geospatial Pose)", "altitude: ${pose.altitude}")
+    Log.d("Hit Result (Geospatial Pose)", "eastUpSouthQuaternion : ${pose.eastUpSouthQuaternion}")
 
-    val newFarm = FarmItem(name = "Test Farm", lat = pose.latitude, long =  pose.longitude, alt = pose.altitude)
+    val newFarm = FarmItem(name = "Test Farm", lat = pose.latitude, long =  pose.longitude, alt = pose.altitude,
+      qx_set = pose.eastUpSouthQuaternion[0], qy_set = pose.eastUpSouthQuaternion[1], qz_set = pose.eastUpSouthQuaternion[2], qw_set = pose.eastUpSouthQuaternion[3])
     playerViewModel.insert(newFarm)
 
     // For testing

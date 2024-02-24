@@ -5,7 +5,8 @@ import androidx.room.PrimaryKey
 
 // TODO: Also add type of farm item
 @Entity(tableName = "farmTable")
-data class FarmItem(var name: String = "Test", var lat: Double = 0.0, var long: Double = 0.0, var alt: Double = 0.0)
+data class FarmItem(var name: String = "Test", var lat: Double = 0.0, var long: Double = 0.0, var alt: Double = 0.0,
+    var qx_set: Float = 0.0f, var qy_set: Float = 0.0f, var qz_set: Float = 0.0f, var qw_set: Float = 0.0f)
 {
     @PrimaryKey(autoGenerate = true)
     var uid : Int = 0
@@ -22,4 +23,17 @@ data class FarmItem(var name: String = "Test", var lat: Double = 0.0, var long: 
 
     @ColumnInfo(name = "altitude")
     var altitude : Double = alt
+
+    @ColumnInfo(name = "qx")
+    var qx : Float = qx_set
+
+    @ColumnInfo(name = "qy")
+    var qy : Float = qy_set
+
+    @ColumnInfo(name = "qz")
+    var qz : Float = qz_set
+
+    @ColumnInfo(name = "qw")
+    var qw : Float = qw_set
+
 }
