@@ -26,7 +26,7 @@ class ShopActivity : AppCompatActivity() {
 
     fun setCurrencyText(currency : Int) {
         val currencyTextView: TextView = findViewById(R.id.shop_currency)
-        currencyTextView.text = "${currency} Shapes"
+        currencyTextView.text = "${currency} Credits"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,9 +43,9 @@ class ShopActivity : AppCompatActivity() {
         if (firstLaunch) {
             lifecycleScope.launch {
                 playerViewModel.insertItem(ShopItem("Cube", imageResId, cubeQuantity,
-                    "Produces 10 per 1 second", 10))
+                    "Produces 10 per 1 second", 10, isUnlocked = true))
                 playerViewModel.insertItem(ShopItem("Sphere", imageResId, sphereQuantity,
-                    "Produces 5 per 1 second", 5))
+                    "Produces 5 per 1 second", 5, isUnlocked = false))
             }
             getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()
         }

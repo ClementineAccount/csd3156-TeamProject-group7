@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 // The player's save data, such as their inventory and the collectables
 // they have obtained, may be saved in a database.
 
-@Database(entities = [Player::class], version = 1, exportSchema = false)
+@Database(entities = [Player::class], version = 2, exportSchema = false)
 abstract class PlayerInventoryDatabase : RoomDatabase()
 {
     abstract fun playerDao(): PlayerDao
