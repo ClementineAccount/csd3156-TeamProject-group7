@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 // TODO: Also add type of farm item
 @Entity(tableName = "farmTable")
-data class FarmItem(var name: String = "Test", var lat: Double = 0.0, var long: Double = 0.0)
+data class FarmItem(var name: String = "Test", var lat: Double = 0.0, var long: Double = 0.0, var alt : Double = 0.0)
 {
     @PrimaryKey(autoGenerate = true)
     var uid : Int = 0
@@ -19,4 +19,7 @@ data class FarmItem(var name: String = "Test", var lat: Double = 0.0, var long: 
 
     @ColumnInfo(name = "longitude")
     var longitude : Double = long
+
+    @ColumnInfo(name = "altitude")
+    val altitude : Double = alt
 }

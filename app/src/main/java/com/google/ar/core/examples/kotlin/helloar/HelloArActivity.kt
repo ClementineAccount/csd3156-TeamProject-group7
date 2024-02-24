@@ -140,6 +140,7 @@ class HelloArActivity : AppCompatActivity() {
               if (location != null) {
                 val latitude = location.latitude
                 val longitude = location.longitude
+                val altitude = location.altitude
 
                 resultList.add(latitude)
                 resultList.add(longitude)
@@ -147,10 +148,10 @@ class HelloArActivity : AppCompatActivity() {
                 // Do something with latitude and longitude
                 Toast.makeText(
                   this@HelloArActivity,
-                  "Latitude: $latitude\nLongitude: $longitude", Toast.LENGTH_SHORT
+                  "Latitude: $latitude\nLongitude: $longitude\nAltitude: $altitude", Toast.LENGTH_SHORT
                 ).show()
 
-                val newFarm = FarmItem(name = "Test Farm", lat = latitude, long =  longitude)
+                val newFarm = FarmItem(name = "Test Farm", lat = latitude, long =  longitude, alt = altitude)
                 playerViewModel.insert(newFarm)
 
                 // For testing
