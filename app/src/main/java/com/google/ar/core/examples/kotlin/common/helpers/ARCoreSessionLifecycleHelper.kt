@@ -15,13 +15,14 @@
  */
 package com.google.ar.core.examples.kotlin.common.helpers
 
-import android.app.Activity
 import android.widget.Toast
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.google.ar.core.ArCoreApk
 import com.google.ar.core.Session
+import com.google.ar.core.TrackingState
 import com.google.ar.core.examples.java.common.helpers.CameraPermissionHelper
+import com.google.ar.core.examples.kotlin.helloar.HelloArActivity
 import com.google.ar.core.exceptions.CameraNotAvailableException
 
 /**
@@ -30,7 +31,7 @@ import com.google.ar.core.exceptions.CameraNotAvailableException
  * asks the user for required permissions if necessary.
  */
 class ARCoreSessionLifecycleHelper(
-  val activity: Activity,
+  val activity: HelloArActivity,
   val features: Set<Session.Feature> = setOf()
 ) : DefaultLifecycleObserver {
   var installRequested = false
@@ -84,6 +85,8 @@ class ARCoreSessionLifecycleHelper(
         }
       }
 
+
+
       // Create a session if Google Play Services for AR is installed and up to date.
       Session(activity, features)
     } catch (e: Exception) {
@@ -100,6 +103,12 @@ class ARCoreSessionLifecycleHelper(
       this.session = session
     } catch (e: CameraNotAvailableException) {
       exceptionCallback?.invoke(e)
+    }
+
+    activity.earth = session.earth!!
+    if (activity.earth.trackingState == TrackingState.TRACKING) {
+      activity.cameraGeospatialPose = activity.earth.cameraGeospatialPose
+      // cameraGeospatialPose contains geodetic location, rotation, and confidences values.
     }
   }
 

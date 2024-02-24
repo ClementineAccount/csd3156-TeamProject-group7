@@ -38,6 +38,8 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.ar.core.Config
 import com.google.ar.core.Config.InstantPlacementMode
+import com.google.ar.core.Earth
+import com.google.ar.core.GeospatialPose
 import com.google.ar.core.Session
 import com.google.ar.core.examples.java.common.helpers.CameraPermissionHelper
 import com.google.ar.core.examples.java.common.helpers.DepthSettings
@@ -87,6 +89,10 @@ class HelloArActivity : AppCompatActivity() {
   lateinit var playerViewModel: PlayerInventoryViewModel
 
   private val LOCATION_PERMISSION_REQUEST_CODE = 100
+
+  public lateinit var earth : Earth
+
+  lateinit var cameraGeospatialPose : GeospatialPose
 
 
   private fun checkPermission(permission: String, requestCode: Int) {
@@ -239,6 +245,8 @@ class HelloArActivity : AppCompatActivity() {
       startActivity(Intent);
     }
 
+
+
   }
 
   // Configure the session, using Lighting Estimation, and Depth mode.
@@ -264,7 +272,7 @@ class HelloArActivity : AppCompatActivity() {
           }
 
         // Enable the Geospatial API to retrieve anchor positions from database using GPS
-        session.configure(session.config.apply { geospatialMode = Config.GeospatialMode.ENABLED })
+        geospatialMode = Config.GeospatialMode.ENABLED
 
       }
     )
@@ -291,6 +299,7 @@ class HelloArActivity : AppCompatActivity() {
             println("Farm Name: ${farm.farmName}")
             println("Farm latitude: ${farm.latitude}")
             println("Farm longitude: ${farm.longitude}")
+            println("Farm Altitude: ${farm.altitude}")
             //farmList.add(newEntity)
           }
         }
