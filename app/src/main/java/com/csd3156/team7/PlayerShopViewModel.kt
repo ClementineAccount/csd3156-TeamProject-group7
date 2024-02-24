@@ -78,6 +78,13 @@ class PlayerShopViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun updateItemResearchState(id : Int, research : Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            shopRepository.updateResearched(id,research)
+        }
+    }
+
+
     private class DeleteTableAsyncTask(private val dao: PlayerDao) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg params: Void): Void? { dao.deleteTable(); return null }
     }

@@ -12,7 +12,7 @@ data class ShopItem(
     var quantity: Int,
     val description: String,
     val price: Int,
-    val researched: Boolean) : Parcelable
+    var researched: Boolean) : Parcelable
 {
     @PrimaryKey(autoGenerate = true)
     var itemId = 0

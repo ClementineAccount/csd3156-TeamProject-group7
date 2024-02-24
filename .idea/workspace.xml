@@ -37,11 +37,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4d10a4c8-058a-4033-877b-68cfdab97344" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetDropDown.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetDropDown.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/color/button_tint_selector.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ItemViewHolder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ItemViewHolder.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/PlayerShopViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/PlayerShopViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopItem.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopItem.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/shop_item.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/shop_item.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,6 +96,13 @@
         </projects_view>
       </state>
     </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="resourceFile" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
