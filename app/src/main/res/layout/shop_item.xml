@@ -1,84 +1,72 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
     android:padding="8dp">
-    <FrameLayout
+
+    <ImageView
+        android:id="@+id/item_image"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:src="@drawable/square_placeholder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+        android:id="@+id/item_quantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:padding="8dp">
-        <ImageView
-            android:id="@+id/item_image"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:src= "@drawable/square_placeholder"/>
-        <TextView
-            android:id="@+id/item_quantity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:text="@string/quantity" />/>
+        android:text="@string/quantity"
+        app:layout_constraintBottom_toBottomOf="@id/item_image"
+        app:layout_constraintEnd_toEndOf="@id/item_image" />
 
+    <TextView
+        android:id="@+id/item_name"
+        android:layout_width="239dp"
+        android:layout_height="23dp"
+        android:text="@string/farm_name"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@id/buy_button"
+        app:layout_constraintStart_toEndOf="@id/item_image"
+        app:layout_constraintTop_toTopOf="@id/item_image" />
 
-    </FrameLayout>
+    <TextView
+        android:id="@+id/item_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/farm_description"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/item_name"
+        app:layout_constraintTop_toBottomOf="@id/item_name"
+        app:layout_constraintEnd_toEndOf="@id/item_name" />
 
+    <TextView
+        android:id="@+id/item_price"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/farm_cost"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/item_description"
+        app:layout_constraintTop_toBottomOf="@id/item_description"
+        app:layout_constraintEnd_toEndOf="@id/item_description" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/buy_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_weight="1"
-        android:layout_gravity="center_vertical"
-        android:padding="4dp">
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:padding="4dp">
+        android:text="Buy"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-            <TextView
-                android:id="@+id/item_name"
-                android:text="@string/farm_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="18sp" />
+    <Button
+        android:id="@+id/sell_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sell"
+        app:layout_constraintTop_toBottomOf="@id/buy_button"
+        app:layout_constraintStart_toStartOf="@id/buy_button"
+        app:layout_constraintEnd_toEndOf="@id/buy_button" />
 
-            <TextView
-                android:id="@+id/item_description"
-                android:text="@string/farm_description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"/>
-
-            <TextView
-                android:id="@+id/item_price"
-                android:text="@string/farm_cost"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width= "wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:orientation="vertical">
-            <Button
-                android:id="@+id/buy_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Buy" />
-
-            <Button
-                android:id="@+id/sell_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sell" />
-
-        </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

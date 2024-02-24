@@ -48,7 +48,7 @@ class ShopActivity : AppCompatActivity() {
                 playerViewModel.insertItem(ShopItem("Cube", imageResId, cubeQuantity,
                     "Produces 10 per 1 second", 10, true))
                 playerViewModel.insertItem(ShopItem("Sphere", imageResId, sphereQuantity,
-                    "Produces 5 per 1 second", 5, true))
+                    "Produces 5 per 1 second", 5, false))
             }
             getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()
         }
