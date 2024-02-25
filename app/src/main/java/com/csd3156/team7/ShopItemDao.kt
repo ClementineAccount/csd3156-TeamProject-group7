@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
@@ -24,7 +25,7 @@ interface ShopItemDao {
      @Query("UPDATE itemTable SET researched = :isResearched WHERE itemID = :id")
      fun updateResearched(id: Int, isResearched: Boolean)
 
-     @Insert
+     @Insert(onConflict = OnConflictStrategy.REPLACE)
      fun insert(item: ShopItem)
 
      @Delete

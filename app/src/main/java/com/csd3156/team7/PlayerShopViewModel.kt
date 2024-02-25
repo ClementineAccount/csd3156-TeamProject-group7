@@ -27,7 +27,7 @@ class PlayerShopViewModel(application: Application) : AndroidViewModel(applicati
     init {
         val database = PlayerInventoryDatabase.getDatabase(application)
         dao = database.playerDao()
-        repository = PlayerRepository(application, dao)
+        repository = PlayerRepository(application)
 
         currentPlayerCurrency = repository.getPlayerCurrency().asLiveData()
 

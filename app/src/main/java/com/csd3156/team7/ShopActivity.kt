@@ -18,8 +18,8 @@ class ShopActivity : AppCompatActivity() {
     private lateinit var viewManager: RecyclerView.LayoutManager
 
     private var inventoryList: MutableList<ShopItem> = mutableListOf()
-
-    var player: Player = Player("Test", 1000)
+    val STARTING_CURRENCY = 2000
+    var player: Player = Player("Test", STARTING_CURRENCY)
 
     companion object {
         lateinit var playerViewModel: PlayerShopViewModel
@@ -27,7 +27,7 @@ class ShopActivity : AppCompatActivity() {
 
     fun setCurrencyText(currency : Int) {
         val currencyTextView: TextView = findViewById(R.id.shop_currency)
-        currencyTextView.text = "${currency} Shapes"
+        currencyTextView.text = "CREDIT: ${currency}"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,9 +47,9 @@ class ShopActivity : AppCompatActivity() {
         if (firstLaunch) {
             lifecycleScope.launch {
                 playerViewModel.insertItem(ShopItem("Cube", squareImageResId, cubeQuantity,
-                    "Produces 5 per 1 second", 5, true))
+                    "Produces 5 per 1 second", 5, true,1000))
                 playerViewModel.insertItem(ShopItem("Sphere", circleImageResId, sphereQuantity,
-                    "Produces 10 per 1 second", 10, false))
+                    "Produces 10 per 1 second", 10, false,1000))
             }
             getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()
         }
@@ -57,7 +57,7 @@ class ShopActivity : AppCompatActivity() {
         playerViewModel.currentPlayerCurrency.observe(this)
         {
             if (it == 0) {
-                player.currentCurrency = 1000
+                player.currentCurrency = STARTING_CURRENCY
                 setCurrencyText(player.currentCurrency)
             }
             else {
@@ -77,11 +77,8 @@ class ShopActivity : AppCompatActivity() {
             (viewAdaptor as ShopListAdaptor).setItems(inventoryList)
         }
 
-//        inventoryList.add(ShopItem("Cube", imageResId, cubeQuantity,
-//            "Produces 10 per 1 second", 10))
-//
-//        inventoryList.add(ShopItem("Sphere", imageResId, sphereQuantity,
-//            "Produces 5 per 1 second", 5))
+//        inventoryList.add(ShopItem("Cube", imageResId, cubeQuantity,"Produces 10 per 1 second", 10))
+//        inventoryList.add(ShopItem("Sphere", imageResId, sphereQuantity,"Produces 5 per 1 second", 5))
 
         viewAdaptor = ShopListAdaptor(this, inventoryList, player)
         recyclerView = findViewById<RecyclerView>(R.id.recyclerViewInventoryList).apply {

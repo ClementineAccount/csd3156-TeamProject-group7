@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [ShopItem::class], version = 2, exportSchema = true)
+@Database(entities = [ShopItem::class], version = 3, exportSchema = true)
 abstract class ShopItemDatabase : RoomDatabase()
 {
 
@@ -17,9 +17,15 @@ abstract class ShopItemDatabase : RoomDatabase()
         @Volatile
         private var INSTANCE: ShopItemDatabase? = null
 
-        val migration = object : Migration(1, 2) {
+        private val migration = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE itemTable ADD COLUMN itemResearched INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        private val migration2 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE itemTable ADD COLUMN researchCreditRequirement INTEGER NOT NULL DEFAULT 0")
             }
         }
 
@@ -32,8 +38,9 @@ abstract class ShopItemDatabase : RoomDatabase()
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     ShopItemDatabase::class.java,
-                    "shop_item_database"
-                ).addMigrations(migration)
+                    "shop_item_database")
+                    .addMigrations(migration)
+                    .addMigrations(migration2)
                     .build()
                 INSTANCE = instance
                 return instance
