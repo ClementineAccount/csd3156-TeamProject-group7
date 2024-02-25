@@ -13,10 +13,12 @@ interface FarmDao {
     fun getAll(): Flow<List<FarmItem>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(farm: FarmItem)
+    suspend fun insert(farm: FarmItem) : Long
 
     @Query("DELETE FROM farmTable")
     suspend fun deleteAllFarm()
+
+
 
     @Query("SELECT * FROM farmTable LIMIT 1")
     fun getFirstFarm(): LiveData<FarmItem>

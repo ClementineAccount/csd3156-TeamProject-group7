@@ -2,7 +2,9 @@ package com.csd3156.team7
 
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 class FarmListRepository(private val farmDao: FarmDao) {
 
@@ -17,6 +19,12 @@ class FarmListRepository(private val farmDao: FarmDao) {
     @WorkerThread
     suspend fun insert(farm: FarmItem) {
         farmDao.insert(farm)
+    }
+
+    suspend fun insertFarmItemAndGetUid(farm: FarmItem) : Long {
+        return withContext(Dispatchers.IO) {
+            farmDao.insert(farm)
+        }
     }
 
     @Suppress("RedundantSuspendModifier")

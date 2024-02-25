@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
 
 // Currently this is named 'PlayerInventoryDatabase' but it also store the Farm Item.
 // The name is a bit wrong but it is kept for backwards compatbility.
-@Database(entities = [Player::class, FarmItem::class], version = 4, exportSchema = false)
+@Database(entities = [Player::class, FarmItem::class], version = 5, exportSchema = false)
 abstract class PlayerInventoryDatabase : RoomDatabase()
 {
     abstract fun farmDao(): FarmDao
