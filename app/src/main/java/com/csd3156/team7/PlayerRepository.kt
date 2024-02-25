@@ -33,6 +33,7 @@ class PlayerRepository(private val context: Context) {
         }
     }
 
+
     suspend fun setPlayerCurrency(newCurrency : Int) {
         context.dataStore.edit { preferences -> preferences[PLAYER_CURRENCY] = newCurrency
         }
