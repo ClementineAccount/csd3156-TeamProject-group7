@@ -27,7 +27,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         binding.itemImage.setImageResource(item.imageResourceId)
         binding.itemQuantity.text = item.quantity.toString()
         binding.itemDescription.text = item.description
-        binding.itemPrice.text = "Cost: ${item.price}"
+        binding.itemPrice.text = "PRICE: ${item.price}"
         binding.unlockButton.visibility = if (item.researched) View.GONE else View.VISIBLE
         binding.unlockButton.text = "Unlock: ${item.creditsToResearch} CREDIT"
         binding.unlockButton.setOnClickListener {
@@ -38,7 +38,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
             if (ShopActivity.playerViewModel.playerCurrencyObject.currency - item.price < 0) {
 
-                binding.buyButton.text = "NOT ENOUGH"
+                binding.buyButton.text = "NOT ENOUGH CREDITS"
                 Handler(Looper.getMainLooper()).postDelayed({
                     binding.buyButton.text = "BUY"
                 }, 500)
@@ -51,7 +51,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
                 ShopActivity.playerViewModel.updateItemQuantity(item.itemId, item.quantity + 1)
 
                 ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price
-                ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
+                //ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
                 // null bug?
                 Log.d(
@@ -68,14 +68,19 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
                 Log.d("ItemViewHolder", "No items to sell")
                 return@setOnClickListener
             }
+            else {
 
-            ShopActivity.playerViewModel.updateItemQuantity(item.itemId, item.quantity - 1)
+                ShopActivity.playerViewModel.updateItemQuantity(item.itemId, 0 )
 
-            ShopActivity.playerViewModel.playerCurrencyObject.currency += item.price
-            ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
+                ShopActivity.playerViewModel.playerCurrencyObject.currency += item.price * item.quantity
+                //ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
-            // null bug?
-            Log.d("ItemViewHolder", "Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}")
+                // null bug?
+                Log.d(
+                    "ItemViewHolder",
+                    "Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}"
+                )
+            }
 
         }
     }
