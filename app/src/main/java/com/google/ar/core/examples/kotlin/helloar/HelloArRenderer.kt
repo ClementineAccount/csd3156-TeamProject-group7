@@ -51,6 +51,7 @@ import com.google.ar.core.exceptions.NotYetAvailableException
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.Random
+import kotlin.math.sqrt
 
 /** Renders the HelloAR application using our example Renderer. */
 class HelloArRenderer(val activity: HelloArActivity) :
@@ -141,6 +142,8 @@ class HelloArRenderer(val activity: HelloArActivity) :
   val viewInverseMatrix = FloatArray(16)
   val worldLightDirection = floatArrayOf(0.0f, 0.0f, 0.0f, 0.0f)
   val viewLightDirection = FloatArray(4) // view x world light direction
+
+
 
 
   val session
@@ -593,15 +596,50 @@ class HelloArRenderer(val activity: HelloArActivity) :
         wrappedAnchors.removeAt(0)
       }
 
-      // Adding an Anchor tells ARCore that it should track this position in
-      // space. This anchor is created on the Plane to place the 3D model
-      // in the correct position relative both to the world and to the plane.
-      wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable))
+      // TODO: Move this constant out
+      // Radius threshold as we create it as circle/point distance check
+      val hitDistanceThresholdMeters = 0.5f
+      val hitPose = firstHitResult.hitPose
+      val hitPoseTranslation = hitPose.translation
 
-      playObjectPlacedSound()
+      var addHit : Boolean = true
 
-      activity.runOnUiThread {
-        activity.addFarm(firstHitResult)
+      //TODO: Check if hit result is near an anchor. If so, get the nearest anchor
+      for ((anchor, trackable) in
+        wrappedAnchors.filter { it.anchor.trackingState == TrackingState.TRACKING }) {
+
+        // https://stackoverflow.com/questions/45982196/how-to-measure-distance-using-arcore
+        // I only googled because 'surely got 'get distance function' but there is not
+        // (Yea I also shocked ARCore got not math library lol)
+        // Compute the difference vector between the two hit locations.
+        // Compute the difference vector between the two hit locations.
+        val endPose = anchor.pose
+        val dx: Float = hitPose.tx() - endPose.tx()
+        val dy: Float = hitPose.ty() - endPose.ty()
+        val dz: Float = hitPose.tz() - endPose.tz()
+
+        // Compute the straight-line distance.
+        val distanceMeters = sqrt((dx * dx + dy * dy + dz * dz).toDouble()).toFloat()
+        if (distanceMeters < hitDistanceThresholdMeters)
+        {
+          // I just realized I need to add to the anchor class an ID indicating which
+          // farm it belongs to
+          addHit = false
+          Log.d("Debug Hit Detection", "Hit Detected")
+        }
+      }
+
+      if (addHit)
+      {
+        // Adding an Anchor tells ARCore that it should track this position in
+        // space. This anchor is created on the Plane to place the 3D model
+        // in the correct position relative both to the world and to the plane.
+        wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable))
+        playObjectPlacedSound()
+
+        activity.runOnUiThread {
+          activity.addFarm(firstHitResult)
+        }
       }
 
       //addFarmToDatabase()
