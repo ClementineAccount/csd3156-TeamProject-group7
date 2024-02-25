@@ -9,7 +9,8 @@ data class FarmItem(var name: String = "Test", var lat: Double = 0.0, var long: 
     var qx_set: Float = 0.0f, var qy_set: Float = 0.0f, var qz_set: Float = 0.0f, var qw_set: Float = 0.0f)
 {
     @PrimaryKey(autoGenerate = true)
-    var uid : Int = 0
+    @ColumnInfo(name = "uid")
+    var uid : Long = 0
 
     @ColumnInfo(name = "farmName")
     var farmName : String = name ?: "My Test Farm"

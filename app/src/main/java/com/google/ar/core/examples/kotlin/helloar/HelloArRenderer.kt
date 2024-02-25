@@ -21,10 +21,12 @@ import android.opengl.Matrix
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.csd3156.team7.FarmItem
 import com.google.ar.core.Anchor
 import com.google.ar.core.Camera
 import com.google.ar.core.DepthPoint
 import com.google.ar.core.Frame
+import com.google.ar.core.GeospatialPose
 import com.google.ar.core.InstantPlacementPoint
 import com.google.ar.core.LightEstimate
 import com.google.ar.core.Plane
@@ -48,9 +50,12 @@ import com.google.ar.core.examples.java.common.samplerender.arcore.PlaneRenderer
 import com.google.ar.core.examples.java.common.samplerender.arcore.SpecularCubemapFilter
 import com.google.ar.core.exceptions.CameraNotAvailableException
 import com.google.ar.core.exceptions.NotYetAvailableException
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.Random
+import kotlin.math.sqrt
 
 /** Renders the HelloAR application using our example Renderer. */
 class HelloArRenderer(val activity: HelloArActivity) :
@@ -141,7 +146,6 @@ class HelloArRenderer(val activity: HelloArActivity) :
   val viewInverseMatrix = FloatArray(16)
   val worldLightDirection = floatArrayOf(0.0f, 0.0f, 0.0f, 0.0f)
   val viewLightDirection = FloatArray(4) // view x world light direction
-
 
   val session
     get() = activity.arCoreSessionHelper.session
@@ -593,15 +597,77 @@ class HelloArRenderer(val activity: HelloArActivity) :
         wrappedAnchors.removeAt(0)
       }
 
-      // Adding an Anchor tells ARCore that it should track this position in
-      // space. This anchor is created on the Plane to place the 3D model
-      // in the correct position relative both to the world and to the plane.
-      wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable))
+      // TODO: Move this constant out
+      // Radius threshold as we create it as circle/point distance check
+      val hitDistanceThresholdMeters = 0.5f
+      val hitPose = firstHitResult.hitPose
+      val hitPoseTranslation = hitPose.translation
 
-      playObjectPlacedSound()
+      var addHit : Boolean = true
 
-      activity.runOnUiThread {
-        activity.addFarm(firstHitResult)
+      //TODO: Check if hit result is near an anchor. If so, get the nearest anchor
+      for ((anchor, trackable, farmData) in
+        wrappedAnchors.filter { it.anchor.trackingState == TrackingState.TRACKING }) {
+
+        // https://stackoverflow.com/questions/45982196/how-to-measure-distance-using-arcore
+        // I only googled because 'surely got 'get distance function' but there is not
+        // (Yea I also shocked ARCore got not math library lol)
+        // Compute the difference vector between the two hit locations.
+        // Compute the difference vector between the two hit locations.
+        val endPose = anchor.pose
+        val dx: Float = hitPose.tx() - endPose.tx()
+        val dy: Float = hitPose.ty() - endPose.ty()
+        val dz: Float = hitPose.tz() - endPose.tz()
+
+        // Compute the straight-line distance.
+        val distanceMeters = sqrt((dx * dx + dy * dy + dz * dz).toDouble()).toFloat()
+        if (distanceMeters < hitDistanceThresholdMeters)
+        {
+          // I just realized I need to add to the anchor class an ID indicating which
+          // farm it belongs to
+          addHit = false
+          Log.d("Debug Hit Detection", "Hit Detected at: ${farmData.uid}")
+        }
+      }
+
+      if (addHit)
+      {
+        // Adding an Anchor tells ARCore that it should track this position in
+        // space. This anchor is created on the Plane to place the 3D model
+        // in the correct position relative both to the world and to the plane.
+
+        var pose : GeospatialPose = activity.earth.getGeospatialPose(hitPose)
+        Log.d("Hit Result (Geospatial Pose)", "longitude: ${pose.longitude}")
+        Log.d("Hit Result (Geospatial Pose)", "latitude: ${pose.latitude}")
+        Log.d("Hit Result (Geospatial Pose)", "altitude: ${pose.altitude}")
+        Log.d("Hit Result (Geospatial Pose)", "eastUpSouthQuaternion : ${pose.eastUpSouthQuaternion}")
+
+        val newFarm = FarmItem(name = "Test Farm", lat = pose.latitude, long =  pose.longitude, alt = pose.altitude,
+          qx_set = pose.eastUpSouthQuaternion[0], qy_set = pose.eastUpSouthQuaternion[1], qz_set = pose.eastUpSouthQuaternion[2], qw_set = pose.eastUpSouthQuaternion[3])
+
+        var uid : Long = 0L
+        runBlocking {
+          val job = launch {
+            uid = activity.addFarm(newFarm)
+          }
+          job.join()
+
+          Log.d("Hit Result (Geospatial Pose)", "UID: ${uid}")
+
+          wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable, FarmData(uid)))
+          playObjectPlacedSound()
+
+        }
+
+
+
+
+        // TODO: Wait for blocking to finish here?
+
+        // TODO: Check the uid is actually uid
+        // TODO: The UID is broken. Its not auto generated by the time I create the anchor
+        // I need to find a way to generate it as a blocking operation
+
       }
 
       //addFarmToDatabase()
@@ -643,13 +709,22 @@ class HelloArRenderer(val activity: HelloArActivity) :
 
 }
 
+
+data class FarmData (
+  val uid: Long
+)
+
 /**
  * Associates an Anchor with the trackable it was attached to. This is used to be able to check
  * whether or not an Anchor originally was attached to an {@link InstantPlacementPoint}.
+ *
+ * Edit from Clem: I also had to add an additional data to indicate the farm specifications
+ * So that it can interact with database
  */
 private data class WrappedAnchor(
   val anchor: Anchor,
   val trackable: Trackable,
+  val farmData : FarmData
 )
 
 
