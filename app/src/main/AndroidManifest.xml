@@ -57,7 +57,13 @@
         <activity
             android:name="com.csd3156.team7.ShopActivity"
             android:exported="true"
-            android:label="@string/shop_title" />
+            android:label="@string/shop_title"
+            android:parentActivityName ="com.csd3156.team7.DebugTitleActivity">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.csd3156.team7.DebugTitleActivity" /></activity>
+
+
         <activity
             android:name="com.csd3156.team7.MapsActivity"
             android:exported="true"

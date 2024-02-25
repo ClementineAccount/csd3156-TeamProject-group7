@@ -2,8 +2,10 @@ package com.csd3156.team7
 
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NavUtils
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,6 +35,9 @@ class ShopActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.shop)
+        if (supportActionBar != null) {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
         viewManager = LinearLayoutManager(this)
         playerViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
 
@@ -112,6 +117,27 @@ class ShopActivity : AppCompatActivity() {
         outState.putInt("PC", player.currentCurrency)
 
         outState.putParcelableArrayList("SAVED_ITEMS", ArrayList(inventoryList))
+    }
+
+
+
+    override fun onBackPressed() {
+        // Use NavUtils to navigate up to the parent activity as specified in the AndroidManifest
+        NavUtils.navigateUpFromSameTask(this)
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here.
+        when (item.itemId) {
+            android.R.id.home -> {
+                // This ID represents the Home or Up button. In the case of this activity,
+                // the Up button is shown. Use NavUtils to allow users to navigate up one level in the application structure.
+                // When pressing Up from this activity, the implementation of navigating to the parent activity
+                // should ensure that the back button returns the user to the home screen.
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 
