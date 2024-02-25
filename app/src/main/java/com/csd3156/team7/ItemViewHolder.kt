@@ -27,7 +27,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         binding.itemImage.setImageResource(item.imageResourceId)
         binding.itemQuantity.text = item.quantity.toString()
         binding.itemDescription.text = item.description
-        binding.itemPrice.text = "PRICE: ${item.price}"
+        binding.itemPrice.text = "Price: ${item.price}"
         binding.unlockButton.visibility = if (item.researched) View.GONE else View.VISIBLE
         binding.unlockButton.text = "Unlock: ${item.creditsToResearch} CREDIT"
         binding.unlockButton.setOnClickListener {

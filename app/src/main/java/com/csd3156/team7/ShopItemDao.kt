@@ -10,7 +10,7 @@ import androidx.room.Query
 @Dao
 interface ShopItemDao {
 
-     @Query("SELECT * FROM itemTable ORDER BY itemID ASC")
+     @Query("SELECT * FROM itemTable ORDER BY itemPrice ASC")
      fun getAllItems(): LiveData<List<ShopItem>>
 
      @Query("SELECT * FROM itemTable WHERE itemID = :id")
