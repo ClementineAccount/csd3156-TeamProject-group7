@@ -38,16 +38,17 @@ class ShopActivity : AppCompatActivity() {
 
         val cubeQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Cube", 0)
         val sphereQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Sphere", 0)
-        val imageResId: Int = R.drawable.square_placeholder
+        val squareImageResId: Int = R.drawable.square_placeholder
+        val circleImageResId: Int = R.drawable.circle
 
 
 
         val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE).getBoolean("FirstLaunch", true)
         if (firstLaunch) {
             lifecycleScope.launch {
-                playerViewModel.insertItem(ShopItem("Cube", imageResId, cubeQuantity,
+                playerViewModel.insertItem(ShopItem("Cube", squareImageResId, cubeQuantity,
                     "Produces 5 per 1 second", 5, true))
-                playerViewModel.insertItem(ShopItem("Sphere", imageResId, sphereQuantity,
+                playerViewModel.insertItem(ShopItem("Sphere", circleImageResId, sphereQuantity,
                     "Produces 10 per 1 second", 10, false))
             }
             getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()
@@ -70,7 +71,9 @@ class ShopActivity : AppCompatActivity() {
         // copy viewModel data to this inventory list
         playerViewModel.allItems.observe(this) {
             // the inventory list is updated
+
             inventoryList = it.toMutableList()
+
             (viewAdaptor as ShopListAdaptor).setItems(inventoryList)
         }
 

@@ -1,10 +1,12 @@
 package com.csd3156.team7
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.google.ar.core.examples.kotlin.helloar.databinding.ShopItemBinding
-
+import kotlinx.coroutines.*
 class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHolder(binding.root){
 
     fun bind(item: ShopItem)
@@ -15,6 +17,9 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         binding.itemDescription.text = item.description
         binding.itemPrice.text = "Cost: ${item.price}"
         binding.unlockButton.visibility = if (item.researched) View.GONE else View.VISIBLE
+        binding.unlockButton.text = "RESEARCH: ${item.price * 100} CREDITS"
+
+        binding
         binding.unlockButton.setOnClickListener {
             onUnlockAttempt(item)
         }
@@ -45,7 +50,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
             ShopActivity.playerViewModel.updateItemQuantity(item.itemId, item.quantity - 1)
 
-            ShopActivity.playerViewModel.playerCurrencyObject.currency += item.price / 2
+            ShopActivity.playerViewModel.playerCurrencyObject.currency += item.price
             ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
             // null bug?
@@ -56,16 +61,23 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
     }
     fun onUnlockAttempt(item: ShopItem)
     {
-        if(ShopActivity.playerViewModel.playerCurrencyObject.currency  >= item.price)
+        if(ShopActivity.playerViewModel.playerCurrencyObject.currency  >= item.price * 100)
         {
+
+            ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price * 100
+            ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
             ShopActivity.playerViewModel.updateItemResearchState(item.itemId, true)
 
-
         }
-        else
-        {
+        else {
 
+            binding.unlockButton.text = "NOT ENOUGH CREDITS"
+            Handler(Looper.getMainLooper()).postDelayed({
+                binding.unlockButton.text = "RESEARCH: ${item.price * 100} CREDITS"
+            }, 500)
         }
+
+
     }
 }
