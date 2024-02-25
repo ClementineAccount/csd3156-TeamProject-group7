@@ -41,7 +41,6 @@ import com.google.ar.core.Config
 import com.google.ar.core.Config.InstantPlacementMode
 import com.google.ar.core.Earth
 import com.google.ar.core.GeospatialPose
-import com.google.ar.core.HitResult
 import com.google.ar.core.Session
 import com.google.ar.core.examples.java.common.helpers.CameraPermissionHelper
 import com.google.ar.core.examples.java.common.helpers.DepthSettings
@@ -161,7 +160,7 @@ class HelloArActivity : AppCompatActivity() {
                 ).show()
 
                 val newFarm = FarmItem(name = "Test Farm", lat = latitude, long =  longitude, alt = altitude)
-                playerViewModel.insert(newFarm)
+                //playerViewModel.insert(newFarm)
 
                 // For testing
                 printAllFarmItem(playerViewModel.allFarm)
@@ -360,23 +359,12 @@ class HelloArActivity : AppCompatActivity() {
     }
   }
 
-  public fun addFarm(result : HitResult) {
 
-    //TODO: Get pose from firstHitResult and send it to do GPS stuff
-    var pose : GeospatialPose = earth.getGeospatialPose(result.hitPose)
-    Log.d("Hit Result (Geospatial Pose)", "longitude: ${pose.longitude}")
-    Log.d("Hit Result (Geospatial Pose)", "latitude: ${pose.latitude}")
-    Log.d("Hit Result (Geospatial Pose)", "altitude: ${pose.altitude}")
-    Log.d("Hit Result (Geospatial Pose)", "eastUpSouthQuaternion : ${pose.eastUpSouthQuaternion}")
 
-    val newFarm = FarmItem(name = "Test Farm", lat = pose.latitude, long =  pose.longitude, alt = pose.altitude,
-      qx_set = pose.eastUpSouthQuaternion[0], qy_set = pose.eastUpSouthQuaternion[1], qz_set = pose.eastUpSouthQuaternion[2], qw_set = pose.eastUpSouthQuaternion[3])
-    playerViewModel.insert(newFarm)
-
-    // For testing
+  public suspend fun addFarm(newFarm : FarmItem) : Long {
+    val generatedUid = playerViewModel.insert(newFarm)
     printAllFarmItem(playerViewModel.allFarm)
-    //var locationValueList : MutableList<Double> = mutableListOf()
-    //getGPSLocation(locationValueList)
+    return generatedUid
   }
 
 
