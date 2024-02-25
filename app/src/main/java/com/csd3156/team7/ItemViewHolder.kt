@@ -77,10 +77,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
 
         }
-        else
-        {
-            Log.d("ItemViewHolder", "Not enough currency")
-        }
+
 
 
     }
