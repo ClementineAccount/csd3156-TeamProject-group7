@@ -36,20 +36,25 @@ class ShopActivity : AppCompatActivity() {
         viewManager = LinearLayoutManager(this)
         playerViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
 
+        val pyramidQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Pyramid", 0)
         val cubeQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Cube", 0)
         val sphereQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Sphere", 0)
         val squareImageResId: Int = R.drawable.square_placeholder
         val circleImageResId: Int = R.drawable.circle
+        val triangleImageResId: Int = R.drawable.triangle
 
 
 
         val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE).getBoolean("FirstLaunch", true)
         if (firstLaunch) {
             lifecycleScope.launch {
+                playerViewModel.insertItem(ShopItem("Pyramid", triangleImageResId, pyramidQuantity,
+                    "Produces 5 per 1 second", 100000, true,1000))
                 playerViewModel.insertItem(ShopItem("Cube", squareImageResId, cubeQuantity,
-                    "Produces 5 per 1 second", 5, true,1000))
-                playerViewModel.insertItem(ShopItem("Sphere", circleImageResId, sphereQuantity,
                     "Produces 10 per 1 second", 10, false,1000))
+                playerViewModel.insertItem(ShopItem("Sphere", circleImageResId, sphereQuantity,
+                    "Produces 15 per 1 second", 15, false,1000))
+
             }
             getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()
         }

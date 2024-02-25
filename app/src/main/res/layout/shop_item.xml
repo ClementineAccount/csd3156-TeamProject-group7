@@ -30,7 +30,7 @@
 
     <TextView
         android:id="@+id/item_name"
-        android:layout_width="228dp"
+        android:layout_width="160dp"
         android:layout_height="24dp"
         android:text="@string/farm_name"
         android:textSize="18sp"

@@ -1,12 +1,24 @@
 package com.csd3156.team7
 
+
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+
 import androidx.recyclerview.widget.RecyclerView
 import com.google.ar.core.examples.kotlin.helloar.databinding.ShopItemBinding
 import kotlinx.coroutines.*
+
+import android.content.Context
+import android.graphics.PixelFormat
+import android.os.Build
+import android.provider.Settings
+import android.view.LayoutInflater
+import android.view.WindowManager
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.Toast
+
 class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHolder(binding.root){
 
     fun bind(item: ShopItem)
@@ -25,17 +37,28 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         binding.buyButton.setOnClickListener {
 
             if (ShopActivity.playerViewModel.playerCurrencyObject.currency - item.price < 0) {
+
+                binding.buyButton.text = "NOT ENOUGH"
+                Handler(Looper.getMainLooper()).postDelayed({
+                    binding.buyButton.text = "BUY"
+                }, 500)
+                //Toast.makeText(binding.root.context, "NOT ENOUGH CREDITS", Toast.LENGTH_SHORT).show()
                 Log.d("ItemViewHolder", "Not enough currency")
                 return@setOnClickListener
             }
+            else {
 
-            ShopActivity.playerViewModel.updateItemQuantity(item.itemId, item.quantity + 1)
+                ShopActivity.playerViewModel.updateItemQuantity(item.itemId, item.quantity + 1)
 
-            ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price
-            ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
+                ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price
+                ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
-            // null bug?
-            Log.d("ItemViewHolder", "Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}")
+                // null bug?
+                Log.d(
+                    "ItemViewHolder",
+                    "Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}"
+                )
+            }
         }
 
 
@@ -54,16 +77,14 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
             // null bug?
             Log.d("ItemViewHolder", "Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}")
 
-//            ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.currentPlayerCurrency.value?.plus(item.price)!!)
         }
     }
     fun onUnlockAttempt(item: ShopItem)
     {
-        if(ShopActivity.playerViewModel.playerCurrencyObject.currency  >= item.price * 100)
+        if(ShopActivity.playerViewModel.playerCurrencyObject.currency  >= item.creditsToResearch)
         {
 
             ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.creditsToResearch
-            ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
             ShopActivity.playerViewModel.updateItemResearchState(item.itemId, true)
 
@@ -72,7 +93,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
             binding.unlockButton.text = "NOT ENOUGH CREDITS"
             Handler(Looper.getMainLooper()).postDelayed({
-                binding.unlockButton.text = "RESEARCH: ${item.price * 100} CREDITS"
+                binding.unlockButton.text = "RESEARCH: ${item.creditsToResearch} CREDITS"
             }, 500)
 
 
@@ -80,5 +101,9 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
 
 
+
     }
+
+
+
 }
