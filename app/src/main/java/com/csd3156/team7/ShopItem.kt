@@ -15,7 +15,7 @@ data class ShopItem(
     val description: String,
     val price: Int,
     var researched: Boolean,
-    val resarchCreditRequirement: Int = 0
+    val researchCreditRequirement: Int = 0
     ) : Parcelable
 {
     @PrimaryKey(autoGenerate = true)
@@ -36,8 +36,8 @@ data class ShopItem(
     @ColumnInfo(name = "itemResearched")
     var itemResearched = researched
 
-    @ColumnInfo(name = "researchCreditRequirement")
-    var creditsToResearch = resarchCreditRequirement
+    @ColumnInfo(name = "researchCreditReq")
+    var creditsToResearch = researchCreditRequirement
 
     override fun describeContents(): Int {
         return 0

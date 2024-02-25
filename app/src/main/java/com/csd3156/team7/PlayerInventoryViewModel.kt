@@ -24,8 +24,8 @@ class PlayerInventoryViewModel(application: Application) : AndroidViewModel(appl
 
     lateinit var allFarm :LiveData<List<FarmItem>>
 
-    fun insert(farm: FarmItem) = viewModelScope.launch {
-        farmRepository.insert(farm)
+    suspend fun insert(farm: FarmItem): Long {
+        return farmRepository.insertFarmItemAndGetUid(farm)
     }
 
     fun deleteAllFarm() = viewModelScope.launch {
