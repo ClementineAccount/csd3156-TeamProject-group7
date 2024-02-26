@@ -36,8 +36,11 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         binding.itemName.text = item.name
         binding.itemImage.setImageResource(item.imageResourceId)
         binding.itemImage.setColorFilter(item.color)
+
         binding.itemQuantity.text = item.quantity.toString()
+
         binding.itemDescription.text = item.description
+
         binding.itemPrice.text = "Price: ${item.price}"
         binding.unlockButton.visibility = if (item.researched) View.GONE else View.VISIBLE
         binding.unlockButton.text = "Unlock: ${item.creditsToResearch} CREDIT"
@@ -72,14 +75,22 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
             }
         }
 
-
+        if (item.quantity == 0) {
+            binding.sellButton.isEnabled = false
+        }
+        else
+        {
+            binding.sellButton.isEnabled = true
+        }
         binding.sellButton.setOnClickListener {
 
             if (item.quantity == 0) {
+
                 Log.d("ItemViewHolder", "No items to sell")
                 return@setOnClickListener
             }
             else {
+
 
                 ShopActivity.playerViewModel.updateItemQuantity(item.itemId, 0 )
 
