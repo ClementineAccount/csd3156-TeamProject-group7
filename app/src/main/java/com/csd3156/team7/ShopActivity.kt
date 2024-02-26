@@ -1,5 +1,6 @@
 package com.csd3156.team7
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -48,17 +49,25 @@ class ShopActivity : AppCompatActivity() {
         val circleImageResId: Int = R.drawable.circle
         val triangleImageResId: Int = R.drawable.triangle
 
+        val redColorHex : String = "#DC143C"
+        val greenColorHex : String = "#228B22"
+        val blueColorHex : String = "#00BFFF"
+
+        val redColor = Color.parseColor(redColorHex)
+        val greenColor =  Color.parseColor(greenColorHex)
+        val blueColor = Color.parseColor(blueColorHex)
+
 
 
         val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE).getBoolean("FirstLaunch", true)
         if (firstLaunch) {
             lifecycleScope.launch {
                 playerViewModel.insertItem(ShopItem("Pyramid", triangleImageResId, pyramidQuantity,
-                    "Produces 5 per 1 second", 5, true,1000))
+                    "Produces 5 per 1 second", 5, true,1000,redColor))
                 playerViewModel.insertItem(ShopItem("Cube", squareImageResId, cubeQuantity,
-                    "Produces 10 per 1 second", 10, false,500))
+                    "Produces 10 per 1 second", 10, false,500,greenColor))
                 playerViewModel.insertItem(ShopItem("Sphere", circleImageResId, sphereQuantity,
-                    "Produces 15 per 1 second", 15, false,2000))
+                    "Produces 15 per 1 second", 15, false,2000,blueColor))
 
             }
             getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()

@@ -84,6 +84,14 @@ class PlayerShopViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun updateItemColor(id : Int, color : Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            shopRepository.updateColor(id,color)
+        }
+    }
+
+
+
 
     private class DeleteTableAsyncTask(private val dao: PlayerDao) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg params: Void): Void? { dao.deleteTable(); return null }

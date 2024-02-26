@@ -1,5 +1,7 @@
 package com.csd3156.team7
 
+import android.graphics.Color
+
 class ShopItemRepository (private val shopItemDao: ShopItemDao, private val playerDao: PlayerDao)
 {
     val allItems = shopItemDao.getAllItems()
@@ -27,5 +29,10 @@ class ShopItemRepository (private val shopItemDao: ShopItemDao, private val play
 
     fun updateResearched(id: Int, researched: Boolean) {
         shopItemDao.updateResearched(id, researched)
+    }
+
+    fun updateColor(id: Int, color: Int)
+    {
+        shopItemDao.updateColor(id, color)
     }
 }

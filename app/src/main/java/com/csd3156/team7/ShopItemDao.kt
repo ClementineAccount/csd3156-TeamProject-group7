@@ -25,6 +25,9 @@ interface ShopItemDao {
      @Query("UPDATE itemTable SET researched = :isResearched WHERE itemID = :id")
      fun updateResearched(id: Int, isResearched: Boolean)
 
+     @Query("UPDATE itemTable SET color = :color WHERE itemID = :id")
+     fun updateColor(id: Int, color: Int)
+
      @Insert(onConflict = OnConflictStrategy.REPLACE)
      fun insert(item: ShopItem)
 

@@ -1,4 +1,5 @@
 package com.csd3156.team7
+import android.graphics.Color
 import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
@@ -15,7 +16,9 @@ data class ShopItem(
     val description: String,
     val price: Int,
     var researched: Boolean,
-    val researchCreditRequirement: Int = 0
+    val researchCreditRequirement: Int = 0,
+    var color : Int
+
     ) : Parcelable
 {
     @PrimaryKey(autoGenerate = true)
@@ -38,6 +41,11 @@ data class ShopItem(
 
     @ColumnInfo(name = "researchCreditReq")
     var creditsToResearch = researchCreditRequirement
+
+    @ColumnInfo(name = "itemColor")
+    var itemColor = color
+
+
 
     override fun describeContents(): Int {
         return 0
@@ -63,7 +71,8 @@ data class ShopItem(
             val price = parcel.readInt()
             val researched = parcel.readBoolean()
             val creditsToResearch = parcel.readInt()
-            return ShopItem(name,imageResourceId, quantity, description, price, researched, creditsToResearch)
+            var color = parcel.readInt()
+            return ShopItem(name,imageResourceId, quantity, description, price, researched, creditsToResearch, color)
         }
 
         override fun newArray(size: Int): Array<ShopItem?> {

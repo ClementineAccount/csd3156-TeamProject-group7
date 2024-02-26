@@ -11,6 +11,8 @@ import com.google.ar.core.examples.kotlin.helloar.databinding.ShopItemBinding
 import kotlinx.coroutines.*
 
 import android.content.Context
+import android.content.Intent
+import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
 import android.provider.Settings
@@ -18,13 +20,25 @@ import android.view.LayoutInflater
 import android.view.WindowManager
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.Toast
+import com.google.ar.core.examples.kotlin.helloar.NFCActivity
 
 class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHolder(binding.root){
+
+    companion object{
+        lateinit var itemViewHolder : ItemViewHolder
+    }
+
+    var selectedID : Int
+        get() {
+            TODO()
+        }
+        set(value) {}
 
     fun bind(item: ShopItem)
     {
         binding.itemName.text = item.name
         binding.itemImage.setImageResource(item.imageResourceId)
+        binding.itemImage.setColorFilter(item.color)
         binding.itemQuantity.text = item.quantity.toString()
         binding.itemDescription.text = item.description
         binding.itemPrice.text = "Price: ${item.price}"
@@ -82,6 +96,12 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
                 )
             }
 
+        }
+
+        binding.changeColorButton.setOnClickListener{
+            selectedID = item.itemId
+            val intent = Intent(itemView.context, NFCActivity::class.java)
+            itemView.context.startActivity(intent)
         }
     }
     fun onUnlockAttempt(item: ShopItem)
