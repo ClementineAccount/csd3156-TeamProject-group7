@@ -28,11 +28,8 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         lateinit var itemViewHolder : ItemViewHolder
     }
 
-    var selectedID : Int
-        get() {
-            TODO()
-        }
-        set(value) {}
+    var selectedID : Int = 0
+
 
     fun bind(item: ShopItem)
     {
@@ -100,6 +97,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
         binding.changeColorButton.setOnClickListener{
             selectedID = item.itemId
+
             val intent = Intent(itemView.context, NFCActivity::class.java)
             itemView.context.startActivity(intent)
         }

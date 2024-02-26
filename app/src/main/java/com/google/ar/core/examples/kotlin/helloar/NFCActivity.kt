@@ -9,6 +9,7 @@ import android.nfc.Tag
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.csd3156.team7.ItemViewHolder
 import com.csd3156.team7.ShopActivity
@@ -70,8 +71,9 @@ class NFCActivity : AppCompatActivity() {
                 val last6 : String= tagValue.takeLast(6)
                 val colorString : String = "#$last6"
 
-
+                Log.d("DebugColor", "$colorString");
                 val color: Int = Color.parseColor(colorString)
+                Log.d("DebugColor", "$color");
 
 
                 Toast.makeText(this, "NFC tag detected: $tagValue", Toast.LENGTH_SHORT).show()

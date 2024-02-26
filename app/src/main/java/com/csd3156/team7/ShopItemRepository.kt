@@ -31,7 +31,7 @@ class ShopItemRepository (private val shopItemDao: ShopItemDao, private val play
         shopItemDao.updateResearched(id, researched)
     }
 
-    fun updateColor(id: Int, color: Int)
+    suspend fun updateColor(id: Int, color: Int)
     {
         shopItemDao.updateColor(id, color)
     }
