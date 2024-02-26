@@ -50,20 +50,6 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
 //
 //                shopActivity.playerViewModel.viewModelScope.launch {
 //                    shopActivity.playerViewModel.repository.setPlayerCurrency(player.currentCurrency)
-//
-//                    val sharedPref = shopActivity.getSharedPreferences("Player", Context.MODE_PRIVATE)
-//                    with(sharedPref.edit()) {
-//                        putInt("PlayerCurrency", player.currentCurrency) // save the player's currency to the datastore
-//                        apply() // apply is asynchronous, commit is synchronous
-//                    }
-//
-//                    // old: save item quantity to the datastore
-//                    val itemQuantity = sharedPref.getInt(item.name, 0)
-//                    with(sharedPref.edit()) {
-//                        putInt(item.name, itemQuantity + 1)
-//                        apply()
-//                    }
-//
 //                    // new: update the item quantity in the database
 //                    shopActivity.playerViewModel.updateItemQuantity(item.name, item.quantity)
 //
@@ -85,19 +71,6 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
 //
 //                shopActivity.playerViewModel.viewModelScope.launch {
 //                    shopActivity.playerViewModel.repository.setPlayerCurrency(player.currentCurrency)
-//
-//                    val sharedPref = shopActivity.getSharedPreferences("Player", Context.MODE_PRIVATE)
-//                    with(sharedPref.edit()) {
-//                        putInt("PlayerCurrency", player.currentCurrency) // save the player's currency to the datastore
-//                        apply() // apply is asynchronous, commit is synchronous
-//                    }
-//
-//                    // old: save item quantity to the datastore
-//                    val itemQuantity = sharedPref.getInt(item.name, 0)
-//                    with(sharedPref.edit()) {
-//                        putInt(item.name, itemQuantity - 1)
-//                        apply()
-//                    }
 //
 //                    // new: update the item quantity in the database
 //                    shopActivity.playerViewModel.updateItemQuantity(item.name, item.quantity)

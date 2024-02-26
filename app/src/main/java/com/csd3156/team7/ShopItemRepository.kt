@@ -5,7 +5,6 @@ import android.graphics.Color
 class ShopItemRepository (private val shopItemDao: ShopItemDao, private val playerDao: PlayerDao)
 {
     val allItems = shopItemDao.getAllItems()
-    val playerCurrency = playerDao.getPlayerCurrency()
 
     suspend fun insert(item: ShopItem) {
         shopItemDao.insert(item)
