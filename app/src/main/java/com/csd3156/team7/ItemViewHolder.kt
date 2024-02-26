@@ -99,7 +99,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
             }
             else {
 
-
+                // Sell all items at once. (as intended)
                 ShopActivity.playerViewModel.updateItemQuantity(item.itemId, 0 )
 
                 ShopActivity.playerViewModel.playerCurrencyObject.currency += item.price * item.quantity

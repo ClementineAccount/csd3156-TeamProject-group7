@@ -37,5 +37,9 @@ interface ShopItemDao {
      @Query("DELETE FROM itemTable")
      fun deleteTable()
 
+     @Query("SELECT quantity FROM itemTable WHERE itemID = :id")
+     fun getItemQuantity(id: Int): Int
+
+
 
 }

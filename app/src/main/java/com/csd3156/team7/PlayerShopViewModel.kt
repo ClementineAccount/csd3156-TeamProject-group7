@@ -72,6 +72,10 @@ class PlayerShopViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun getItemQuantity(id : Int) : Int {
+        return shopRepository.getItemQuantity(id)
+    }
+
     fun updateItemQuantity(id : Int, quantity : Int) {
         viewModelScope.launch(Dispatchers.IO) {
             shopRepository.updateQuantity(id, quantity)
