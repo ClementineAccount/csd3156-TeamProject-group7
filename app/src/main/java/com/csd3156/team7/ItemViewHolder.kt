@@ -48,6 +48,14 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
             onUnlockAttempt(item)
         }
 
+
+        if (ShopActivity.playerViewModel.playerCurrencyObject.currency - item.price < 0) {
+            binding.buyButton.isEnabled = false
+        }
+        else
+        {
+            binding.buyButton.isEnabled = true
+        }
         binding.buyButton.setOnClickListener {
 
             if (ShopActivity.playerViewModel.playerCurrencyObject.currency - item.price < 0) {
