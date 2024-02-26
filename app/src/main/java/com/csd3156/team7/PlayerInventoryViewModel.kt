@@ -4,11 +4,9 @@ import android.app.Application
 import android.os.AsyncTask
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -18,12 +16,31 @@ import kotlinx.coroutines.launch
 
 class PlayerInventoryViewModel(application: Application) : AndroidViewModel(application) {
     private val dao: PlayerDao
+    private val farmDao: FarmDao
+
     var repository = PlayerRepository(application)
+    lateinit var farmRepository : FarmListRepository
     lateinit var currentPlayerCurrency : LiveData<Int>
+
+    lateinit var allFarm :LiveData<List<FarmItem>>
+
+    suspend fun insert(farm: FarmItem): Long {
+        return farmRepository.insertFarmItemAndGetUid(farm)
+    }
+
+    fun deleteAllFarm() = viewModelScope.launch {
+        farmRepository.delete()
+    }
+
+    fun getFirstFarm() = farmRepository.GetFirstFarm()
+
 
     init {
         val database = PlayerInventoryDatabase.getDatabase(application)
         dao = database.playerDao()
+        farmDao = database.farmDao()
+        farmRepository = FarmListRepository(farmDao)
+        allFarm = farmRepository.alLFarms.asLiveData()
         currentPlayerCurrency = repository.getPlayerCurrency().asLiveData()
     }
 
@@ -31,7 +48,7 @@ class PlayerInventoryViewModel(application: Application) : AndroidViewModel(appl
 
     fun insertPlayer(value: Player) { InsertAsyncTask(dao).execute(value) }
 
-    fun delete(value: Player) { dao.delete(value) }
+    fun deleteAllFarm(value: Player) { dao.delete(value) }
 
     fun deleteTable() { DeleteTableAsyncTask(dao).execute() }
 

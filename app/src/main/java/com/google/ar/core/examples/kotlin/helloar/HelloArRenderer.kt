@@ -21,14 +21,17 @@ import android.opengl.Matrix
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.csd3156.team7.FarmItem
 import com.google.ar.core.Anchor
 import com.google.ar.core.Camera
 import com.google.ar.core.DepthPoint
 import com.google.ar.core.Frame
+import com.google.ar.core.GeospatialPose
 import com.google.ar.core.InstantPlacementPoint
 import com.google.ar.core.LightEstimate
 import com.google.ar.core.Plane
 import com.google.ar.core.Point
+import com.google.ar.core.Pose
 import com.google.ar.core.Session
 import com.google.ar.core.Trackable
 import com.google.ar.core.TrackingFailureReason
@@ -47,9 +50,12 @@ import com.google.ar.core.examples.java.common.samplerender.arcore.PlaneRenderer
 import com.google.ar.core.examples.java.common.samplerender.arcore.SpecularCubemapFilter
 import com.google.ar.core.exceptions.CameraNotAvailableException
 import com.google.ar.core.exceptions.NotYetAvailableException
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.Random
+import kotlin.math.sqrt
 
 /** Renders the HelloAR application using our example Renderer. */
 class HelloArRenderer(val activity: HelloArActivity) :
@@ -110,8 +116,10 @@ class HelloArRenderer(val activity: HelloArActivity) :
   lateinit var virtualObjectShader: Shader
   lateinit var virtualObjectAlbedoTexture: Texture
   lateinit var virtualObjectAlbedoInstantPlacementTexture: Texture
+  lateinit var geospatialAnchorVirtualObjectShader: Shader
 
   private val wrappedAnchors = mutableListOf<WrappedAnchor>()
+  private val gpsAnchors = mutableListOf<Anchor>()
 
   private var mediaPlayer: MediaPlayer? = null
   private val audioResources = arrayOf(
@@ -251,6 +259,15 @@ class HelloArRenderer(val activity: HelloArActivity) :
          // .setTexture("u_RoughnessMetallicAmbientOcclusionTexture", virtualObjectPbrTexture)
           .setTexture("u_Cubemap", cubemapFilter.filteredCubemapTexture)
           .setTexture("u_DfgTexture", dfgTexture)
+
+      geospatialAnchorVirtualObjectShader = Shader.createFromAssets(
+        render,
+        "shaders/ar_unlit_object.vert",
+        "shaders/ar_unlit_object.frag",  /* defines= */
+        null
+      )
+        .setTexture("u_Texture", virtualObjectAlbedoTexture)
+
     } catch (e: IOException) {
       Log.e(TAG, "Failed to read a required asset file", e)
       showError("Failed to read a required asset file: $e")
@@ -261,6 +278,17 @@ class HelloArRenderer(val activity: HelloArActivity) :
     displayRotationHelper.onSurfaceChanged(width, height)
     virtualSceneFramebuffer.resize(width, height)
   }
+
+  private fun getScale(anchorPose: Pose, cameraPose: Pose): Float {
+    val distance = Math.sqrt(
+      Math.pow((anchorPose.tx() - cameraPose.tx()).toDouble(), 2.0)
+              + Math.pow((anchorPose.ty() - cameraPose.ty()).toDouble(), 2.0)
+              + Math.pow((anchorPose.tz() - cameraPose.tz()).toDouble(), 2.0)
+    )
+    val mapDistance = Math.min(Math.max(2.0, distance), 20.0)
+    return (mapDistance - 2).toFloat() / (20 - 2) + 1
+  }
+
 
   override fun onDrawFrame(render: SampleRender) {
     val session = session ?: return
@@ -391,6 +419,8 @@ class HelloArRenderer(val activity: HelloArActivity) :
     // Update lighting parameters in the shader
     updateLightEstimation(frame.lightEstimate, viewMatrix)
 
+
+
     // Visualize anchors created by touch.
     render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f)
     for ((anchor, trackable) in
@@ -417,6 +447,50 @@ class HelloArRenderer(val activity: HelloArActivity) :
         }
       virtualObjectShader.setTexture("u_AlbedoTexture", texture)
       render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+    }
+
+
+    // Visualize anchors created by GPS
+    // I copy from geospatial_java from the samples
+    for (anchor in gpsAnchors) {
+  // Get the current pose of an Anchor in world space. The Anchor pose is updated
+        // during calls to session.update() as ARCore refines its estimate of the world.
+        // Only render resolved Terrain & Rooftop anchors and Geospatial anchors.
+
+        // Get the current pose of an Anchor in world space. The Anchor pose is updated
+        // during calls to session.update() as ARCore refines its estimate of the world.
+        // Only render resolved Terrain & Rooftop anchors and Geospatial anchors.
+      if (anchor.trackingState != TrackingState.TRACKING) {
+        continue
+      }
+      anchor.pose.toMatrix(modelMatrix, 0)
+      val scaleMatrix = FloatArray(16)
+      Matrix.setIdentityM(scaleMatrix, 0)
+      val scale: Float = getScale(anchor.pose, camera.displayOrientedPose)
+      scaleMatrix[0] = scale
+      scaleMatrix[5] = scale
+      scaleMatrix[10] = scale
+      Matrix.multiplyMM(modelMatrix, 0, modelMatrix, 0, scaleMatrix, 0)
+      // Rotate the virtual object 180 degrees around the Y axis to make the object face the GL
+      // camera -Z axis, since camera Z axis faces toward users.
+      // Rotate the virtual object 180 degrees around the Y axis to make the object face the GL
+      // camera -Z axis, since camera Z axis faces toward users.
+      val rotationMatrix = FloatArray(16)
+      Matrix.setRotateM(rotationMatrix, 0, 180f, 0.0f, 1.0f, 0.0f)
+      val rotationModelMatrix = FloatArray(16)
+      Matrix.multiplyMM(rotationModelMatrix, 0, modelMatrix, 0, rotationMatrix, 0)
+      // Calculate model/view/projection matrices
+      // Calculate model/view/projection matrices
+      Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, rotationModelMatrix, 0)
+      Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
+
+      geospatialAnchorVirtualObjectShader.setMat4(
+        "u_ModelViewProjection", modelViewProjectionMatrix
+      )
+      render.draw(
+        virtualObjectMesh, geospatialAnchorVirtualObjectShader, virtualSceneFramebuffer
+      )
+
     }
 
     // Compose the virtual scene with the background.
@@ -523,15 +597,94 @@ class HelloArRenderer(val activity: HelloArActivity) :
         wrappedAnchors.removeAt(0)
       }
 
-      // Adding an Anchor tells ARCore that it should track this position in
-      // space. This anchor is created on the Plane to place the 3D model
-      // in the correct position relative both to the world and to the plane.
-      wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable))
-      playObjectPlacedSound()
+      // TODO: Move this constant out
+      // Radius threshold as we create it as circle/point distance check
+      val hitDistanceThresholdMeters = 0.5f
+      val hitPose = firstHitResult.hitPose
+      val hitPoseTranslation = hitPose.translation
+
+      var addHit : Boolean = true
+
+      //TODO: Check if hit result is near an anchor. If so, get the nearest anchor
+      for ((anchor, trackable, farmData) in
+        wrappedAnchors.filter { it.anchor.trackingState == TrackingState.TRACKING }) {
+
+        // https://stackoverflow.com/questions/45982196/how-to-measure-distance-using-arcore
+        // I only googled because 'surely got 'get distance function' but there is not
+        // (Yea I also shocked ARCore got not math library lol)
+        // Compute the difference vector between the two hit locations.
+        // Compute the difference vector between the two hit locations.
+        val endPose = anchor.pose
+        val dx: Float = hitPose.tx() - endPose.tx()
+        val dy: Float = hitPose.ty() - endPose.ty()
+        val dz: Float = hitPose.tz() - endPose.tz()
+
+        // Compute the straight-line distance.
+        val distanceMeters = sqrt((dx * dx + dy * dy + dz * dz).toDouble()).toFloat()
+        if (distanceMeters < hitDistanceThresholdMeters)
+        {
+          // I just realized I need to add to the anchor class an ID indicating which
+          // farm it belongs to
+          addHit = false
+          Log.d("Debug Hit Detection", "Hit Detected at: ${farmData.uid}")
+        }
+      }
+
+      if (addHit)
+      {
+        // Adding an Anchor tells ARCore that it should track this position in
+        // space. This anchor is created on the Plane to place the 3D model
+        // in the correct position relative both to the world and to the plane.
+
+        var pose : GeospatialPose = activity.earth.getGeospatialPose(hitPose)
+        Log.d("Hit Result (Geospatial Pose)", "longitude: ${pose.longitude}")
+        Log.d("Hit Result (Geospatial Pose)", "latitude: ${pose.latitude}")
+        Log.d("Hit Result (Geospatial Pose)", "altitude: ${pose.altitude}")
+        Log.d("Hit Result (Geospatial Pose)", "eastUpSouthQuaternion : ${pose.eastUpSouthQuaternion}")
+
+        val newFarm = FarmItem(name = "Test Farm", lat = pose.latitude, long =  pose.longitude, alt = pose.altitude,
+          qx_set = pose.eastUpSouthQuaternion[0], qy_set = pose.eastUpSouthQuaternion[1], qz_set = pose.eastUpSouthQuaternion[2], qw_set = pose.eastUpSouthQuaternion[3])
+
+        var uid : Long = 0L
+        runBlocking {
+          val job = launch {
+            uid = activity.addFarm(newFarm)
+          }
+          job.join()
+
+          Log.d("Hit Result (Geospatial Pose)", "UID: ${uid}")
+
+          wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable, FarmData(uid)))
+          playObjectPlacedSound()
+
+        }
+
+
+
+
+        // TODO: Wait for blocking to finish here?
+
+        // TODO: Check the uid is actually uid
+        // TODO: The UID is broken. Its not auto generated by the time I create the anchor
+        // I need to find a way to generate it as a blocking operation
+
+      }
+
+      //addFarmToDatabase()
       // For devices that support the Depth API, shows a dialog to suggest enabling
       // depth-based occlusion. This dialog needs to be spawned on the UI thread.
       activity.runOnUiThread { activity.view.showOcclusionDialogIfNeeded() }
     }
+  }
+
+  public fun addAnchorGPS(anchor : Anchor)
+  {
+    gpsAnchors.add(anchor)
+  }
+
+  public fun clearAnchorGPS()
+  {
+    gpsAnchors.clear()
   }
 
   private fun showError(errorMessage: String) =
@@ -551,15 +704,27 @@ class HelloArRenderer(val activity: HelloArActivity) :
     }
     mediaPlayer?.start()
   }
+
+
+
 }
+
+
+data class FarmData (
+  val uid: Long
+)
 
 /**
  * Associates an Anchor with the trackable it was attached to. This is used to be able to check
  * whether or not an Anchor originally was attached to an {@link InstantPlacementPoint}.
+ *
+ * Edit from Clem: I also had to add an additional data to indicate the farm specifications
+ * So that it can interact with database
  */
 private data class WrappedAnchor(
   val anchor: Anchor,
   val trackable: Trackable,
+  val farmData : FarmData
 )
 
 
