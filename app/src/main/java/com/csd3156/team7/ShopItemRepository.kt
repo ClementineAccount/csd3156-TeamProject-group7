@@ -35,4 +35,8 @@ class ShopItemRepository (private val shopItemDao: ShopItemDao, private val play
     {
         shopItemDao.updateColor(id, color)
     }
+
+    fun getItemQuantity(id: Int): Int {
+        return shopItemDao.getItemQuantity(id)
+    }
 }

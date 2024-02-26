@@ -12,6 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.ar.core.examples.kotlin.helloar.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -42,9 +44,9 @@ class ShopActivity : AppCompatActivity() {
         viewManager = LinearLayoutManager(this)
         playerViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
 
-        val pyramidQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Pyramid", 0)
-        val cubeQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Cube", 0)
-        val sphereQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Sphere", 0)
+        // val pyramidQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Pyramid", 0)
+        // val cubeQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Cube", 0)
+        // val sphereQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Sphere", 0)
         val squareImageResId: Int = R.drawable.square_placeholder
         val circleImageResId: Int = R.drawable.circle
         val triangleImageResId: Int = R.drawable.triangle
@@ -62,11 +64,11 @@ class ShopActivity : AppCompatActivity() {
         val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE).getBoolean("FirstLaunch", true)
         if (firstLaunch) {
             lifecycleScope.launch {
-                playerViewModel.insertItem(ShopItem("Pyramid", triangleImageResId, pyramidQuantity,
+                playerViewModel.insertItem(ShopItem("Pyramid", triangleImageResId, 0,
                     "Produces 5 per 1 second", 5, true,1000,redColor))
-                playerViewModel.insertItem(ShopItem("Cube", squareImageResId, cubeQuantity,
+                playerViewModel.insertItem(ShopItem("Cube", squareImageResId, 0,
                     "Produces 10 per 1 second", 10, false,500,greenColor))
-                playerViewModel.insertItem(ShopItem("Sphere", circleImageResId, sphereQuantity,
+                playerViewModel.insertItem(ShopItem("Sphere", circleImageResId, 0,
                     "Produces 15 per 1 second", 15, false,2000,blueColor))
 
             }
@@ -83,23 +85,23 @@ class ShopActivity : AppCompatActivity() {
                 player.currentCurrency = it
                 playerViewModel.playerCurrencyObject.currency = it
                 setCurrencyText(player.currentCurrency)
-
-
             }
         }
-
 
         // copy viewModel data to this inventory list
         playerViewModel.allItems.observe(this) {
             // the inventory list is updated
-
             inventoryList = it.toMutableList()
-
             (viewAdaptor as ShopListAdaptor).setItems(inventoryList)
-        }
 
-//        inventoryList.add(ShopItem("Cube", imageResId, cubeQuantity,"Produces 10 per 1 second", 10))
-//        inventoryList.add(ShopItem("Sphere", imageResId, sphereQuantity,"Produces 5 per 1 second", 5))
+            var quantity = 0
+            CoroutineScope(Dispatchers.IO).launch {
+                for (item in inventoryList) {
+                    quantity = playerViewModel.getItemQuantity(item.itemId)
+                    Log.d("ShopActivity", "Quantity: ${quantity}")
+                }
+            }
+        }
 
         viewAdaptor = ShopListAdaptor(this, inventoryList, player)
         recyclerView = findViewById<RecyclerView>(R.id.recyclerViewInventoryList).apply {
@@ -109,7 +111,6 @@ class ShopActivity : AppCompatActivity() {
         }
         //load()
 
-
         if (savedInstanceState != null) {
             val savedList = savedInstanceState.getParcelableArrayList<ShopItem>("SAVED_ITEMS")
             player.currentCurrency = savedInstanceState.getInt("PC")
@@ -117,8 +118,6 @@ class ShopActivity : AppCompatActivity() {
             inventoryList = savedList?.toMutableList() ?: mutableListOf()
             (viewAdaptor as ShopListAdaptor).setItems(inventoryList)
         }
-
-        Log.d("ShopActivity", "1213Test: $cubeQuantity")
 
     }
 
