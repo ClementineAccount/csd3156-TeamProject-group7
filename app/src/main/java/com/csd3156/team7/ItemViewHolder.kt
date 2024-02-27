@@ -26,9 +26,10 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
     companion object{
         lateinit var itemViewHolder : ItemViewHolder
+        var selectedID : Int = 0
     }
 
-    var selectedID : Int = 0
+
 
 
     fun bind(item: ShopItem)

@@ -15,7 +15,10 @@
   <component name="ChangeListManager">
     <list default="true" id="20cc0cd7-a7b8-4301-a520-7d1bb427f361" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/shop_item.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/shop_item.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ItemViewHolder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ItemViewHolder.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopListAdaptor.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopListAdaptor.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/NFCActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/NFCActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,7 +28,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\green\.android\avd\Pixel_7_Pro_API_TiramisuPrivacySandbox_1.avd]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[R5CR82Z549A]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -126,7 +129,7 @@
     <option name="LAST_EDITED_SIGNING_CONFIG" value="debug" />
     <option name="LAST_EDITED_BUILD_TYPE" value="release" />
   </component>
-  <component name="RunManager" selected="Android App.ShopActivity">
+  <component name="RunManager" selected="Android App.DebugTitleActivity">
     <configuration name="DebugTitleActivity" type="AndroidRunConfigurationType" factoryName="Android App" temporary="true">
       <module name="csd3156-TeamProject-group7.app.main" />
       <option name="DEPLOY" value="true" />
@@ -330,8 +333,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Android App.ShopActivity" />
         <item itemvalue="Android App.DebugTitleActivity" />
+        <item itemvalue="Android App.ShopActivity" />
         <item itemvalue="Android App.MapsActivity" />
       </list>
     </recent_temporary>
