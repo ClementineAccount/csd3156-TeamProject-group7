@@ -56,7 +56,8 @@ class ShopActivity : AppCompatActivity() {
         val greenColor =  Color.parseColor(greenColorHex)
         val blueColor = Color.parseColor(blueColorHex)
 
-        val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE).getBoolean("FirstLaunch", true)
+        val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE)
+            .getBoolean("FirstLaunch", true)
         if (firstLaunch) {
             lifecycleScope.launch {
                 playerViewModel.insertItem(ShopItem("Pyramid", triangleImageResId, 0,
@@ -86,7 +87,7 @@ class ShopActivity : AppCompatActivity() {
             CoroutineScope(Dispatchers.IO).launch {
                 for (item in inventoryList) {
                     quantity = playerViewModel.getItemQuantity(item.itemId)
-                    Log.d("ShopActivity", "Quantity: ${quantity}")
+//                    Log.d("ShopActivity", "Quantity: ${quantity}")
                 }
             }
         }
@@ -97,7 +98,11 @@ class ShopActivity : AppCompatActivity() {
             layoutManager = viewManager
             adapter = viewAdaptor
         }
-        //load()
+
+        lifecycleScope.launch {
+            //val weather = playerViewModel.getWeather(1.3521, 103.8198) // Singapore
+            val weather2 = playerViewModel.getWeather("q")
+        }
 
         if (savedInstanceState != null) {
             val savedList = savedInstanceState.getParcelableArrayList<ShopItem>("SAVED_ITEMS")

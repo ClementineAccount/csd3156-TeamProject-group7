@@ -43,6 +43,9 @@
   <component name="ChangeListManager">
     <list default="true" id="63fb922e-c2ea-4e8d-b793-0c239ba65f0e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopItemRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopItemRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/Weather/Weather.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/Weather/Weather.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/Weather/WeatherService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/Weather/WeatherService.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,6 +56,19 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\ander\.android\avd\Device_1.avd]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin Class" />
+        <option value="Kotlin Data Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -61,14 +77,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "InventoryBranch2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;InventoryBranch2&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="ShopActivity" type="AndroidRunConfigurationType" factoryName="Android App" temporary="true">
       <module name="csd3156-TeamProject-group7.app.main" />
