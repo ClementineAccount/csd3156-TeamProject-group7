@@ -105,6 +105,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GoogleCloudApiKey" />
 
+        <service android:name="com.csd3156.team7.FarmService"/>
+
 
     </application>
 
