@@ -12,6 +12,11 @@ import com.google.ar.core.examples.kotlin.helloar.databinding.ShopItemBinding
 class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: List<ShopItem>, var player: Player)
     : RecyclerView.Adapter<ItemViewHolder>() {
 
+        companion object{
+            lateinit var shopListAdaptor : ShopListAdaptor
+        }
+
+
 
     //val sharedPreferences: SharedPreferences = context.getSharedPreferences("player", Context.MODE_PRIVATE)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {

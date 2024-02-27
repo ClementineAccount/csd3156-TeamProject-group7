@@ -11,8 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.viewModelScope
 import com.csd3156.team7.ItemViewHolder
 import com.csd3156.team7.ShopActivity
+import kotlinx.coroutines.flow.collect
 import java.lang.StringBuilder
 
 //https://abhishekbagdare.medium.com/reading-nfc-tags-with-android-kotlin-9ee8f82223b8
@@ -77,7 +80,8 @@ class NFCActivity : AppCompatActivity() {
 
 
                 Toast.makeText(this, "NFC tag detected: $tagValue", Toast.LENGTH_SHORT).show()
-                ShopActivity.playerViewModel.updateItemColor(ItemViewHolder.itemViewHolder.selectedID, color )
+                ShopActivity.playerViewModel.updateItemColor(ItemViewHolder.selectedID, color )
+
                 val intent = Intent(this, ShopActivity::class.java)
                 this.startActivity(intent)
 
