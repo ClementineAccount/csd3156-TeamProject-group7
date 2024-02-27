@@ -37,4 +37,16 @@ data class Weather(val _description: String, val _lut: String)
 * Be careful with the serialized name. It is the group header of the json response
 * object.
 */
-class WeatherResponse(@SerializedName("location") val weatherItems: Weather = Weather("Error", "Error"))
+class WeatherResponse(@SerializedName("location")
+                      val weatherItems: Weather = Weather("Error", "Error"),
+                      @SerializedName("current")
+                      val current: Current)
+
+data class Current(
+    @SerializedName("condition")
+    val condition: Condition,
+
+    // Include other fields from the `current` section as needed
+    @SerializedName("last_updated")
+    val lastUpdated: String
+)

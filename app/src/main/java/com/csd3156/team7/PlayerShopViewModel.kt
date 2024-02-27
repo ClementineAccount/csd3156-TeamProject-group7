@@ -95,6 +95,12 @@ class PlayerShopViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun updateItemPrice(id : Int, price : Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            shopRepository.updatePrice(id,price)
+        }
+    }
+
     fun getColorComponents(colorInt: Int): Triple<Int, Int, Int> {
         val red = (colorInt shr 16) and 0xff
         val green = (colorInt shr 8) and 0xff

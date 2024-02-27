@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.csd3156.team7.ShopActivity.Companion.playerViewModel
+import com.csd3156.team7.Weather.WeatherService
+import com.csd3156.team7.Weather.WeatherServiceClient
 import com.google.ar.core.examples.kotlin.helloar.R
 import com.google.ar.core.examples.kotlin.helloar.databinding.ShopItemBinding
 
@@ -39,6 +41,9 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
 
     fun setItems(items: List<ShopItem>) {
         dataSource = items
+
+
+
         shopActivity.setCurrencyText(playerViewModel.playerCurrencyObject.currency)
         shopActivity.getSharedPreferences("Player", MODE_PRIVATE).edit().putInt("PlayerCurrency", playerViewModel.playerCurrencyObject.currency).apply()
         notifyDataSetChanged()

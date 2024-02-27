@@ -11,6 +11,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.csd3156.team7.Weather.Weather
+import com.csd3156.team7.Weather.WeatherService
+import com.csd3156.team7.Weather.WeatherServiceClient
 import com.google.ar.core.examples.kotlin.helloar.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +28,7 @@ class ShopActivity : AppCompatActivity() {
     private var inventoryList: MutableList<ShopItem> = mutableListOf()
     val STARTING_CURRENCY = 2000
     var player: Player = Player("Test", STARTING_CURRENCY)
+    var weatherCondition: String = ""
 
     companion object {
         lateinit var playerViewModel: PlayerShopViewModel
@@ -44,6 +48,18 @@ class ShopActivity : AppCompatActivity() {
         viewManager = LinearLayoutManager(this)
         playerViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
 
+        lifecycleScope.launch {
+
+                // Assuming you have a valid API key and the necessary permissions set up
+                val response = WeatherServiceClient.create().getWeather("Singapore", 1.3521, 103.8198)
+                if (response.isSuccessful) {
+                    response.body()?.current?.condition?.text?.let { conditionText ->
+                        val weather = Weather(_description = conditionText, "1")
+                        // Use your weather data here
+                    }
+                }
+
+        }
         val squareImageResId: Int = R.drawable.square_placeholder
         val circleImageResId: Int = R.drawable.circle
         val triangleImageResId: Int = R.drawable.triangle
@@ -57,6 +73,8 @@ class ShopActivity : AppCompatActivity() {
         val blueColor = Color.parseColor(blueColorHex)
 
         val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE)
+
+
             .getBoolean("FirstLaunch", true)
         if (firstLaunch) {
             lifecycleScope.launch {
@@ -76,10 +94,19 @@ class ShopActivity : AppCompatActivity() {
             else { player.currentCurrency = it; playerViewModel.playerCurrencyObject.currency = it }
             setCurrencyText(player.currentCurrency)
         }
+        lifecycleScope.launch {
+            //val weather = playerViewModel.getWeather(1.3521, 103.8198) // Singapore
+            val weather2 = playerViewModel.getWeather("q")
+            weatherCondition = playerViewModel.getWeather("q").description
+
+
+
+        }
 
         // copy viewModel data to this inventory list
         playerViewModel.allItems.observe(this)
         {
+            
             inventoryList = it.toMutableList() // the inventory list is updated
             (viewAdaptor as ShopListAdaptor).setItems(inventoryList)
 
@@ -87,6 +114,9 @@ class ShopActivity : AppCompatActivity() {
             CoroutineScope(Dispatchers.IO).launch {
                 for (item in inventoryList) {
                     quantity = playerViewModel.getItemQuantity(item.itemId)
+
+
+
 //                    Log.d("ShopActivity", "Quantity: ${quantity}")
                 }
             }
@@ -99,10 +129,9 @@ class ShopActivity : AppCompatActivity() {
             adapter = viewAdaptor
         }
 
-        lifecycleScope.launch {
-            //val weather = playerViewModel.getWeather(1.3521, 103.8198) // Singapore
-            val weather2 = playerViewModel.getWeather("q")
-        }
+
+
+
 
         if (savedInstanceState != null) {
             val savedList = savedInstanceState.getParcelableArrayList<ShopItem>("SAVED_ITEMS")
