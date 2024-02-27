@@ -13,7 +13,9 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
     : RecyclerView.Adapter<ItemViewHolder>() {
 
         companion object{
+
             lateinit var shopListAdaptor : ShopListAdaptor
+            var selectedID : Int = 0
         }
 
 

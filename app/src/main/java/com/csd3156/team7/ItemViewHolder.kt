@@ -24,11 +24,6 @@ import com.google.ar.core.examples.kotlin.helloar.NFCActivity
 
 class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHolder(binding.root){
 
-    companion object{
-        lateinit var itemViewHolder : ItemViewHolder
-        var selectedID : Int = 0
-    }
-
 
 
 
@@ -116,7 +111,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         }
 
         binding.changeColorButton.setOnClickListener{
-            selectedID = item.itemId
+            ShopListAdaptor.selectedID = item.itemId
 
             val intent = Intent(itemView.context, NFCActivity::class.java)
             itemView.context.startActivity(intent)

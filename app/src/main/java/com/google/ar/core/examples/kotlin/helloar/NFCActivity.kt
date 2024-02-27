@@ -15,6 +15,7 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.csd3156.team7.ItemViewHolder
 import com.csd3156.team7.ShopActivity
+import com.csd3156.team7.ShopListAdaptor
 import kotlinx.coroutines.flow.collect
 import java.lang.StringBuilder
 
@@ -25,6 +26,9 @@ class NFCActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nfc)
+        if (supportActionBar != null) {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
     }
@@ -80,7 +84,7 @@ class NFCActivity : AppCompatActivity() {
 
 
                 Toast.makeText(this, "NFC tag detected: $tagValue", Toast.LENGTH_SHORT).show()
-                ShopActivity.playerViewModel.updateItemColor(ItemViewHolder.selectedID, color )
+                ShopActivity.playerViewModel.updateItemColor(ShopListAdaptor.selectedID, color )
 
                 val intent = Intent(this, ShopActivity::class.java)
                 this.startActivity(intent)

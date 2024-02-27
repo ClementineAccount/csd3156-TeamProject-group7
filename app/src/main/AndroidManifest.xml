@@ -42,7 +42,13 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".NFCActivity"
-            android:exported="true" />
+
+            android:exported="true"
+            android:label="@string/nfc_activity_title"
+            android:parentActivityName ="com.csd3156.team7.ShopActivity">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.csd3156.team7.ShopActivity" /></activity>
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 

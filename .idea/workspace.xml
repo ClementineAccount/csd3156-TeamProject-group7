@@ -15,9 +15,12 @@
   <component name="ChangeListManager">
     <list default="true" id="20cc0cd7-a7b8-4301-a520-7d1bb427f361" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ItemViewHolder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ItemViewHolder.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopListAdaptor.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopListAdaptor.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/NFCActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/NFCActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_nfc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_nfc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/shop_item.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/shop_item.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

@@ -84,6 +84,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Color Change Via NFC"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="@id/item_price"
         app:layout_constraintEnd_toEndOf="@id/item_price"
         app:layout_constraintTop_toBottomOf="@id/item_price" />
