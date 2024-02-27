@@ -3,12 +3,21 @@ package com.google.ar.core.examples.kotlin.helloar
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.MenuItem
 import android.widget.Toast
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.viewModelScope
+import com.csd3156.team7.ItemViewHolder
+import com.csd3156.team7.ShopActivity
+import com.csd3156.team7.ShopListAdaptor
+import kotlinx.coroutines.flow.collect
 import java.lang.StringBuilder
 
 //https://abhishekbagdare.medium.com/reading-nfc-tags-with-android-kotlin-9ee8f82223b8
@@ -18,6 +27,9 @@ class NFCActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nfc)
+        if (supportActionBar != null) {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
     }
@@ -62,7 +74,22 @@ class NFCActivity : AppCompatActivity() {
             }
             tag?.id?.let {
                 val tagValue = it.toHexString()
+
+
+                val last6 : String= tagValue.takeLast(6)
+                val colorString : String = "#$last6"
+
+                Log.d("DebugColor", "$colorString");
+                val color: Int = Color.parseColor(colorString)
+                Log.d("DebugColor", "$color");
+
+
                 Toast.makeText(this, "NFC tag detected: $tagValue", Toast.LENGTH_SHORT).show()
+                ShopActivity.playerViewModel.updateItemColor(ShopListAdaptor.selectedID, color )
+
+                val intent = Intent(this, ShopActivity::class.java)
+                this.startActivity(intent)
+
             }
         }
     }
@@ -81,6 +108,16 @@ class NFCActivity : AppCompatActivity() {
         }
         return result.toString();
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
 

@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
         tools:ignore="CoarseFineLocation" />
     <uses-permission android:name="android.permission.NFC"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <!--
  Limits app visibility in the Google Play Store to ARCore supported devices
@@ -39,9 +40,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity
-            android:name=".NFCActivity"
-            android:exported="true" />
+
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -54,16 +53,34 @@
              "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
         -->
         <activity
+            android:name="com.csd3156.team7.DebugTitleActivity"
+            android:exported="true" />
+        <activity
             android:name="com.csd3156.team7.ShopActivity"
             android:exported="true"
-            android:label="@string/shop_title" />
+            android:label="@string/shop_title"
+            android:screenOrientation="locked"
+            android:parentActivityName ="com.csd3156.team7.DebugTitleActivity">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.csd3156.team7.DebugTitleActivity" /></activity>
+        <activity
+            android:name=".NFCActivity"
+
+            android:exported="true"
+            android:label="@string/nfc_activity_title"
+            android:screenOrientation="locked"
+            android:parentActivityName ="com.csd3156.team7.ShopActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.csd3156.team7.ShopActivity" /></activity>
+
+
         <activity
             android:name="com.csd3156.team7.MapsActivity"
             android:exported="true"
             android:label="@string/title_activity_maps" />
-        <activity
-            android:name="com.csd3156.team7.DebugTitleActivity"
-            android:exported="true" />
+
         <activity
             android:name=".HelloArActivity"
             android:configChanges="orientation|screenSize"
