@@ -34,9 +34,11 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false"
         tools:ignore="GoogleAppIndexingWarning">
+
+        
         <activity
             android:name="com.csd3156.team7.DebugTestFarm"
-            android:exported="false" />
+            android:exported="true" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -48,6 +50,8 @@
              project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
              "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
         -->
+
+
         <activity
             android:name="com.csd3156.team7.DebugTitleActivity"
             android:exported="true" />
