@@ -7,6 +7,7 @@ import android.os.IBinder
 import android.os.Handler
 import android.provider.Settings
 import android.util.Log
+import androidx.lifecycle.ViewModelProvider
 
 
 //Calling this in DebugTitleActivity for testing
@@ -15,6 +16,16 @@ public class FarmService : Service() {
     private var localCount : Int = 0
     private var handler: Handler? = null
     private var incrementTask: Runnable? = null
+
+    lateinit var farmRepository : FarmListRepository
+    lateinit var farmDao: FarmDao
+
+    override fun onCreate() {
+        super.onCreate()
+        val database = PlayerInventoryDatabase.getDatabase(application)
+        farmDao = database.farmDao()
+        farmRepository = FarmListRepository(farmDao)
+    }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         startIncrementTask()
