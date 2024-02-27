@@ -44,9 +44,6 @@ class ShopActivity : AppCompatActivity() {
         viewManager = LinearLayoutManager(this)
         playerViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
 
-        // val pyramidQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Pyramid", 0)
-        // val cubeQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Cube", 0)
-        // val sphereQuantity = getSharedPreferences("Player", MODE_PRIVATE).getInt("Sphere", 0)
         val squareImageResId: Int = R.drawable.square_placeholder
         val circleImageResId: Int = R.drawable.circle
         val triangleImageResId: Int = R.drawable.triangle
@@ -59,8 +56,6 @@ class ShopActivity : AppCompatActivity() {
         val greenColor =  Color.parseColor(greenColorHex)
         val blueColor = Color.parseColor(blueColorHex)
 
-
-
         val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE).getBoolean("FirstLaunch", true)
         if (firstLaunch) {
             lifecycleScope.launch {
@@ -70,28 +65,21 @@ class ShopActivity : AppCompatActivity() {
                     "Produces 10 per 1 second", 10, false,500,greenColor))
                 playerViewModel.insertItem(ShopItem("Sphere", circleImageResId, 0,
                     "Produces 15 per 1 second", 15, false,2000,blueColor))
-
             }
             getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()
         }
 
         playerViewModel.currentPlayerCurrency.observe(this)
         {
-            if (it == 0) {
-                player.currentCurrency = STARTING_CURRENCY
-                setCurrencyText(player.currentCurrency)
-            }
-            else {
-                player.currentCurrency = it
-                playerViewModel.playerCurrencyObject.currency = it
-                setCurrencyText(player.currentCurrency)
-            }
+            if (it == 0) { player.currentCurrency = STARTING_CURRENCY; }
+            else { player.currentCurrency = it; playerViewModel.playerCurrencyObject.currency = it }
+            setCurrencyText(player.currentCurrency)
         }
 
         // copy viewModel data to this inventory list
-        playerViewModel.allItems.observe(this) {
-            // the inventory list is updated
-            inventoryList = it.toMutableList()
+        playerViewModel.allItems.observe(this)
+        {
+            inventoryList = it.toMutableList() // the inventory list is updated
             (viewAdaptor as ShopListAdaptor).setItems(inventoryList)
 
             var quantity = 0

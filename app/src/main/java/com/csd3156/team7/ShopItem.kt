@@ -71,7 +71,7 @@ data class ShopItem(
             val price = parcel.readInt()
             val researched = parcel.readBoolean()
             val creditsToResearch = parcel.readInt()
-            var color = parcel.readInt()
+            val color = parcel.readInt()
             return ShopItem(name,imageResourceId, quantity, description, price, researched, creditsToResearch, color)
         }
 
