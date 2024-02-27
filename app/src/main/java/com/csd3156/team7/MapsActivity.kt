@@ -2,23 +2,67 @@ package com.csd3156.team7
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CircleOptions
+import com.google.android.gms.maps.model.GroundOverlayOptions
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.ar.core.examples.kotlin.helloar.R
 import com.google.ar.core.examples.kotlin.helloar.databinding.ActivityMapsBinding
+
+class FarmAdapter(private val farms: List<Location>, private val onItemClick: (LatLng) -> Unit) :
+    RecyclerView.Adapter<FarmAdapter.ViewHolder>() {
+
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val farmNameTextView: TextView = itemView.findViewById(R.id.farmNameTextView)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.farm_list, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val farm = farms[position]
+        holder.farmNameTextView.text = "Farm $position"
+        holder.itemView.setOnClickListener {
+            onItemClick(LatLng(farm.latitude, farm.longitude))
+        }
+
+        // Log the size of the farms list
+        Log.d("FarmAdapter", "Size of farms list: ${farms.size}")
+    }
+
+
+    override fun getItemCount(): Int {
+        return farms.size
+    }
+}
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -29,6 +73,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val strokeColor: Int = Color.argb(255, 0, 0, 0)
     private val fillColor: Int = Color.argb(255, 0, 255, 0)
     private var selectedFarmIndex: Int = -1 // Variable to track the selected farm
+    private var isMapStyleEnabled = true
+    private lateinit var farmRecyclerView: RecyclerView
+    private lateinit var farmAdapter: FarmAdapter
 
     // I used ChatGPT to get the Location API stuff - Clementine
     // You can see me struggle here: https://chat.openai.com/share/1ca2cba9-00ef-4279-9608-6eb88915beb3
@@ -44,17 +91,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        val toggleStyleButton = findViewById<Button>(R.id.toggleStyleButton)
+        toggleStyleButton.setOnClickListener { onToggleMapStyleClick() }
+
+        farmRecyclerView = findViewById(R.id.farmRecyclerView)
+        farmAdapter = FarmAdapter(farms) { selectedFarmLatLng ->
+            moveCameraToSelectedFarm(selectedFarmLatLng)
+        }
+        farmRecyclerView.layoutManager = LinearLayoutManager(this)
+        farmRecyclerView.adapter = farmAdapter
+
+        val showFarmsButton = findViewById<Button>(R.id.showFarmsButton)
+        showFarmsButton.setOnClickListener { onShowFarmsClick() }
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
@@ -84,19 +135,32 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             addFarm(latLng.latitude, latLng.longitude)
             refreshMap()
         }
+
         moveCameraToLastKnownLocation()
     }
 
-    // Add a marker in Sydney and move the camera
-//        val sydney = LatLng(-34.0, 151.0)
-//        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+    private fun onToggleMapStyleClick() {
+        isMapStyleEnabled = !isMapStyleEnabled
+
+        try {
+            if (isMapStyleEnabled) {
+                mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style)
+                )
+            } else {
+                mMap.setMapStyle(null)
+            }
+        } catch (e: Resources.NotFoundException) {
+            Log.e("MapsActivity", "Resource not found: ${e.message}")
+        }
+    }
 
     private fun addFarm(latitude: Double, longitude: Double) {
         val farmLocation = Location("")
         farmLocation.latitude = latitude
         farmLocation.longitude = longitude
         farms.add(farmLocation)
+        farmAdapter.notifyDataSetChanged()
     }
 
     private fun deleteFarm(latLng: LatLng) {
@@ -105,34 +169,65 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             if (areLocationsEqual(latLng, farmLatLng)) {
                 farms.removeAt(index)
                 selectedFarmIndex = -1
-                refreshMap()
+                farmAdapter.notifyDataSetChanged()
                 return
             }
         }
     }
 
     private fun refreshMap() {
-        mMap.clear()
-        for ((index, farmLocation) in farms.withIndex()) {
-            val circleOptions = CircleOptions()
-                .center(LatLng(farmLocation.latitude, farmLocation.longitude))
-                .radius(farmRadius)
-                .strokeColor(strokeColor)
-                .fillColor(fillColor)
+        try {
+            mMap.clear()
+            for ((index, farmLocation) in farms.withIndex()) {
+                val location = LatLng(farmLocation.latitude, farmLocation.longitude)
 
-            mMap.addCircle(circleOptions)
+                val circleOptions = CircleOptions()
+                    .center(location)
+                    .radius(farmRadius)
+                    .strokeColor(strokeColor)
+                    .fillColor(fillColor)
 
-            val userLocation = mMap.myLocation
-            if (userLocation != null) {
-                val distance = calculateDistance(
-                    LatLng(userLocation.latitude, userLocation.longitude),
-                    LatLng(farmLocation.latitude, farmLocation.longitude)
-                )
-                if (distance <= farmRadius) {
-                    Log.d("FarmLog", "Inside Farm $index")
+                mMap.addCircle(circleOptions)
+
+                val paint = Paint().apply {
+                    color = Color.BLACK
+                    textSize = 150f // Sharpness
                 }
+
+                val textBitmap = createTextBitmap("Farm $index", paint)
+                mMap.addGroundOverlay(
+                    GroundOverlayOptions()
+                        .image(BitmapDescriptorFactory.fromBitmap(textBitmap))
+                        .position(location, farmRadius.toFloat() * 5)
+                )
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("MapsActivity", "Error refreshing map: ${e.message}")
         }
+    }
+
+    private fun createTextBitmap(text: String, paint: Paint): Bitmap {
+        val bounds = Rect()
+        paint.getTextBounds(text, 0, text.length, bounds)
+
+        val bitmap = Bitmap.createBitmap((farmRadius * 3).toInt(), (farmRadius).toInt(), Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        paint.textSize = 15f
+        val xOffset = 125f;
+        val yOffset = 15f
+        canvas.drawText(text, xOffset, yOffset, paint)
+
+        return bitmap
+    }
+
+    private fun onShowFarmsClick() {
+        farmRecyclerView.visibility = if (farmRecyclerView.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+    }
+
+    private fun moveCameraToSelectedFarm(selectedFarmLatLng: LatLng) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedFarmLatLng, DEFAULT_ZOOM))
     }
 
     private fun moveCameraToLastKnownLocation() {
@@ -146,7 +241,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location ->
-                    // Got last known location. In some rare situations, this can be null.
                     location?.let {
                         val userLocation = LatLng(it.latitude, it.longitude)
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, DEFAULT_ZOOM))
@@ -165,7 +259,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             grantResults.isNotEmpty() &&
             grantResults[0] == PackageManager.PERMISSION_GRANTED
         ) {
-            // Permission granted, enable the "My Location" layer
             if (::mMap.isInitialized) {
                 if (ActivityCompat.checkSelfPermission(
                         this,
@@ -175,13 +268,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
                     return
                 }
                 mMap.isMyLocationEnabled = true
@@ -190,16 +276,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             // Permission denied, handle accordingly (e.g., show a message to the user)
         }
     }
-}
 
-private fun calculateDistance(point1: LatLng, point2: LatLng): Float {
-    val result = FloatArray(1)
-    Location.distanceBetween(point1.latitude, point1.longitude, point2.latitude, point2.longitude, result)
-    return result[0]
-}
+    private fun calculateDistance(point1: LatLng, point2: LatLng): Float {
+        val result = FloatArray(1)
+        Location.distanceBetween(
+            point1.latitude, point1.longitude,
+            point2.latitude, point2.longitude, result
+        )
+        return result[0]
+    }
 
-private fun areLocationsEqual(location1: LatLng, location2: LatLng): Boolean {
-    val epsilon = 1e-5 // Adjust this value based on your precision requirement
-    return Math.abs(location1.latitude - location2.latitude) < epsilon &&
-            Math.abs(location1.longitude - location2.longitude) < epsilon
+    private fun areLocationsEqual(location1: LatLng, location2: LatLng): Boolean {
+        val epsilon = 1e-5
+        return Math.abs(location1.latitude - location2.latitude) < epsilon &&
+                Math.abs(location1.longitude - location2.longitude) < epsilon
+    }
 }
