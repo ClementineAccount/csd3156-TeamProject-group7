@@ -22,7 +22,9 @@
         android:layout_height="wrap_content"
         android:text="@string/quantity"
         app:layout_constraintBottom_toBottomOf="@id/item_image"
-        app:layout_constraintEnd_toEndOf="@id/item_image" />
+        app:layout_constraintEnd_toEndOf="@id/item_image"
+        app:layout_constraintStart_toStartOf="@+id/item_image"
+        app:layout_constraintTop_toTopOf="@+id/item_image" />
 
     <TextView
         android:id="@+id/item_name"
