@@ -20,6 +20,8 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
 
 
 
+
+
     //val sharedPreferences: SharedPreferences = context.getSharedPreferences("player", Context.MODE_PRIVATE)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val view = LayoutInflater.from(parent.context)
