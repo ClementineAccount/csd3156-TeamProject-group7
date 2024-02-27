@@ -87,8 +87,7 @@ class NFCActivity : AppCompatActivity() {
                 Toast.makeText(this, "NFC tag detected: $tagValue", Toast.LENGTH_SHORT).show()
                 ShopActivity.playerViewModel.updateItemColor(ShopListAdaptor.selectedID, color )
 
-                val intent = Intent(this, ShopActivity::class.java)
-                this.startActivity(intent)
+                onBackPressed()
 
             }
         }
