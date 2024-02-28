@@ -24,7 +24,9 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -75,7 +77,7 @@ class MyLocationListener(private val context: Context, private val locationCallb
 }
 
 
-class HelloArActivity : AppCompatActivity() {
+class HelloArActivity : AppCompatActivity(), TapInterface {
   companion object {
     private const val TAG = "HelloArActivity"
   }
@@ -226,7 +228,7 @@ class HelloArActivity : AppCompatActivity() {
       LOCATION_PERMISSION_REQUEST_CODE)
 
     // Set up the Hello AR renderer.
-    renderer = HelloArRenderer(this)
+    renderer = HelloArRenderer(this,this)
     lifecycle.addObserver(renderer)
 
     // Set up Hello AR UI.
@@ -387,4 +389,19 @@ class HelloArActivity : AppCompatActivity() {
     super.onWindowFocusChanged(hasFocus)
     FullScreenHelper.setFullScreenOnWindowFocusChanged(this, hasFocus)
   }
+
+  override fun onObjectTapped(farmId: Int) {
+    runOnUiThread {
+      val overlayText: TextView = findViewById(R.id.incrementValueText)
+      overlayText.text = "+1"
+      overlayText.visibility = View.VISIBLE
+
+      // Handler to post a delayed task
+      overlayText.postDelayed({
+        overlayText.visibility = View.INVISIBLE // or View.GONE if you want to remove the space it takes up as well
+      }, 500) // Delay in milliseconds (1000ms = 1s)
+    }
+  }
+
+
 }

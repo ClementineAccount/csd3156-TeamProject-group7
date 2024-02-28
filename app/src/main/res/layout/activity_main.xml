@@ -23,7 +23,7 @@
       android:id="@+id/surfaceview"
       android:layout_width="fill_parent"
       android:layout_height="fill_parent"
-      android:layout_gravity="top"/>
+      android:layout_gravity="top" />
 
   <ImageButton
       android:id="@+id/settings_button"
@@ -64,6 +64,7 @@
       android:layout_marginBottom="50dp"
       android:text="(DEBUG) PLACE FARM FROM DATABASE" />
 
+
   <Button
       android:id="@+id/debugRandomFarm"
       android:layout_width="wrap_content"
@@ -71,5 +72,18 @@
       android:layout_marginLeft="10dp"
       android:layout_marginTop="100dp"
       android:text="(DEBUG) PLACE FARM RANDOM" />
+
+  <TextView
+      android:id="@+id/incrementValueText"
+      android:layout_width="152dp"
+      android:layout_height="56dp"
+      android:layout_alignParentStart="true"
+      android:layout_alignParentTop="true"
+      android:layout_marginStart="125dp"
+      android:layout_marginTop="270dp"
+      android:text=" "
+      android:textAlignment="center"
+      android:textSize="24sp" />
+
 
 </RelativeLayout>
