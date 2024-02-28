@@ -1,10 +1,13 @@
 package com.csd3156.team7
 
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.MenuItem
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +20,8 @@ import com.google.ar.core.examples.kotlin.helloar.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 
 class ShopActivity : AppCompatActivity() {
@@ -28,7 +33,25 @@ class ShopActivity : AppCompatActivity() {
     private val startingCurrency = 2000
     private var player: Player = Player("Test", startingCurrency)
 
+    // Kotlin Time
+    @RequiresApi(Build.VERSION_CODES.O)
+    var time = LocalTime.now()
+
     companion object {
+
+        fun addDefaultItems()
+        {
+//            playerViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
+            //lifecycleScope.launch
+            playerViewModel.insertItem(ShopItem("Pyramid", R.drawable.triangle, 0,
+                    "Produces 5 per 1 second", 5, true,1000, Color.RED))
+            playerViewModel.insertItem(ShopItem("Cube", R.drawable.square_placeholder, 0,
+                    "Produces 10 per 1 second", 10, false,500, Color.GREEN))
+            playerViewModel.insertItem(ShopItem("Sphere", R.drawable.circle, 0,
+                    "Produces 15 per 1 second", 15, false,2000, Color.BLUE))
+        }
+
+
         lateinit var playerViewModel: PlayerShopViewModel
         var weatherCondition: String = ""
     }
@@ -38,7 +61,10 @@ class ShopActivity : AppCompatActivity() {
         currencyTextView.text = "CREDIT: $currency"
     }
 
-    fun AddDefaultItems() {
+    fun addDefaultItems() {
+
+//        playerViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
+
             lifecycleScope.launch {
             playerViewModel.insertItem(ShopItem("Pyramid", R.drawable.triangle, 0,
                 "Produces 5 per 1 second", 5, true,1000, Color.RED))
@@ -46,8 +72,10 @@ class ShopActivity : AppCompatActivity() {
                 "Produces 10 per 1 second", 10, false,500, Color.GREEN))
             playerViewModel.insertItem(ShopItem("Sphere", R.drawable.circle, 0,
                 "Produces 15 per 1 second", 15, false,2000, Color.BLUE))
-        } }
+        }
+    }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.shop)
@@ -96,7 +124,7 @@ class ShopActivity : AppCompatActivity() {
 
         val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE).getBoolean("FirstLaunch", true)
         if (firstLaunch) {
-            AddDefaultItems()
+            addDefaultItems()
             getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()
         }
 
@@ -124,7 +152,7 @@ class ShopActivity : AppCompatActivity() {
             CoroutineScope(Dispatchers.IO).launch {
                 for (item in inventoryList) {
                     quantity = playerViewModel.getItemQuantity(item.itemId)
-                    Log.d("ShopActivity", "Quantity: $quantity")
+//                    Log.d("ShopActivity", "Quantity: $quantity")
                 }
             }
         }
@@ -137,6 +165,43 @@ class ShopActivity : AppCompatActivity() {
             adapter = viewAdaptor
         }
 
+        // log the current time every 60 seconds
+        // convert GMT LocalTime to actual local time (Singapore, GMT+8)
+        val runnable = object : Runnable {
+            override fun run() {
+                val timeNow = LocalTime.now().plusHours(8)
+                // display the current time only if seconds is 0
+                if (timeNow.second == 0) {
+                    // parse the time milliseconds away & into a string with the format "HH:mm:ss"
+                    val timeNowString = timeNow.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
+                    Log.d("ShopActivity", "Current Time: $timeNowString")
+                    Handler().postDelayed(this, 60000)
+
+                    // update the weather every 60 seconds
+                    lifecycleScope.launch {
+                        weatherCondition = playerViewModel.getWeather("q").current.condition.text
+                        weatherTextView.text = weatherCondition
+
+                        if (weatherCondition.uppercase().contains("CLOUDY")) {
+                            if (!weatherTextView.text.contains("x2 Prices")) {
+                                weatherTextView.append(" (x2 Prices)")
+                            }
+                        }
+                        else {
+                            if (weatherTextView.text.contains("x2 Prices")) {
+                                weatherTextView.text = weatherTextView.text
+                                    .substring(0, weatherTextView.text.length - 11)
+                            }
+                    }
+                }
+                else {
+                    val delay = 60 - timeNow.second
+                    Handler().postDelayed(this, delay * 1000L)
+                }
+            }
+        }
+
+        Handler().postDelayed(runnable, 10000)
 
         if (savedInstanceState != null) {
             val savedList = savedInstanceState.getParcelableArrayList<ShopItem>("SAVED_ITEMS")
