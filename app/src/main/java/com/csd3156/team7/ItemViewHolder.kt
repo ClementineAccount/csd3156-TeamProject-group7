@@ -20,6 +20,7 @@ import android.view.LayoutInflater
 import android.view.WindowManager
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.Toast
+import androidx.compose.ui.text.toUpperCase
 import com.google.ar.core.examples.kotlin.helloar.NFCActivity
 
 class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHolder(binding.root){
@@ -68,8 +69,16 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
                 ShopActivity.playerViewModel.updateItemQuantity(item.itemId, item.quantity + 1)
 
-                ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price
-                //ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
+                // Keep case sensitivity in mind here.
+                if (ShopActivity.weatherCondition.uppercase().contains("CLOUDY"))
+                {
+                    ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price * 2
+                }
+                else
+                {
+                    ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price
+                }
+                ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
                 // null bug?
                 Log.d(
@@ -99,7 +108,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
                 ShopActivity.playerViewModel.updateItemQuantity(item.itemId, 0 )
 
                 ShopActivity.playerViewModel.playerCurrencyObject.currency += item.price * item.quantity
-                //ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
+                ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
                 // null bug?
                 Log.d(

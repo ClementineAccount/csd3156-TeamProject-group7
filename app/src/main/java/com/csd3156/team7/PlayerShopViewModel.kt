@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.csd3156.team7.Weather.Weather
+import com.csd3156.team7.Weather.WeatherResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -108,7 +109,7 @@ class PlayerShopViewModel(application: Application) : AndroidViewModel(applicati
         return Triple(red, green, blue)
     }
 
-    suspend fun getWeather(q : String): Weather {
+    suspend fun getWeather(q : String): WeatherResponse {
         return shopRepository.getWeather(q)
     }
 

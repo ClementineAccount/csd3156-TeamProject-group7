@@ -48,19 +48,21 @@ class ShopItemRepository (private val shopItemDao: ShopItemDao, private val play
         return shopItemDao.getItemQuantity(id)
     }
 
-    suspend fun getWeather(q : String): Weather {
+    suspend fun getWeather(q : String): WeatherResponse {
         val response = WeatherServiceClient.create().getWeather(q)
         if (response.isSuccessful) {
             val weatherResponse: WeatherResponse = response.body()!!
-            Log.d("WeatherService", "Success")
+            Log.d("WeatherService", "Success. Latitude, longitude of Singapore below.")
             Log.d("WeatherService", weatherResponse.weatherItems.latitude.toString())
             Log.d("WeatherService", weatherResponse.weatherItems.longitude.toString())
+            Log.d("WeatherService", weatherResponse.current.lastUpdated)
+//            Log.d("WeatherService", weatherResponse.weatherItems.description)
 
-            return weatherResponse.weatherItems
+            return weatherResponse
         }
         else {
             Log.e("WeatherService", "Failed to get weather")
-            return Weather("Error", "Error")
+            throw Exception("Failed to get weather")
         }
     }
 }

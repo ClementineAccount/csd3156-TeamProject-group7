@@ -28,10 +28,10 @@ class ShopActivity : AppCompatActivity() {
     private var inventoryList: MutableList<ShopItem> = mutableListOf()
     val STARTING_CURRENCY = 2000
     var player: Player = Player("Test", STARTING_CURRENCY)
-    var weatherCondition: String = ""
 
     companion object {
         lateinit var playerViewModel: PlayerShopViewModel
+        var weatherCondition: String = ""
     }
 
     fun setCurrencyText(currency : Int) {
@@ -58,8 +58,17 @@ class ShopActivity : AppCompatActivity() {
                         // Use your weather data here
                     }
                 }
-
         }
+
+        val weatherTextView: TextView = findViewById(R.id.weatherTextView)
+        lifecycleScope.launch {
+            val weather2 = playerViewModel.getWeather("q")
+            weatherCondition = playerViewModel.getWeather("q").current.condition.text
+            Log.d("ShopActivity", "Weather: ${weatherCondition}")
+            weatherTextView.text = "${weatherCondition}"
+        }
+
+
         val squareImageResId: Int = R.drawable.square_placeholder
         val circleImageResId: Int = R.drawable.circle
         val triangleImageResId: Int = R.drawable.triangle
@@ -72,10 +81,7 @@ class ShopActivity : AppCompatActivity() {
         val greenColor =  Color.parseColor(greenColorHex)
         val blueColor = Color.parseColor(blueColorHex)
 
-        val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE)
-
-
-            .getBoolean("FirstLaunch", true)
+        val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE).getBoolean("FirstLaunch", true)
         if (firstLaunch) {
             lifecycleScope.launch {
                 playerViewModel.insertItem(ShopItem("Pyramid", triangleImageResId, 0,
@@ -90,18 +96,16 @@ class ShopActivity : AppCompatActivity() {
 
         playerViewModel.currentPlayerCurrency.observe(this)
         {
+            Log.d("ShopActivity", "Currency: ${it}")
             if (it == 0) { player.currentCurrency = STARTING_CURRENCY; }
-            else { player.currentCurrency = it; playerViewModel.playerCurrencyObject.currency = it }
+            else {
+                player.currentCurrency = it;
+                playerViewModel.playerCurrencyObject.currency = it
+            }
+
             setCurrencyText(player.currentCurrency)
         }
-        lifecycleScope.launch {
-            //val weather = playerViewModel.getWeather(1.3521, 103.8198) // Singapore
-            val weather2 = playerViewModel.getWeather("q")
-            weatherCondition = playerViewModel.getWeather("q").description
 
-
-
-        }
 
         // copy viewModel data to this inventory list
         playerViewModel.allItems.observe(this)
@@ -114,10 +118,7 @@ class ShopActivity : AppCompatActivity() {
             CoroutineScope(Dispatchers.IO).launch {
                 for (item in inventoryList) {
                     quantity = playerViewModel.getItemQuantity(item.itemId)
-
-
-
-//                    Log.d("ShopActivity", "Quantity: ${quantity}")
+                    Log.d("ShopActivity", "Quantity: ${quantity}")
                 }
             }
         }

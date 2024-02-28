@@ -12,15 +12,19 @@ private const val API_KEY = "00f3d1ce95a642eca5a153517242702" // WeatherAPI key
 private const val latitude = 1.3521
 private const val longitude = 103.8198
 
+// gets weather data from the api
 interface WeatherService {
-    // gets weather data from the api
+
     // @GET("onecall?lat=$latitude&lon=$longitude&appid=$API_KEY")
 
+    // As reference
     // https://api.weatherapi.com/v1/current.json?key=00f3d1ce95a642eca5a153517242702&q=Singapore
     @GET("current.json?key=$API_KEY&aqi=no&q=Singapore")
     suspend fun getWeather(@Query("q") q: String = "q",
                            @Query("lat") lat: Double = latitude,
-                           @Query("lon") lon: Double = longitude
+                           @Query("lon") lon: Double = longitude,
+                           @Query("last_updated") last_updated: String = "last_updated",
+                           @Query("condition/text") condition: String = "condition/text",
     ) : Response<WeatherResponse>
 }
 

@@ -3,11 +3,11 @@ package com.csd3156.team7.Weather
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "weatherForecast")
-data class Weather(val _description: String, val _lut: String)
-{
+data class Weather(val _description: String, val _lut: String) {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo("id")
     @SerializedName("id")
@@ -22,15 +22,6 @@ data class Weather(val _description: String, val _lut: String)
     @ColumnInfo("longitude")
     @SerializedName("lon")
     var longitude: Double = 0.0
-
-    @ColumnInfo("text")
-    @SerializedName("text")
-    var description: String = _description
-
-    // time
-    @ColumnInfo("lastUpdateTime")
-    @SerializedName("last_updated")
-    var lastUpdateTime: String = _lut
 }
 
 /*
@@ -43,7 +34,7 @@ class WeatherResponse(@SerializedName("location")
                       val current: Current)
 
 data class Current(
-    @SerializedName("condition")
+    @SerializedName("condition") // "text" is contained under "condition" in the json response
     val condition: Condition,
 
     // Include other fields from the `current` section as needed
