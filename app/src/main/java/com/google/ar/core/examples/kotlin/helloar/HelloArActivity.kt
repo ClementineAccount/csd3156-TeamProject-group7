@@ -58,6 +58,7 @@ import com.google.ar.core.exceptions.UnavailableSdkTooOldException
 import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -106,6 +107,10 @@ class HelloArActivity : AppCompatActivity() {
   private var addCollectableTask: Runnable? = null
   private var collectableRateSeconds : Long = 2L
 
+  // Number of times the handler called before it ends
+  // By default don't run first...
+  private var collectableRunNumberMaxCount : Int = 5
+  private var currentCollectableRunCount : Int = 0
 
 
   private fun checkPermission(permission: String, requestCode: Int) {
@@ -308,23 +313,49 @@ class HelloArActivity : AppCompatActivity() {
         var random : Random = Random.Default
         lifecycleScope.launch {
 
-          var maxX : Float = 1.25f
-          var minX : Float = -1.25f
+          // Don't create it for the last loop iteration (bad user experience)
+          if (currentCollectableRunCount < collectableRunNumberMaxCount - 1)
+          {
 
-          var maxZ : Float = 1.0f
-          var minZ : Float = -1.0f
+            var maxX : Float = 1.25f
+            var minX : Float = -1.25f
 
-          var offsetX : Float = random.nextFloat() * (maxX - minX) + minX
-          var offsetZ : Float = random.nextFloat() * (maxZ - minZ) + minZ
+            var maxZ : Float = 1.0f
+            var minZ : Float = -1.0f
 
-          renderer.createCollectable(offsetX, 0.0f, offsetZ)
+            var offsetX : Float = random.nextFloat() * (maxX - minX) + minX
+            var offsetZ : Float = random.nextFloat() * (maxZ - minZ) + minZ
+
+
+
+            renderer.createCollectable(offsetX, 0.0f, offsetZ)
+          }
         }
-        handler?.postDelayed(this, collectableRateSeconds * 1000)
+        currentCollectableRunCount += 1
+        if (currentCollectableRunCount < collectableRunNumberMaxCount)
+        {
+          handler?.postDelayed(this, collectableRateSeconds * 1000)
+        }
+        else
+        {
+          //TODO: Remove the anchor after the thing stop spawning...
+          renderer.removeAnchors()
+          renderer.removeCollectables()
+        }
       }
     }
     // Start the task immediately
     handler?.post(addCollectableTask!!)
   }
+
+
+  //Set the current collectable run count back to 0 so the thing will spawn
+  public fun setCollectableTaskRun()
+  {
+    currentCollectableRunCount = 0
+    handler?.post(addCollectableTask!!)
+  }
+
 
   // Configure the session, using Lighting Estimation, and Depth mode.
   fun configureSession(session: Session) {

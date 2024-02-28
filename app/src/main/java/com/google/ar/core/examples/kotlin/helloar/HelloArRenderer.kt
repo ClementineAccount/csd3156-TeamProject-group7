@@ -774,6 +774,8 @@ class HelloArRenderer(val activity: HelloArActivity) :
           //var offsetX = 0.5f
           var offsetZ = 0.5f
 
+          activity.setCollectableTaskRun()
+
           //Offset from anchor
           //createCollectable(firstHitResult.hitPose.tx() + offsetX, firstHitResult.hitPose.ty(), firstHitResult.hitPose.tz() + offsetZ)
         }
@@ -850,6 +852,16 @@ class HelloArRenderer(val activity: HelloArActivity) :
   public fun clearAnchorGPS()
   {
     gpsAnchors.clear()
+  }
+
+  public fun removeAnchors()
+  {
+    wrappedAnchors.clear()
+  }
+
+  public fun removeCollectables()
+  {
+    collectableList.clear()
   }
 
   private fun showError(errorMessage: String) =
