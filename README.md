@@ -15,6 +15,10 @@ The player will be able to place cube objects into the game world as 'farms' and
 
 ![image](https://github.com/ClementineAccount/csd3156-TeamProject-group7/assets/26779639/4e802643-d894-436c-bd96-99d382384db0)
 
+# Report
+
+The link to this project's report can be found here: (https://docs.google.com/document/d/1Pa2NDl_YiSsUN_LS5waNF5DBgIZ41OX_DScyN7MaiV4/edit#heading=h.1dfqzzjhht5z)
+
 # Figma
 https://www.figma.com/file/pTjoJ43P1GrfIPtrr67FRE/Untitled?type=design&node-id=1-20&mode=design&t=iGUBU0Sf1PouCpuO-0
 
