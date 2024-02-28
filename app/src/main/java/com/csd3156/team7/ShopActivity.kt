@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.csd3156.team7.Weather.Weather
-import com.csd3156.team7.Weather.WeatherService
 import com.csd3156.team7.Weather.WeatherServiceClient
 import com.google.ar.core.examples.kotlin.helloar.R
 import kotlinx.coroutines.CoroutineScope
@@ -26,8 +25,8 @@ class ShopActivity : AppCompatActivity() {
     private lateinit var viewManager: RecyclerView.LayoutManager
 
     private var inventoryList: MutableList<ShopItem> = mutableListOf()
-    val STARTING_CURRENCY = 2000
-    var player: Player = Player("Test", STARTING_CURRENCY)
+    private val startingCurrency = 2000
+    private var player: Player = Player("Test", startingCurrency)
 
     companion object {
         lateinit var playerViewModel: PlayerShopViewModel
@@ -36,8 +35,18 @@ class ShopActivity : AppCompatActivity() {
 
     fun setCurrencyText(currency : Int) {
         val currencyTextView: TextView = findViewById(R.id.shop_currency)
-        currencyTextView.text = "CREDIT: ${currency}"
+        currencyTextView.text = "CREDIT: $currency"
     }
+
+    fun AddDefaultItems() {
+            lifecycleScope.launch {
+            playerViewModel.insertItem(ShopItem("Pyramid", R.drawable.triangle, 0,
+                "Produces 5 per 1 second", 5, true,1000, Color.RED))
+            playerViewModel.insertItem(ShopItem("Cube", R.drawable.square_placeholder, 0,
+                "Produces 10 per 1 second", 10, false,500, Color.GREEN))
+            playerViewModel.insertItem(ShopItem("Sphere", R.drawable.circle, 0,
+                "Produces 15 per 1 second", 15, false,2000, Color.BLUE))
+        } }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +74,7 @@ class ShopActivity : AppCompatActivity() {
             weatherCondition = playerViewModel.getWeather("q").current.condition.text
 
             // Log.d("ShopActivity", "Weather: ${weatherCondition}")
-            weatherTextView.text = "${weatherCondition}"
+            weatherTextView.text = weatherCondition
 
             if (weatherCondition.uppercase().contains("CLOUDY")) {
                 weatherTextView.append(" (x2 Prices)")
@@ -77,9 +86,9 @@ class ShopActivity : AppCompatActivity() {
         val circleImageResId: Int = R.drawable.circle
         val triangleImageResId: Int = R.drawable.triangle
 
-        val redColorHex : String = "#DC143C"
-        val greenColorHex : String = "#228B22"
-        val blueColorHex : String = "#00BFFF"
+        val redColorHex = "#DC143C"
+        val greenColorHex = "#228B22"
+        val blueColorHex = "#00BFFF"
 
         val redColor = Color.parseColor(redColorHex)
         val greenColor =  Color.parseColor(greenColorHex)
@@ -87,23 +96,16 @@ class ShopActivity : AppCompatActivity() {
 
         val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE).getBoolean("FirstLaunch", true)
         if (firstLaunch) {
-            lifecycleScope.launch {
-                playerViewModel.insertItem(ShopItem("Pyramid", triangleImageResId, 0,
-                    "+5 Pyramid per 1 second", 5, true,1000,redColor))
-                playerViewModel.insertItem(ShopItem("Cube", squareImageResId, 0,
-                    "+10 Cube per 1 second", 10, false,500,greenColor))
-                playerViewModel.insertItem(ShopItem("Sphere", circleImageResId, 0,
-                    "+15 Sphere per 1 second", 15, false,2000,blueColor))
-            }
+            AddDefaultItems()
             getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()
         }
 
         playerViewModel.currentPlayerCurrency.observe(this)
         {
-            Log.d("ShopActivity", "Currency: ${it}")
-            if (it == 0) { player.currentCurrency = STARTING_CURRENCY; }
+            Log.d("ShopActivity", "Currency: $it")
+            if (it == 0) { player.currentCurrency = startingCurrency; }
             else {
-                player.currentCurrency = it;
+                player.currentCurrency = it
                 playerViewModel.playerCurrencyObject.currency = it
             }
 
@@ -118,11 +120,11 @@ class ShopActivity : AppCompatActivity() {
             inventoryList = it.toMutableList() // the inventory list is updated
             (viewAdaptor as ShopListAdaptor).setItems(inventoryList)
 
-            var quantity = 0
+            var quantity : Int
             CoroutineScope(Dispatchers.IO).launch {
                 for (item in inventoryList) {
                     quantity = playerViewModel.getItemQuantity(item.itemId)
-                    Log.d("ShopActivity", "Quantity: ${quantity}")
+                    Log.d("ShopActivity", "Quantity: $quantity")
                 }
             }
         }

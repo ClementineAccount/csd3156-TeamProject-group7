@@ -10,17 +10,11 @@ class ShopItemRepository (private val shopItemDao: ShopItemDao, private val play
 {
     val allItems = shopItemDao.getAllItems()
 
-    suspend fun insert(item: ShopItem) {
-        shopItemDao.insert(item)
-    }
+    fun insert(item: ShopItem) { shopItemDao.insert(item) }
 
-    suspend fun delete(item: ShopItem) {
-        shopItemDao.delete(item)
-    }
+    fun delete(item: ShopItem) { shopItemDao.delete(item) }
 
-    suspend fun deleteTable() {
-        shopItemDao.deleteTable()
-    }
+    fun deleteTable() { shopItemDao.deleteTable() }
 
     fun getItemByName(name: String): ShopItem {
         return shopItemDao.getItemByName(name)
@@ -34,13 +28,11 @@ class ShopItemRepository (private val shopItemDao: ShopItemDao, private val play
         shopItemDao.updateResearched(id, researched)
     }
 
-    suspend fun updateColor(id: Int, color: Int)
-    {
+    fun updateColor(id: Int, color: Int) {
         shopItemDao.updateColor(id, color)
     }
 
     fun updatePrice(id: Int, price: Int) {
-
         shopItemDao.updatePrice(id, price)
     }
 
@@ -52,11 +44,10 @@ class ShopItemRepository (private val shopItemDao: ShopItemDao, private val play
         val response = WeatherServiceClient.create().getWeather(q)
         if (response.isSuccessful) {
             val weatherResponse: WeatherResponse = response.body()!!
-            Log.d("WeatherService", "Success. Latitude, longitude of Singapore below.")
+            Log.d("WeatherService", "Retrieval Success.")
             Log.d("WeatherService", weatherResponse.weatherItems.latitude.toString())
             Log.d("WeatherService", weatherResponse.weatherItems.longitude.toString())
             Log.d("WeatherService", weatherResponse.current.lastUpdated)
-//            Log.d("WeatherService", weatherResponse.weatherItems.description)
 
             return weatherResponse
         }
