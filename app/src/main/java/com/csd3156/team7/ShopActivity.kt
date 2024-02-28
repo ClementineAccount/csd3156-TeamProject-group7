@@ -99,7 +99,6 @@ class ShopActivity : AppCompatActivity() {
             val weather2 = playerViewModel.getWeather("q")
             weatherCondition = playerViewModel.getWeather("q").description
 
-            Log.d("ShopActivity", weatherCondition)
 
 
         }
@@ -107,7 +106,7 @@ class ShopActivity : AppCompatActivity() {
         // copy viewModel data to this inventory list
         playerViewModel.allItems.observe(this)
         {
-
+            
             inventoryList = it.toMutableList() // the inventory list is updated
             (viewAdaptor as ShopListAdaptor).setItems(inventoryList)
 
