@@ -190,8 +190,9 @@ class ShopActivity : AppCompatActivity() {
                         else {
                             if (weatherTextView.text.contains("x2 Prices")) {
                                 weatherTextView.text = weatherTextView.text
-                                    .substring(0, weatherTextView.text.length - 11)
+                                    .substring(0,weatherTextView.text.length - 11)
                             }
+                        }
                     }
                 }
                 else {
