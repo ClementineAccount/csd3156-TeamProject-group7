@@ -308,11 +308,11 @@ class HelloArActivity : AppCompatActivity() {
         var random : Random = Random.Default
         lifecycleScope.launch {
 
-          var maxX : Float = 2.0f
-          var minX : Float = -2.0f
+          var maxX : Float = 1.25f
+          var minX : Float = -1.25f
 
-          var maxZ : Float = 2.0f
-          var minZ : Float = -2.0f
+          var maxZ : Float = 1.0f
+          var minZ : Float = -1.0f
 
           var offsetX : Float = random.nextFloat() * (maxX - minX) + minX
           var offsetZ : Float = random.nextFloat() * (maxZ - minZ) + minZ
