@@ -49,6 +49,13 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
         notifyDataSetChanged()
     }
 
+    fun getColorComponents(colorInt: Int): Triple<Int, Int, Int> {
+        val red = (colorInt shr 16) and 0xff
+        val green = (colorInt shr 8) and 0xff
+        val blue = colorInt and 0xff
+        return Triple(red, green, blue)
+    }
+
 
 
 
