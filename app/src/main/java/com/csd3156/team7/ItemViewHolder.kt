@@ -15,6 +15,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.Debug
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.WindowManager
@@ -29,7 +30,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
 
 
-    fun bind(item: ShopItem)
+    fun bind(item: ShopItem, position: Int, isSelected: Boolean, onItemSelected: (Int) -> Unit)
     {
         binding.itemName.text = item.name
         binding.itemImage.setImageResource(item.imageResourceId)
@@ -40,18 +41,21 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         binding.itemDescription.text = item.description
 
         binding.itemPrice.text = "Price: ${item.price}"
+        binding.itemContainerBackground.isSelected = isSelected
+        if(binding.itemContainerBackground.isSelected)
+        {
+           selectedName = item.name
+
+
+        }
+        else
+        {
+            selectedName = ""
+        }
+
         binding.selectButton.setOnClickListener{
 
-
-            binding.itemContainerBackground.isSelected = !binding.itemContainerBackground.isSelected
-            if(binding.itemContainerBackground.isSelected)
-            {
-                selectedName = item.itemName
-            }
-            else
-            {
-                selectedName = ""
-            }
+            onItemSelected(position)
         }
 
         Log.d("ItemViewHolder", "Weather: ${ShopActivity.weatherCondition}")

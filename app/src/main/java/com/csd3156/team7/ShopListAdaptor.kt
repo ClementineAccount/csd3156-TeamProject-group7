@@ -14,7 +14,10 @@ import com.google.ar.core.examples.kotlin.helloar.databinding.ShopItemBinding
 class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: List<ShopItem>, var player: Player)
     : RecyclerView.Adapter<ItemViewHolder>() {
 
-        companion object{
+
+    private var selectedPosition = RecyclerView.NO_POSITION
+
+    companion object{
             lateinit var shopListAdaptor : ShopListAdaptor
             var selectedID : Int = 0
             var selectedName : String = ""
@@ -33,7 +36,16 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = dataSource[position]
-        holder.bind(dataSource[position])
+        holder.bind(item,position, selectedPosition == position)
+        {
+            newPosition ->
+            if (selectedPosition != newPosition) {
+                val oldPosition = selectedPosition
+                selectedPosition = newPosition
+                notifyItemChanged(oldPosition)
+                notifyItemChanged(newPosition)
+            }
+        }
     }
 
     override fun getItemCount(): Int {
@@ -56,6 +68,8 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
         val blue = colorInt and 0xff
         return Triple(red, green, blue)
     }
+
+
 
 
 

@@ -127,7 +127,8 @@ class ShopActivity : AppCompatActivity() {
             }
         }
 
-        viewAdaptor = ShopListAdaptor(this, inventoryList, player)
+
+        viewAdaptor = ShopListAdaptor(this, inventoryList,player = player)
         recyclerView = findViewById<RecyclerView>(R.id.recyclerViewInventoryList).apply {
             setHasFixedSize(true)
             layoutManager = viewManager
