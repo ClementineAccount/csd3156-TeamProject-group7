@@ -44,13 +44,9 @@
     <list default="true" id="63fb922e-c2ea-4e8d-b793-0c239ba65f0e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ItemViewHolder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ItemViewHolder.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/PlayerShopViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/PlayerShopViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopItemRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopItemRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/Weather/Weather.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/Weather/Weather.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/Weather/WeatherService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/Weather/WeatherService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/shop.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/shop.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopItem.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopItem.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopItemDao.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopItemDao.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,7 +125,7 @@
     &quot;last_opened_file_path&quot;: &quot;C:/Users/green/Documents/GitHub/csd3156-TeamProject-group7&quot;
   }
 }</component>
-  <component name="RunManager" selected="Android App.DebugTitleActivity">
+  <component name="RunManager" selected="Android App.ShopActivity">
     <configuration name="DebugTitleActivity" type="AndroidRunConfigurationType" factoryName="Android App" temporary="true">
       <module name="csd3156-TeamProject-group7.app.main" />
       <option name="DEPLOY" value="true" />
@@ -266,8 +262,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Android App.DebugTitleActivity" />
         <item itemvalue="Android App.ShopActivity" />
+        <item itemvalue="Android App.DebugTitleActivity" />
       </list>
     </recent_temporary>
   </component>

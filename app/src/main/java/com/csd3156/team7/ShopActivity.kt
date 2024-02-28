@@ -62,10 +62,14 @@ class ShopActivity : AppCompatActivity() {
 
         val weatherTextView: TextView = findViewById(R.id.weatherTextView)
         lifecycleScope.launch {
-            val weather2 = playerViewModel.getWeather("q")
             weatherCondition = playerViewModel.getWeather("q").current.condition.text
-            Log.d("ShopActivity", "Weather: ${weatherCondition}")
+
+            // Log.d("ShopActivity", "Weather: ${weatherCondition}")
             weatherTextView.text = "${weatherCondition}"
+
+            if (weatherCondition.uppercase().contains("CLOUDY")) {
+                weatherTextView.append(" (x2 Prices)")
+            }
         }
 
 
@@ -129,9 +133,6 @@ class ShopActivity : AppCompatActivity() {
             layoutManager = viewManager
             adapter = viewAdaptor
         }
-
-
-
 
 
         if (savedInstanceState != null) {

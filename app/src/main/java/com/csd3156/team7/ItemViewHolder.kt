@@ -38,7 +38,20 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
         binding.itemDescription.text = item.description
 
-        binding.itemPrice.text = "Price: ${item.price}"
+        Log.d("ItemViewHolder", "Weather: ${ShopActivity.weatherCondition}")
+
+
+        // If the weather condition is cloudy, double the
+        // buying (& selling) price of the item.
+        // Directly accessing the weather condition returns "".
+        CoroutineScope(Dispatchers.IO).launch {
+
+            // Keep case sensitivity in mind here.
+            if (ShopActivity.playerViewModel.getWeather("q").current.condition
+                .text.uppercase().contains("CLOUDY")) { item.price *= 2 }
+
+            binding.itemPrice.text = "Price: ${item.price}"
+        }
         binding.unlockButton.visibility = if (item.researched) View.GONE else View.VISIBLE
         binding.unlockButton.text = "Unlock: ${item.creditsToResearch} CREDIT"
         binding.unlockButton.setOnClickListener {
@@ -69,15 +82,16 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
                 ShopActivity.playerViewModel.updateItemQuantity(item.itemId, item.quantity + 1)
 
-                // Keep case sensitivity in mind here.
-                if (ShopActivity.weatherCondition.uppercase().contains("CLOUDY"))
-                {
-                    ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price * 2
-                }
-                else
-                {
+                //if (ShopActivity.weatherCondition.uppercase().contains("CLOUDY"))
+//                {
+//                    ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price * 2
+//                }
+//                else
+//                {
                     ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price
-                }
+//                }
+
+
                 ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
                 // null bug?
