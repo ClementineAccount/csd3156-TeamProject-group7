@@ -1,14 +1,23 @@
 package com.csd3156.team7
 
+import android.content.Context.MODE_PRIVATE
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.csd3156.team7.ShopActivity.Companion.playerViewModel
 import com.google.ar.core.examples.kotlin.helloar.R
 import com.google.ar.core.examples.kotlin.helloar.databinding.ShopItemBinding
 
 
 class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: List<ShopItem>, var player: Player)
     : RecyclerView.Adapter<ItemViewHolder>() {
+
+        companion object{
+
+            lateinit var shopListAdaptor : ShopListAdaptor
+            var selectedID : Int = 0
+        }
+
 
 
     //val sharedPreferences: SharedPreferences = context.getSharedPreferences("player", Context.MODE_PRIVATE)
@@ -48,19 +57,8 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
 //
 //                shopActivity.playerViewModel.viewModelScope.launch {
 //                    shopActivity.playerViewModel.repository.setPlayerCurrency(player.currentCurrency)
-//
-//                    val sharedPref = shopActivity.getSharedPreferences("Player", Context.MODE_PRIVATE)
-//                    with(sharedPref.edit()) {
-//                        putInt("PlayerCurrency", player.currentCurrency) // save the player's currency to the datastore
-//                        apply() // apply is asynchronous, commit is synchronous
-//                    }
-//
-//                    // save item quantity to the datastore
-//                    val itemQuantity = sharedPref.getInt(item.name, 0)
-//                    with(sharedPref.edit()) {
-//                        putInt(item.name, itemQuantity + 1)
-//                        apply()
-//                    }
+//                    // new: update the item quantity in the database
+//                    shopActivity.playerViewModel.updateItemQuantity(item.name, item.quantity)
 //
 //                }
 //
@@ -81,19 +79,8 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
 //                shopActivity.playerViewModel.viewModelScope.launch {
 //                    shopActivity.playerViewModel.repository.setPlayerCurrency(player.currentCurrency)
 //
-//                    val sharedPref = shopActivity.getSharedPreferences("Player", Context.MODE_PRIVATE)
-//                    with(sharedPref.edit()) {
-//                        putInt("PlayerCurrency", player.currentCurrency) // save the player's currency to the datastore
-//                        apply() // apply is asynchronous, commit is synchronous
-//                    }
-//
-//                    // save item quantity to the datastore
-//                    val itemQuantity = sharedPref.getInt(item.name, 0)
-//                    with(sharedPref.edit()) {
-//                        putInt(item.name, itemQuantity - 1)
-//                        apply()
-//                    }
-//
+//                    // new: update the item quantity in the database
+//                    shopActivity.playerViewModel.updateItemQuantity(item.name, item.quantity)
 //                }
 //
 //            }
@@ -106,7 +93,8 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
 
     fun setItems(items: List<ShopItem>) {
         dataSource = items
-        shopActivity.setCurrencyText(player.currentCurrency)
+        shopActivity.setCurrencyText(playerViewModel.playerCurrencyObject.currency)
+        shopActivity.getSharedPreferences("Player", MODE_PRIVATE).edit().putInt("PlayerCurrency", playerViewModel.playerCurrencyObject.currency).apply()
         notifyDataSetChanged()
     }
 

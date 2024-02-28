@@ -1,10 +1,10 @@
 package com.csd3156.team7
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import com.google.ar.core.examples.kotlin.helloar.HelloArActivity
 import com.google.ar.core.examples.kotlin.helloar.R
 
@@ -24,6 +24,13 @@ class DebugTitleActivity : AppCompatActivity() {
                 Log.d("BUTTONS", "User tapped the buttonMap")
                 openMapScene()
             }
+
+        findViewById<Button>(R.id.buttonShop)
+            .setOnClickListener {
+                Log.d("BUTTONS", "User tapped the buttonShop")
+                openShopScene()
+        }
+
     }
 
     fun openARScene()
@@ -37,6 +44,13 @@ class DebugTitleActivity : AppCompatActivity() {
     {
         Log.d("DEBUG TITLE", "openMapScene() function called")
         val intent = Intent(this, MapsActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun openShopScene()
+    {
+        Log.d("DEBUG TITLE", "openShopScene() function called")
+        val intent = Intent(this, ShopActivity::class.java)
         startActivity(intent)
     }
 }
