@@ -22,6 +22,7 @@ import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.csd3156.team7.FarmItem
+import com.csd3156.team7.ShopItem
 import com.google.ar.core.Anchor
 import com.google.ar.core.Camera
 import com.google.ar.core.DepthPoint
@@ -56,6 +57,15 @@ import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.Random
 import kotlin.math.sqrt
+
+// Create this with the anchor stuff
+// TODO: Also add the shape here that it will represent
+private data class CollectableObject(
+  val x : Float,
+  val y : Float,
+  val z:  Float,
+  val radius: Float = 10.0f //For distance hit point check with the tap pointer
+)
 
 /** Renders the HelloAR application using our example Renderer. */
 class HelloArRenderer(val activity: HelloArActivity) :
@@ -146,6 +156,10 @@ class HelloArRenderer(val activity: HelloArActivity) :
   val viewInverseMatrix = FloatArray(16)
   val worldLightDirection = floatArrayOf(0.0f, 0.0f, 0.0f, 0.0f)
   val viewLightDirection = FloatArray(4) // view x world light direction
+
+
+  //Store the collcetable objects that are generated
+  private var collectableList: MutableList<CollectableObject> = mutableListOf()
 
   val session
     get() = activity.arCoreSessionHelper.session
@@ -430,6 +444,8 @@ class HelloArRenderer(val activity: HelloArActivity) :
 
       anchor.pose.toMatrix(modelMatrix, 0)
 
+      Matrix.translateM(modelMatrix, 0, 0.0f, 1.0f, 0.0f)
+
       // Calculate model/view/projection matrices
       Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
       Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
@@ -565,6 +581,8 @@ class HelloArRenderer(val activity: HelloArActivity) :
   private fun handleTap(frame: Frame, camera: Camera) {
     if (camera.trackingState != TrackingState.TRACKING) return
     val tap = activity.view.tapHelper.poll() ?: return
+
+    tap.offsetLocation(50.0f, 10.0f)
 
     val hitResultList =
       if (activity.instantPlacementSettings.isInstantPlacementEnabled) {
@@ -703,9 +721,6 @@ class HelloArRenderer(val activity: HelloArActivity) :
     }
     mediaPlayer?.start()
   }
-
-
-
 }
 
 
@@ -725,5 +740,3 @@ private data class WrappedAnchor(
   val trackable: Trackable,
   val farmData : FarmData
 )
-
-

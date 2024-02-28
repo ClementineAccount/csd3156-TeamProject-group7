@@ -112,8 +112,6 @@ class HelloArActivity : AppCompatActivity() {
     val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
     resultList.clear()
 
-
-
     // Check if the location provider is enabled
     if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 //      val locationListener = MyLocationListener(this) { location ->
