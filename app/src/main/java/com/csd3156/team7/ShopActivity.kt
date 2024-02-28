@@ -89,11 +89,11 @@ class ShopActivity : AppCompatActivity() {
         if (firstLaunch) {
             lifecycleScope.launch {
                 playerViewModel.insertItem(ShopItem("Pyramid", triangleImageResId, 0,
-                    "Produces 5 per 1 second", 5, true,1000,redColor))
+                    "+5 Pyramid per 1 second", 5, true,1000,redColor))
                 playerViewModel.insertItem(ShopItem("Cube", squareImageResId, 0,
-                    "Produces 10 per 1 second", 10, false,500,greenColor))
+                    "+10 Cube per 1 second", 10, false,500,greenColor))
                 playerViewModel.insertItem(ShopItem("Sphere", circleImageResId, 0,
-                    "Produces 15 per 1 second", 15, false,2000,blueColor))
+                    "+15 Sphere per 1 second", 15, false,2000,blueColor))
             }
             getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()
         }
