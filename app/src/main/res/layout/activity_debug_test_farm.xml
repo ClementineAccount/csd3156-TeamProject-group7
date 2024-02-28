@@ -4,7 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="200dp"
     android:orientation="vertical"
     tools:context="com.csd3156.team7.DebugTestFarm">
 
+    <Button
+        android:id="@+id/debugAddCubeFarm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="(DEBUG) CREATE CUBE FARM" />
+
+    <Button
+        android:id="@+id/debugGoShopButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="(DEBUG) GO TO SHOP" />
 </LinearLayout>
