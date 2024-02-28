@@ -22,7 +22,7 @@ class ShopItemRepository (private val shopItemDao: ShopItemDao, private val play
         return shopItemDao.getItemByName(name)
     }
 
-    fun updateQuantity(id: Int, quantity: Int) {
+    suspend fun updateQuantity(id: Int, quantity: Int) {
         shopItemDao.updateQuantity(id, quantity)
     }
 

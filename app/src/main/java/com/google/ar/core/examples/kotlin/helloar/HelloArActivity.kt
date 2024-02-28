@@ -89,10 +89,9 @@ class HelloArActivity : AppCompatActivity() {
 
   lateinit var playerViewModel: PlayerInventoryViewModel
 
+
   private val LOCATION_PERMISSION_REQUEST_CODE = 100
-
   public lateinit var earth : Earth
-
   lateinit var cameraGeospatialPose : GeospatialPose
 
 
@@ -257,8 +256,6 @@ class HelloArActivity : AppCompatActivity() {
 
     val debugFarmPlaceButton = findViewById<Button>(R.id.debugFarm)
     debugFarmPlaceButton.setOnClickListener {
-
-
 
       runOnUiThread {
         var farmList: MutableList<FarmItem> = mutableListOf()

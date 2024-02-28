@@ -64,4 +64,12 @@
       android:layout_marginBottom="50dp"
       android:text="(DEBUG) PLACE FARM FROM DATABASE" />
 
+  <Button
+      android:id="@+id/debugRandomFarm"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="10dp"
+      android:layout_marginTop="100dp"
+      android:text="(DEBUG) PLACE FARM RANDOM" />
+
 </RelativeLayout>
