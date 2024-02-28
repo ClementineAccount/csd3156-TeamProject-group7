@@ -656,7 +656,6 @@ class HelloArRenderer(val activity: HelloArActivity) :
 
           wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable, FarmData(uid)))
           playObjectPlacedSound()
-
         }
 
 
