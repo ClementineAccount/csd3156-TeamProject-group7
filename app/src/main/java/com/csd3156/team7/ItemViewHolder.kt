@@ -21,6 +21,7 @@ import android.view.WindowManager
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.Toast
 import androidx.compose.ui.text.toUpperCase
+import com.csd3156.team7.ShopListAdaptor.Companion.selectedName
 import com.google.ar.core.examples.kotlin.helloar.NFCActivity
 
 class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHolder(binding.root){
@@ -39,6 +40,20 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         binding.itemDescription.text = item.description
 
         binding.itemPrice.text = "Price: ${item.price}"
+        binding.selectButton.setOnClickListener{
+
+
+            binding.itemContainerBackground.isSelected = !binding.itemContainerBackground.isSelected
+            if(binding.itemContainerBackground.isSelected)
+            {
+                selectedName = item.itemName
+            }
+            else
+            {
+                selectedName = ""
+            }
+        }
+
         binding.unlockButton.visibility = if (item.researched) View.GONE else View.VISIBLE
         binding.unlockButton.text = "Unlock: ${item.creditsToResearch} CREDIT"
         binding.unlockButton.setOnClickListener {
@@ -150,6 +165,8 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
 
     }
+
+
 
 
 
