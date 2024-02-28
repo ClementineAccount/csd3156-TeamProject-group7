@@ -1,7 +1,12 @@
 package com.csd3156.team7
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import android.view.MenuItem
 import android.widget.TextView
@@ -27,6 +32,9 @@ class ShopActivity : AppCompatActivity() {
     private var inventoryList: MutableList<ShopItem> = mutableListOf()
     private val startingCurrency = 2000
     private var player: Player = Player("Test", startingCurrency)
+    private var musicService: MusicService? = null
+    private var isBound = false
+
 
     companion object {
         lateinit var playerViewModel: PlayerShopViewModel
@@ -175,6 +183,38 @@ class ShopActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as MusicService.LocalBinder
+            musicService = binder.getService()
+            isBound = true
+            musicService?.playMusic()
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            isBound = false
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Intent(this, MusicService::class.java).also { intent ->
+            startService(intent)
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+
+        }
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (isBound) {
+            unbindService(connection)
+            isBound = false
+        }
     }
 
 

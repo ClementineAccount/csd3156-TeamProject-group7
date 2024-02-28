@@ -27,6 +27,8 @@
         android:required="true" />
 
 
+
+
     <application
         android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
@@ -34,6 +36,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <service android:name="com.csd3156.team7.MusicService" />
 
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
