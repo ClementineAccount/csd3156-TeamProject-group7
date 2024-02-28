@@ -22,7 +22,7 @@ import android.view.WindowManager
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.Toast
 import androidx.compose.ui.text.toUpperCase
-import com.csd3156.team7.ShopListAdaptor.Companion.selectedName
+import com.csd3156.team7.ShopListAdaptor.Companion.selectedFarmName
 import com.google.ar.core.examples.kotlin.helloar.NFCActivity
 
 class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHolder(binding.root){
@@ -44,13 +44,13 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         binding.itemContainerBackground.isSelected = isSelected
         if(binding.itemContainerBackground.isSelected)
         {
-           selectedName = item.name
+            selectedFarmName = item.name
 
 
         }
         else
         {
-            selectedName = ""
+            selectedFarmName = ""
         }
 
         binding.selectButton.setOnClickListener{
