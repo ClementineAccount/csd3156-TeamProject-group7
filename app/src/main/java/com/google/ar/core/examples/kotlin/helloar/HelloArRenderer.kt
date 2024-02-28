@@ -18,6 +18,7 @@ package com.google.ar.core.examples.kotlin.helloar
 import android.media.MediaPlayer
 import android.opengl.GLES30
 import android.opengl.Matrix
+import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -159,6 +160,8 @@ class HelloArRenderer(val activity: HelloArActivity) :
 
   //Store the collcetable objects that are generated
   private var collectableList: MutableList<CollectableObject> = mutableListOf()
+
+
 
   val session
     get() = activity.arCoreSessionHelper.session
@@ -432,36 +435,71 @@ class HelloArRenderer(val activity: HelloArActivity) :
     // Update lighting parameters in the shader
     updateLightEstimation(frame.lightEstimate, viewMatrix)
 
-
-
     // Visualize anchors created by touch.
     render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f)
     for ((anchor, trackable) in
       wrappedAnchors.filter { it.anchor.trackingState == TrackingState.TRACKING }) {
+
+      //Cannot just put in another function got issues
+      //renderCollectables(anchor, trackable)
+
+      //Causes crash sometimes I think due to concurrency modifying collectableList during
+      //rendering operation....
+
+      //easy fix since N is small is to clone the list
+      var collectableListClone = collectableList.toMutableList()
+      for (collectable in collectableListClone) {
+        anchor.pose.toMatrix(modelMatrix, 0)
+
+        Matrix.translateM(modelMatrix, 0, collectable.x, collectable.y, collectable.z)
+
+        // Calculate model/view/projection matrices
+        Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
+        Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
+
+        // Update shader properties and draw
+        virtualObjectShader.setMat4("u_ModelView", modelViewMatrix)
+        virtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix)
+        val texture =
+          if ((trackable as? InstantPlacementPoint)?.trackingMethod ==
+            InstantPlacementPoint.TrackingMethod.SCREENSPACE_WITH_APPROXIMATE_DISTANCE
+          ) {
+            virtualObjectAlbedoInstantPlacementTexture
+          } else {
+            virtualObjectAlbedoTexture
+          }
+        virtualObjectShader.setTexture("u_AlbedoTexture", texture)
+        render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+      }
+
       // Get the current pose of an Anchor in world space. The Anchor pose is updated
       // during calls to session.update() as ARCore refines its estimate of the world.
 
-      anchor.pose.toMatrix(modelMatrix, 0)
+      //Objects are relative to the (one) anchor
 
-      Matrix.translateM(modelMatrix, 0, 0.0f, 1.0f, 0.0f)
 
-      // Calculate model/view/projection matrices
-      Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
-      Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
+      //Don't render the anchor itself.
 
-      // Update shader properties and draw
-      virtualObjectShader.setMat4("u_ModelView", modelViewMatrix)
-      virtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix)
-      val texture =
-        if ((trackable as? InstantPlacementPoint)?.trackingMethod ==
-            InstantPlacementPoint.TrackingMethod.SCREENSPACE_WITH_APPROXIMATE_DISTANCE
-        ) {
-          virtualObjectAlbedoInstantPlacementTexture
-        } else {
-          virtualObjectAlbedoTexture
-        }
-      virtualObjectShader.setTexture("u_AlbedoTexture", texture)
-      render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+//      anchor.pose.toMatrix(modelMatrix, 0)
+//      Matrix.translateM(modelMatrix, 0, 0.0f, 0.0f, 0.0f)
+//
+//      // Calculate model/view/projection matrices
+//      Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
+//      Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
+//
+//      // Update shader properties and draw
+//      virtualObjectShader.setMat4("u_ModelView", modelViewMatrix)
+//      virtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix)
+//      val texture =
+//        if ((trackable as? InstantPlacementPoint)?.trackingMethod ==
+//            InstantPlacementPoint.TrackingMethod.SCREENSPACE_WITH_APPROXIMATE_DISTANCE
+//        ) {
+//          virtualObjectAlbedoInstantPlacementTexture
+//        } else {
+//          virtualObjectAlbedoTexture
+//        }
+//      virtualObjectShader.setTexture("u_AlbedoTexture", texture)
+//      render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
     }
 
 
@@ -575,12 +613,40 @@ class HelloArRenderer(val activity: HelloArActivity) :
     )
   }
 
+  private fun renderCollectables(anchor: Anchor, trackable: Trackable)
+  {
+    //val collectableListCloned = collectableList.toMutableList()
+    for (collectable in collectableList) {
+      anchor.pose.toMatrix(modelMatrix, 0)
+
+      Matrix.translateM(modelMatrix, 0, collectable.x, collectable.y, collectable.z)
+
+      // Calculate model/view/projection matrices
+      Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
+      Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
+
+      // Update shader properties and draw
+      virtualObjectShader.setMat4("u_ModelView", modelViewMatrix)
+      virtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix)
+      val texture =
+        if ((trackable as? InstantPlacementPoint)?.trackingMethod ==
+          InstantPlacementPoint.TrackingMethod.SCREENSPACE_WITH_APPROXIMATE_DISTANCE
+        ) {
+          virtualObjectAlbedoInstantPlacementTexture
+        } else {
+          virtualObjectAlbedoTexture
+        }
+      virtualObjectShader.setTexture("u_AlbedoTexture", texture)
+      render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+    }
+  }
+
   // Handle only one tap per frame, as taps are usually low frequency compared to frame rate.
   private fun handleTap(frame: Frame, camera: Camera) {
     if (camera.trackingState != TrackingState.TRACKING) return
     val tap = activity.view.tapHelper.poll() ?: return
 
-    tap.offsetLocation(50.0f, 10.0f)
+    //tap.offsetLocation(50.0f, 10.0f)
 
     val hitResultList =
       if (activity.instantPlacementSettings.isInstantPlacementEnabled) {
@@ -608,6 +674,7 @@ class HelloArRenderer(val activity: HelloArActivity) :
     if (firstHitResult != null) {
       // Cap the number of objects created. This avoids overloading both the
       // rendering system and ARCore.
+
       if (wrappedAnchors.size >= 20) {
         wrappedAnchors[0].anchor.detach()
         wrappedAnchors.removeAt(0)
@@ -651,14 +718,21 @@ class HelloArRenderer(val activity: HelloArActivity) :
         //addFarmPrototypeTest(hitPose)
 
         //farm data not relevant anymore btw
-        wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable, FarmData(0)))
-        playObjectPlacedSound()
+        //Only allow one anchor at a time.
+        // TODO: Remove the anchor whenever we leace the activity
+        if (wrappedAnchors.isEmpty())
+        {
+          wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable, FarmData(0)))
+          //playObjectPlacedSound()
 
-        //Prototype offset function
-        var offsetX = 10.0f
+          //Prototype offset function
+          //var offsetX = 0.5f
+          var offsetZ = 0.5f
 
-        //Offset from anchor
-        createCollectable(firstHitResult.hitPose.tx() + offsetX, firstHitResult.hitPose.ty(), firstHitResult.hitPose.tz())
+          //Offset from anchor
+          //createCollectable(firstHitResult.hitPose.tx() + offsetX, firstHitResult.hitPose.ty(), firstHitResult.hitPose.tz() + offsetZ)
+        }
+
       }
 
       //addFarmToDatabase()
@@ -674,9 +748,21 @@ class HelloArRenderer(val activity: HelloArActivity) :
   }
 
   // Create a new collectable and add it the list
-  private fun createCollectable(x : Float, y : Float, z : Float) {
-    var collectable = CollectableObject(x, y, z)
-    collectableList.add(collectable)
+  public fun createCollectable(offsetX : Float, offsetY : Float, offsetZ : Float) {
+
+    var maxCollectableNumber = 10
+    if (wrappedAnchors.isNotEmpty() && collectableList.size < maxCollectableNumber)
+    {
+      var anchor = wrappedAnchors.first().anchor
+      var translate = anchor.pose.translation
+
+      var collectable = CollectableObject(translate[0] + offsetX, translate[1] + offsetY,
+        translate[2] + offsetZ)
+
+      //Sometimes causes a crash because of iteration in the rendering loop...
+      collectableList.add(collectable)
+      playObjectPlacedSound()
+    }
   }
 
 

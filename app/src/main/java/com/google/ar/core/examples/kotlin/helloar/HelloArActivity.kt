@@ -23,6 +23,8 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
@@ -32,6 +34,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.csd3156.team7.FarmItem
 import com.csd3156.team7.PlayerInventoryViewModel
 import com.google.android.gms.location.LocationServices
@@ -53,6 +56,10 @@ import com.google.ar.core.exceptions.UnavailableApkTooOldException
 import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException
 import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 
 /**
@@ -93,6 +100,11 @@ class HelloArActivity : AppCompatActivity() {
   private val LOCATION_PERMISSION_REQUEST_CODE = 100
   public lateinit var earth : Earth
   lateinit var cameraGeospatialPose : GeospatialPose
+
+  //For spawning the collectable items at a timer
+  private var handler: Handler? = null
+  private var addCollectableTask: Runnable? = null
+  private var collectableRateSeconds : Long = 2L
 
 
 
@@ -254,7 +266,6 @@ class HelloArActivity : AppCompatActivity() {
 
     val debugFarmPlaceButton = findViewById<Button>(R.id.debugFarm)
     debugFarmPlaceButton.setOnClickListener {
-
       runOnUiThread {
         var farmList: MutableList<FarmItem> = mutableListOf()
         playerViewModel.allFarm.observe(this, Observer { farmList ->
@@ -289,17 +300,30 @@ class HelloArActivity : AppCompatActivity() {
             }
           }
         })
-
-
       }
-
-
     }
+    handler = Handler(Looper.getMainLooper())
+    addCollectableTask = object : Runnable {
+      override fun run() {
+        var random : Random = Random.Default
+        lifecycleScope.launch {
 
+          var maxX : Float = 2.0f
+          var minX : Float = -2.0f
 
+          var maxZ : Float = 2.0f
+          var minZ : Float = -2.0f
 
+          var offsetX : Float = random.nextFloat() * (maxX - minX) + minX
+          var offsetZ : Float = random.nextFloat() * (maxZ - minZ) + minZ
 
-
+          renderer.createCollectable(offsetX, 0.0f, offsetZ)
+        }
+        handler?.postDelayed(this, collectableRateSeconds * 1000)
+      }
+    }
+    // Start the task immediately
+    handler?.post(addCollectableTask!!)
   }
 
   // Configure the session, using Lighting Estimation, and Depth mode.
