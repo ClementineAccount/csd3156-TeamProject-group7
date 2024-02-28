@@ -68,9 +68,15 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
             // Keep case sensitivity in mind here.
             if (ShopActivity.playerViewModel.getWeather("q").current.condition
-                .text.uppercase().contains("CLOUDY")) { item.price *= 2 }
+                .text.uppercase().contains("CLOUDY"))
+            {
+                binding.itemPrice.text = "Price: ${item.price * 2}"
+            }
+            else
+            {
+                binding.itemPrice.text = "Price: ${item.price}"
+            }
 
-            binding.itemPrice.text = "Price: ${item.price}"
         }
         binding.unlockButton.visibility = if (item.researched) View.GONE else View.VISIBLE
         binding.unlockButton.text = "Unlock: ${item.creditsToResearch} CREDIT"
@@ -102,14 +108,14 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
                 ShopActivity.playerViewModel.updateItemQuantity(item.itemId, item.quantity + 1)
 
-                //if (ShopActivity.weatherCondition.uppercase().contains("CLOUDY"))
-//                {
-//                    ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price * 2
-//                }
-//                else
-//                {
+                if (ShopActivity.weatherCondition.uppercase().contains("CLOUDY"))
+                {
+                    ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price * 2
+                }
+                else
+                {
                     ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price
-//                }
+                }
 
 
                 ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
