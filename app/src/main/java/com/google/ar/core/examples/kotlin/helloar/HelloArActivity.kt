@@ -60,6 +60,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 
@@ -121,6 +122,13 @@ class HelloArActivity : AppCompatActivity() {
     } else {
       Toast.makeText(this@HelloArActivity, "Permission already granted for GPS", Toast.LENGTH_SHORT).show()
     }
+  }
+
+  public fun displayMinigameEndMessage()
+  {
+    //I rushing stuff at like 10.47pm on 28/2/2024 I don't have time to make this make sense
+    val message: String = "End of the minigame! Tap again to collect more!"
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
   }
 
 
@@ -338,9 +346,12 @@ class HelloArActivity : AppCompatActivity() {
         }
         else
         {
+          renderer.showMinigameEndText()
+
           //TODO: Remove the anchor after the thing stop spawning...
           renderer.removeAnchors()
           renderer.removeCollectables()
+
         }
       }
     }
@@ -352,8 +363,18 @@ class HelloArActivity : AppCompatActivity() {
   //Set the current collectable run count back to 0 so the thing will spawn
   public fun setCollectableTaskRun()
   {
+
+    lifecycleScope.launch {
+      withContext(Dispatchers.Main) {
+        // Perform UI-related operations here, such as showing a Toast
+        Toast.makeText(applicationContext, "COLLECT THE SHAPES!", Toast.LENGTH_SHORT).show()
+      }
+    }
+
     currentCollectableRunCount = 0
     handler?.post(addCollectableTask!!)
+
+
   }
 
 

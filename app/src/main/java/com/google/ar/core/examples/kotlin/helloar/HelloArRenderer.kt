@@ -59,6 +59,8 @@ import java.nio.ByteBuffer
 import java.util.Random
 import kotlin.math.sqrt
 
+import android.widget.Toast
+
 // Create this with the anchor stuff
 // TODO: Also add the shape here that it will represent
 private data class CollectableObject(
@@ -857,6 +859,28 @@ class HelloArRenderer(val activity: HelloArActivity) :
   public fun removeAnchors()
   {
     wrappedAnchors.clear()
+  }
+
+  public fun showMinigameEndText()
+  {
+    //SPAGHETTI LOGIC: THIS IS CALLED **BEFORE** removeAnchors in HelloArActivity
+    //THAT IS WHY I CAN ASSUME THE ANCHOR LIST NOT CLEARED YET
+
+    //THIS IS SO THAT THE MESSAGE DOES NOT APPEAR DURING THE STARTUP WHERE THE THING
+    //GOES ITS A BUG AND I JUST HAVE TO WORK AROUND IT
+    if (wrappedAnchors.isEmpty())
+    {
+      return
+    }
+
+    //I rushing stuff at like 10.47pm on 28/2/2024 I don't have time to make this make sense
+    //val message: String = "End of the minigame! Tap again to collect more!"
+    //activity.view.snackbarHelper.showMessage(activity, message)
+
+    // Use toast as placeholder
+    // as snackbarHelper would need some kind of timer thing and its just... I don't have time now
+    //activity.applicationContext.Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    activity.displayMinigameEndMessage()
   }
 
   public fun removeCollectables()
