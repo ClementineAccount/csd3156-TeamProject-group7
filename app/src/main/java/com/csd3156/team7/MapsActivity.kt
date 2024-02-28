@@ -10,17 +10,19 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.location.Location
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.csd3156.team7.PlayerInventoryDatabase.Companion.getDatabase
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -35,50 +37,23 @@ import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.ar.core.examples.kotlin.helloar.R
 import com.google.ar.core.examples.kotlin.helloar.databinding.ActivityMapsBinding
 
-class FarmAdapter(private val farms: List<Location>, private val onItemClick: (LatLng) -> Unit) :
-    RecyclerView.Adapter<FarmAdapter.ViewHolder>() {
-
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val farmNameTextView: TextView = itemView.findViewById(R.id.farmNameTextView)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.farm_list, parent, false)
-        return ViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val farm = farms[position]
-        holder.farmNameTextView.text = "Farm $position"
-        holder.itemView.setOnClickListener {
-            onItemClick(LatLng(farm.latitude, farm.longitude))
-        }
-
-        // Log the size of the farms list
-        Log.d("FarmAdapter", "Size of farms list: ${farms.size}")
-    }
-
-
-    override fun getItemCount(): Int {
-        return farms.size
-    }
-}
-
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private val farms: MutableList<Location> = mutableListOf()
-    private var farmRadius: Double = 100.0 // Default radius
-    private val strokeColor: Int = Color.argb(255, 0, 0, 0)
-    private val fillColor: Int = Color.argb(255, 0, 255, 0)
-    private var selectedFarmIndex: Int = -1 // Variable to track the selected farm
+    private lateinit var farmRepository: FarmListRepository
+    private var farmRadius: Double = 100.0
+    private var selectedFarmIndex: Int = -1
     private var isMapStyleEnabled = true
-    private lateinit var farmRecyclerView: RecyclerView
-    private lateinit var farmAdapter: FarmAdapter
+    private lateinit var scrollView: ScrollView
+    private lateinit var farmNamesTextView: TextView
+    private var strokeColor: Int = Color.argb(255, 0, 0, 0)
+    private var defaultStrokeColor: Int = Color.argb(255, 206, 189, 173)
+    private val fillColor: Int = Color.argb(255, 101,254,8)
+    private val ZOOM = 16f
+    private val zoomSpeed = 800
 
-    // I used ChatGPT to get the Location API stuff - Clementine
-    // You can see me struggle here: https://chat.openai.com/share/1ca2cba9-00ef-4279-9608-6eb88915beb3
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 1
         private const val DEFAULT_ZOOM = 15f
@@ -95,17 +70,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val toggleStyleButton = findViewById<Button>(R.id.toggleStyleButton)
         toggleStyleButton.setOnClickListener { onToggleMapStyleClick() }
 
-        farmRecyclerView = findViewById(R.id.farmRecyclerView)
-        farmAdapter = FarmAdapter(farms) { selectedFarmLatLng ->
-            moveCameraToSelectedFarm(selectedFarmLatLng)
-        }
-        farmRecyclerView.layoutManager = LinearLayoutManager(this)
-        farmRecyclerView.adapter = farmAdapter
+        scrollView = findViewById(R.id.scrollView)
+        farmNamesTextView = findViewById(R.id.farmNamesTextView)
+        farmRepository = FarmListRepository(getDatabase(this).farmDao())
 
         val showFarmsButton = findViewById<Button>(R.id.showFarmsButton)
         showFarmsButton.setOnClickListener { onShowFarmsClick() }
     }
 
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
@@ -129,16 +110,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (distance <= farmRadius) {
                     deleteFarm(farmLatLng)
                     refreshMap()
+                    updateFarmNames()
                     return@setOnMapClickListener
                 }
             }
             addFarm(latLng.latitude, latLng.longitude)
             refreshMap()
+            updateFarmNames()
         }
 
         moveCameraToLastKnownLocation()
     }
 
+    // Add a marker in Sydney and move the camera
+//        val sydney = LatLng(-34.0, 151.0)
+//        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     private fun onToggleMapStyleClick() {
         isMapStyleEnabled = !isMapStyleEnabled
 
@@ -155,31 +142,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun addFarm(latitude: Double, longitude: Double) {
-        val farmLocation = Location("")
-        farmLocation.latitude = latitude
-        farmLocation.longitude = longitude
-        farms.add(farmLocation)
-        farmAdapter.notifyDataSetChanged()
-    }
-
-    private fun deleteFarm(latLng: LatLng) {
-        for ((index, farmLocation) in farms.withIndex()) {
-            val farmLatLng = LatLng(farmLocation.latitude, farmLocation.longitude)
-            if (areLocationsEqual(latLng, farmLatLng)) {
-                farms.removeAt(index)
-                selectedFarmIndex = -1
-                farmAdapter.notifyDataSetChanged()
-                return
-            }
-        }
-    }
-
     private fun refreshMap() {
         try {
             mMap.clear()
+
             for ((index, farmLocation) in farms.withIndex()) {
                 val location = LatLng(farmLocation.latitude, farmLocation.longitude)
+
+                val userLocation = mMap.myLocation
+                val distance = calculateDistance(
+                    LatLng(userLocation.latitude, userLocation.longitude),
+                    LatLng(farmLocation.latitude, farmLocation.longitude)
+                )
+
+                if (distance <= farmRadius) {
+                    strokeColor = fillColor
+                } else {
+                    strokeColor = defaultStrokeColor
+                }
 
                 val circleOptions = CircleOptions()
                     .center(location)
@@ -189,12 +169,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 mMap.addCircle(circleOptions)
 
+                // Draw text directly on the map
                 val paint = Paint().apply {
                     color = Color.BLACK
-                    textSize = 150f // Sharpness
+                    textSize = 20f
                 }
 
-                val textBitmap = createTextBitmap("Farm $index", paint)
+                val textBitmap = createTextBitmap("Farm ${index + 1}", paint)
                 mMap.addGroundOverlay(
                     GroundOverlayOptions()
                         .image(BitmapDescriptorFactory.fromBitmap(textBitmap))
@@ -215,19 +196,73 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val canvas = Canvas(bitmap)
 
         paint.textSize = 15f
-        val xOffset = 125f;
+        val xOffset = 125f
         val yOffset = 15f
         canvas.drawText(text, xOffset, yOffset, paint)
 
         return bitmap
     }
 
-    private fun onShowFarmsClick() {
-        farmRecyclerView.visibility = if (farmRecyclerView.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+    private fun addFarm(latitude: Double, longitude: Double) {
+        val farmLocation = Location("")
+        farmLocation.latitude = latitude
+        farmLocation.longitude = longitude
+        farms.add(farmLocation)
     }
 
-    private fun moveCameraToSelectedFarm(selectedFarmLatLng: LatLng) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedFarmLatLng, DEFAULT_ZOOM))
+    private fun deleteFarm(latLng: LatLng) {
+        for ((index, farmLocation) in farms.withIndex()) {
+            val farmLatLng = LatLng(farmLocation.latitude, farmLocation.longitude)
+            if (areLocationsEqual(latLng, farmLatLng)) {
+                farms.removeAt(index)
+                selectedFarmIndex = -1
+                return
+            }
+        }
+    }
+
+    private fun onShowFarmsClick() {
+        scrollView.visibility = if (scrollView.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+        if (scrollView.visibility == View.VISIBLE) {
+            updateFarmNames()
+        }
+    }
+
+    private fun updateFarmNames() {
+        val farmNames = farms.mapIndexed { index, _ -> "Farm ${index + 1}" }.toTypedArray()
+
+        val builder = SpannableStringBuilder()
+        farmNames.forEachIndexed { index, farmName ->
+            builder.append(farmName)
+            builder.setSpan(object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    onFarmNameClicked(index)
+                }
+            }, builder.length - farmName.length, builder.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            if (index < farmNames.size - 1) {
+                builder.append("\n")
+            }
+        }
+
+        farmNamesTextView.text = builder
+        farmNamesTextView.movementMethod = LinkMovementMethod.getInstance()
+    }
+
+    private fun onFarmNameClicked(index: Int) {
+        if (index in farms.indices) {
+            selectedFarmIndex = index
+            val selectedFarmLatLng = LatLng(farms[index].latitude, farms[index].longitude)
+            moveCameraToSelectedFarm(selectedFarmLatLng, ZOOM)
+        }
+    }
+
+    private fun moveCameraToSelectedFarm(selectedFarmLatLng: LatLng, zoomLevel: Float) {
+        mMap.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(selectedFarmLatLng, zoomLevel),
+            zoomSpeed,
+            null
+        )
     }
 
     private fun moveCameraToLastKnownLocation() {
@@ -268,6 +303,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
                     return
                 }
                 mMap.isMyLocationEnabled = true
