@@ -18,10 +18,12 @@ package com.google.ar.core.examples.kotlin.helloar
 import android.media.MediaPlayer
 import android.opengl.GLES30
 import android.opengl.Matrix
+import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.csd3156.team7.FarmItem
+import com.csd3156.team7.ShopItem
 import com.google.ar.core.Anchor
 import com.google.ar.core.Camera
 import com.google.ar.core.DepthPoint
@@ -56,6 +58,17 @@ import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.Random
 import kotlin.math.sqrt
+
+import android.widget.Toast
+
+// Create this with the anchor stuff
+// TODO: Also add the shape here that it will represent
+private data class CollectableObject(
+  val x : Float,
+  val y : Float,
+  val z:  Float,
+  val radius: Float = 1.0f //For distance hit point check with the tap pointer
+)
 
 /** Renders the HelloAR application using our example Renderer. */
 class HelloArRenderer(val activity: HelloArActivity) :
@@ -146,6 +159,11 @@ class HelloArRenderer(val activity: HelloArActivity) :
   val viewInverseMatrix = FloatArray(16)
   val worldLightDirection = floatArrayOf(0.0f, 0.0f, 0.0f, 0.0f)
   val viewLightDirection = FloatArray(4) // view x world light direction
+
+  //Store the collcetable objects that are generated
+  private var collectableList: MutableList<CollectableObject> = mutableListOf()
+
+
 
   val session
     get() = activity.arCoreSessionHelper.session
@@ -419,83 +437,127 @@ class HelloArRenderer(val activity: HelloArActivity) :
     // Update lighting parameters in the shader
     updateLightEstimation(frame.lightEstimate, viewMatrix)
 
-
-
     // Visualize anchors created by touch.
     render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f)
-    for ((anchor, trackable) in
+    synchronized(wrappedAnchors)
+    {
+      for ((anchor, trackable) in
       wrappedAnchors.filter { it.anchor.trackingState == TrackingState.TRACKING }) {
-      // Get the current pose of an Anchor in world space. The Anchor pose is updated
-      // during calls to session.update() as ARCore refines its estimate of the world.
 
-      anchor.pose.toMatrix(modelMatrix, 0)
+        //Cannot just put in another function got issues
+        //renderCollectables(anchor, trackable)
 
-      // Calculate model/view/projection matrices
-      Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
-      Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
+        //Causes crash sometimes I think due to concurrency modifying collectableList during
+        //rendering operation....
 
-      // Update shader properties and draw
-      virtualObjectShader.setMat4("u_ModelView", modelViewMatrix)
-      virtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix)
-      val texture =
-        if ((trackable as? InstantPlacementPoint)?.trackingMethod ==
-            InstantPlacementPoint.TrackingMethod.SCREENSPACE_WITH_APPROXIMATE_DISTANCE
-        ) {
-          virtualObjectAlbedoInstantPlacementTexture
-        } else {
-          virtualObjectAlbedoTexture
+        //easy fix since N is small is to clone the list
+        //var collectableListClone = collectableList.toMutableList()
+        synchronized(collectableList)
+        {
+          for (collectable in collectableList) {
+            anchor.pose.toMatrix(modelMatrix, 0)
+
+            Matrix.translateM(modelMatrix, 0, collectable.x, collectable.y, collectable.z)
+
+            // Calculate model/view/projection matrices
+            Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
+            Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
+
+            // Update shader properties and draw
+            virtualObjectShader.setMat4("u_ModelView", modelViewMatrix)
+            virtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix)
+            val texture =
+              if ((trackable as? InstantPlacementPoint)?.trackingMethod ==
+                InstantPlacementPoint.TrackingMethod.SCREENSPACE_WITH_APPROXIMATE_DISTANCE
+              ) {
+                virtualObjectAlbedoInstantPlacementTexture
+              } else {
+                virtualObjectAlbedoTexture
+              }
+            virtualObjectShader.setTexture("u_AlbedoTexture", texture)
+            render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+          }
         }
-      virtualObjectShader.setTexture("u_AlbedoTexture", texture)
-      render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
-    }
 
-
-    // Visualize anchors created by GPS
-    // I copy from geospatial_java from the samples
-    for (anchor in gpsAnchors) {
-  // Get the current pose of an Anchor in world space. The Anchor pose is updated
-        // during calls to session.update() as ARCore refines its estimate of the world.
-        // Only render resolved Terrain & Rooftop anchors and Geospatial anchors.
 
         // Get the current pose of an Anchor in world space. The Anchor pose is updated
         // during calls to session.update() as ARCore refines its estimate of the world.
-        // Only render resolved Terrain & Rooftop anchors and Geospatial anchors.
-      if (anchor.trackingState != TrackingState.TRACKING) {
-        continue
+
+        //Objects are relative to the (one) anchor
+
+
+        //Don't render the anchor itself.
+
+//      anchor.pose.toMatrix(modelMatrix, 0)
+//      Matrix.translateM(modelMatrix, 0, 0.0f, 0.0f, 0.0f)
+//
+//      // Calculate model/view/projection matrices
+//      Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
+//      Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
+//
+//      // Update shader properties and draw
+//      virtualObjectShader.setMat4("u_ModelView", modelViewMatrix)
+//      virtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix)
+//      val texture =
+//        if ((trackable as? InstantPlacementPoint)?.trackingMethod ==
+//            InstantPlacementPoint.TrackingMethod.SCREENSPACE_WITH_APPROXIMATE_DISTANCE
+//        ) {
+//          virtualObjectAlbedoInstantPlacementTexture
+//        } else {
+//          virtualObjectAlbedoTexture
+//        }
+//      virtualObjectShader.setTexture("u_AlbedoTexture", texture)
+//      render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
       }
-      anchor.pose.toMatrix(modelMatrix, 0)
-      val scaleMatrix = FloatArray(16)
-      Matrix.setIdentityM(scaleMatrix, 0)
-      val scale: Float = getScale(anchor.pose, camera.displayOrientedPose)
-      scaleMatrix[0] = scale
-      scaleMatrix[5] = scale
-      scaleMatrix[10] = scale
-      Matrix.multiplyMM(modelMatrix, 0, modelMatrix, 0, scaleMatrix, 0)
-      // Rotate the virtual object 180 degrees around the Y axis to make the object face the GL
-      // camera -Z axis, since camera Z axis faces toward users.
-      // Rotate the virtual object 180 degrees around the Y axis to make the object face the GL
-      // camera -Z axis, since camera Z axis faces toward users.
-      val rotationMatrix = FloatArray(16)
-      Matrix.setRotateM(rotationMatrix, 0, 180f, 0.0f, 1.0f, 0.0f)
-      val rotationModelMatrix = FloatArray(16)
-      Matrix.multiplyMM(rotationModelMatrix, 0, modelMatrix, 0, rotationMatrix, 0)
-      // Calculate model/view/projection matrices
-      // Calculate model/view/projection matrices
-      Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, rotationModelMatrix, 0)
-      Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
 
-      geospatialAnchorVirtualObjectShader.setMat4(
-        "u_ModelViewProjection", modelViewProjectionMatrix
-      )
-      render.draw(
-        virtualObjectMesh, geospatialAnchorVirtualObjectShader, virtualSceneFramebuffer
-      )
 
+      // Visualize anchors created by GPS
+      // I copy from geospatial_java from the samples
+      /*    for (anchor in gpsAnchors) {
+        // Get the current pose of an Anchor in world space. The Anchor pose is updated
+              // during calls to session.update() as ARCore refines its estimate of the world.
+              // Only render resolved Terrain & Rooftop anchors and Geospatial anchors.
+
+              // Get the current pose of an Anchor in world space. The Anchor pose is updated
+              // during calls to session.update() as ARCore refines its estimate of the world.
+              // Only render resolved Terrain & Rooftop anchors and Geospatial anchors.
+            if (anchor.trackingState != TrackingState.TRACKING) {
+              continue
+            }
+            anchor.pose.toMatrix(modelMatrix, 0)
+            val scaleMatrix = FloatArray(16)
+            Matrix.setIdentityM(scaleMatrix, 0)
+            val scale: Float = getScale(anchor.pose, camera.displayOrientedPose)
+            scaleMatrix[0] = scale
+            scaleMatrix[5] = scale
+            scaleMatrix[10] = scale
+            Matrix.multiplyMM(modelMatrix, 0, modelMatrix, 0, scaleMatrix, 0)
+            // Rotate the virtual object 180 degrees around the Y axis to make the object face the GL
+            // camera -Z axis, since camera Z axis faces toward users.
+            // Rotate the virtual object 180 degrees around the Y axis to make the object face the GL
+            // camera -Z axis, since camera Z axis faces toward users.
+            val rotationMatrix = FloatArray(16)
+            Matrix.setRotateM(rotationMatrix, 0, 180f, 0.0f, 1.0f, 0.0f)
+            val rotationModelMatrix = FloatArray(16)
+            Matrix.multiplyMM(rotationModelMatrix, 0, modelMatrix, 0, rotationMatrix, 0)
+            // Calculate model/view/projection matrices
+            // Calculate model/view/projection matrices
+            Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, rotationModelMatrix, 0)
+            Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
+
+            geospatialAnchorVirtualObjectShader.setMat4(
+              "u_ModelViewProjection", modelViewProjectionMatrix
+            )
+            render.draw(
+              virtualObjectMesh, geospatialAnchorVirtualObjectShader, virtualSceneFramebuffer
+            )
+          }*/
+
+      // Compose the virtual scene with the background.
+      backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR)
+      }
     }
 
-    // Compose the virtual scene with the background.
-    backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR)
-  }
 
   /** Checks if we detected at least one plane. */
   private fun Session.hasTrackingPlane() =
@@ -561,10 +623,40 @@ class HelloArRenderer(val activity: HelloArActivity) :
     )
   }
 
+  private fun renderCollectables(anchor: Anchor, trackable: Trackable)
+  {
+    //val collectableListCloned = collectableList.toMutableList()
+    for (collectable in collectableList) {
+      anchor.pose.toMatrix(modelMatrix, 0)
+
+      Matrix.translateM(modelMatrix, 0, collectable.x, collectable.y, collectable.z)
+
+      // Calculate model/view/projection matrices
+      Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
+      Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
+
+      // Update shader properties and draw
+      virtualObjectShader.setMat4("u_ModelView", modelViewMatrix)
+      virtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix)
+      val texture =
+        if ((trackable as? InstantPlacementPoint)?.trackingMethod ==
+          InstantPlacementPoint.TrackingMethod.SCREENSPACE_WITH_APPROXIMATE_DISTANCE
+        ) {
+          virtualObjectAlbedoInstantPlacementTexture
+        } else {
+          virtualObjectAlbedoTexture
+        }
+      virtualObjectShader.setTexture("u_AlbedoTexture", texture)
+      render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+    }
+  }
+
   // Handle only one tap per frame, as taps are usually low frequency compared to frame rate.
   private fun handleTap(frame: Frame, camera: Camera) {
     if (camera.trackingState != TrackingState.TRACKING) return
     val tap = activity.view.tapHelper.poll() ?: return
+
+    //tap.offsetLocation(50.0f, 10.0f)
 
     val hitResultList =
       if (activity.instantPlacementSettings.isInstantPlacementEnabled) {
@@ -592,6 +684,7 @@ class HelloArRenderer(val activity: HelloArActivity) :
     if (firstHitResult != null) {
       // Cap the number of objects created. This avoids overloading both the
       // rendering system and ARCore.
+
       if (wrappedAnchors.size >= 20) {
         wrappedAnchors[0].anchor.detach()
         wrappedAnchors.removeAt(0)
@@ -604,6 +697,43 @@ class HelloArRenderer(val activity: HelloArActivity) :
       val hitPoseTranslation = hitPose.translation
 
       var addHit : Boolean = true
+
+
+      //Check if hit result is near a collectable object.
+      //We should assume only one anchor for simplicity...
+      for ((anchor, trackable) in
+      wrappedAnchors.filter { it.anchor.trackingState == TrackingState.TRACKING }) {
+        //Clone to prevent concurrency issues again... N is small size so its ok...
+        //easy fix since N is small is to clone the list
+        synchronized(collectableList) {
+          val iterator = collectableList.iterator()
+          while (iterator.hasNext()) {
+            val collectable = iterator.next()
+
+            // Assumption: the hit pose and the anchor are in the same world coordinate space...
+            val dx: Float = hitPose.tx() - collectable.x
+            val dy: Float = 0.0f //Don't stress about the floor
+            val dz: Float = hitPose.tz() - collectable.z
+
+            // Compute the straight-line distance.
+            val distanceMeters = sqrt((dx * dx + dy * dy + dz * dz).toDouble()).toFloat()
+            Log.d("Debug Hit Detection", "distanceMeters: ${distanceMeters}")
+            if (distanceMeters < collectable.radius)
+            {
+              Log.d("Debug Hit Detection", "Hit Detected for object!")
+              iterator.remove()
+            }
+            else
+            {
+              Log.d("Debug Hit Detection", "distanceMeters: ${distanceMeters}")
+              Log.d("Debug Hit Detection", "tap x,y,z: ${hitPose.tx()}, ${hitPose.ty()}, ${hitPose.tz()}")
+              Log.d("Debug Hit Detection", "collectable x,y,z: ${collectable.x}, ${collectable.y}, ${collectable.z}")
+
+            }
+          }
+        }
+      }
+
 
       //TODO: Check if hit result is near an anchor. If so, get the nearest anchor
       for ((anchor, trackable, farmData) in
@@ -632,41 +762,25 @@ class HelloArRenderer(val activity: HelloArActivity) :
 
       if (addHit)
       {
-        // Adding an Anchor tells ARCore that it should track this position in
-        // space. This anchor is created on the Plane to place the 3D model
-        // in the correct position relative both to the world and to the plane.
+        //addFarmPrototypeTest(hitPose)
 
-        var pose : GeospatialPose = activity.earth.getGeospatialPose(hitPose)
-        Log.d("Hit Result (Geospatial Pose)", "longitude: ${pose.longitude}")
-        Log.d("Hit Result (Geospatial Pose)", "latitude: ${pose.latitude}")
-        Log.d("Hit Result (Geospatial Pose)", "altitude: ${pose.altitude}")
-        Log.d("Hit Result (Geospatial Pose)", "eastUpSouthQuaternion : ${pose.eastUpSouthQuaternion}")
+        //farm data not relevant anymore btw
+        //Only allow one anchor at a time.
+        // TODO: Remove the anchor whenever we leace the activity
+        if (wrappedAnchors.isEmpty())
+        {
+          wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable, FarmData(0)))
+          //playObjectPlacedSound()
 
-        val newFarm = FarmItem(name = "Test Farm", lat = pose.latitude, long =  pose.longitude, alt = pose.altitude,
-          qx_set = pose.eastUpSouthQuaternion[0], qy_set = pose.eastUpSouthQuaternion[1], qz_set = pose.eastUpSouthQuaternion[2], qw_set = pose.eastUpSouthQuaternion[3])
+          //Prototype offset function
+          //var offsetX = 0.5f
+          var offsetZ = 0.5f
 
-        var uid : Long = 0L
-        runBlocking {
-          val job = launch {
-            uid = activity.addFarm(newFarm)
-          }
-          job.join()
+          activity.setCollectableTaskRun()
 
-          Log.d("Hit Result (Geospatial Pose)", "UID: ${uid}")
-
-          wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable, FarmData(uid)))
-          playObjectPlacedSound()
-
+          //Offset from anchor
+          //createCollectable(firstHitResult.hitPose.tx() + offsetX, firstHitResult.hitPose.ty(), firstHitResult.hitPose.tz() + offsetZ)
         }
-
-
-
-
-        // TODO: Wait for blocking to finish here?
-
-        // TODO: Check the uid is actually uid
-        // TODO: The UID is broken. Its not auto generated by the time I create the anchor
-        // I need to find a way to generate it as a blocking operation
 
       }
 
@@ -682,9 +796,96 @@ class HelloArRenderer(val activity: HelloArActivity) :
     gpsAnchors.add(anchor)
   }
 
+  // Create a new collectable and add it the list
+  public fun createCollectable(offsetX : Float, offsetY : Float, offsetZ : Float) {
+
+    var maxCollectableNumber = 6
+    synchronized(wrappedAnchors)
+    {
+      synchronized(collectableList)
+      {
+        if (wrappedAnchors.isNotEmpty() && collectableList.size < maxCollectableNumber)
+        {
+          var anchor = wrappedAnchors.first().anchor
+          var translate = anchor.pose.translation
+
+          var collectable = CollectableObject(translate[0] + offsetX, translate[1] + offsetY,
+            translate[2] + offsetZ)
+
+          // TODO: Don't spawn if too near another collectable.
+
+          //Sometimes causes a crash because of iteration in the rendering loop...
+          collectableList.add(collectable)
+          playObjectPlacedSound()
+        }
+      }
+    }
+  }
+
+
+  // Old code from testing not sure if needed anymore
+  private fun addFarmPrototypeTest(hitPose : Pose)
+  {
+    // Adding an Anchor tells ARCore that it should track this position in
+    // space. This anchor is created on the Plane to place the 3D model
+    // in the correct position relative both to the world and to the plane.
+
+    var pose : GeospatialPose = activity.earth.getGeospatialPose(hitPose)
+    Log.d("Hit Result (Geospatial Pose)", "longitude: ${pose.longitude}")
+    Log.d("Hit Result (Geospatial Pose)", "latitude: ${pose.latitude}")
+    Log.d("Hit Result (Geospatial Pose)", "altitude: ${pose.altitude}")
+    Log.d("Hit Result (Geospatial Pose)", "eastUpSouthQuaternion : ${pose.eastUpSouthQuaternion}")
+
+    val newFarm = FarmItem(name = "Test Farm", lat = pose.latitude, long =  pose.longitude, alt = pose.altitude,
+      qx_set = pose.eastUpSouthQuaternion[0], qy_set = pose.eastUpSouthQuaternion[1], qz_set = pose.eastUpSouthQuaternion[2], qw_set = pose.eastUpSouthQuaternion[3])
+
+    var uid : Long = 0L
+    runBlocking {
+      val job = launch {
+        uid = activity.addFarm(newFarm)
+      }
+      job.join()
+
+      Log.d("Hit Result (Geospatial Pose)", "UID: ${uid}")
+    }
+  }
+
+
   public fun clearAnchorGPS()
   {
     gpsAnchors.clear()
+  }
+
+  public fun removeAnchors()
+  {
+    wrappedAnchors.clear()
+  }
+
+  public fun showMinigameEndText()
+  {
+    //SPAGHETTI LOGIC: THIS IS CALLED **BEFORE** removeAnchors in HelloArActivity
+    //THAT IS WHY I CAN ASSUME THE ANCHOR LIST NOT CLEARED YET
+
+    //THIS IS SO THAT THE MESSAGE DOES NOT APPEAR DURING THE STARTUP WHERE THE THING
+    //GOES ITS A BUG AND I JUST HAVE TO WORK AROUND IT
+    if (wrappedAnchors.isEmpty())
+    {
+      return
+    }
+
+    //I rushing stuff at like 10.47pm on 28/2/2024 I don't have time to make this make sense
+    //val message: String = "End of the minigame! Tap again to collect more!"
+    //activity.view.snackbarHelper.showMessage(activity, message)
+
+    // Use toast as placeholder
+    // as snackbarHelper would need some kind of timer thing and its just... I don't have time now
+    //activity.applicationContext.Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    activity.displayMinigameEndMessage()
+  }
+
+  public fun removeCollectables()
+  {
+    collectableList.clear()
   }
 
   private fun showError(errorMessage: String) =
@@ -696,18 +897,14 @@ class HelloArRenderer(val activity: HelloArActivity) :
 
     mediaPlayer?.release()
 
-
-
     mediaPlayer = MediaPlayer.create(activity.applicationContext, audioResource)
     mediaPlayer?.setOnCompletionListener {
       it.release()
     }
     mediaPlayer?.start()
   }
-
-
-
 }
+
 
 
 data class FarmData (
@@ -726,5 +923,3 @@ private data class WrappedAnchor(
   val trackable: Trackable,
   val farmData : FarmData
 )
-
-

@@ -31,6 +31,16 @@ class DebugTitleActivity : AppCompatActivity() {
                 openShopScene()
         }
 
+        //startFarmActivity()
+
+    }
+
+    fun startFarmActivity()
+    {
+        Log.d("DEBUG TITLE", "startFarmActivity() function called")
+
+        // starting the service
+        startService(Intent(this, FarmService::class.java))
     }
 
     fun openARScene()

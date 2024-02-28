@@ -52,7 +52,8 @@
       android:id="@+id/clearFarm"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="(DEBUG) Clear Database" />
+      android:text="(DEBUG) Clear Database"
+      android:visibility="gone" />
 
   <Button
       android:id="@+id/debugFarm"
@@ -62,6 +63,16 @@
       android:layout_marginTop="50dp"
       android:layout_marginEnd="50dp"
       android:layout_marginBottom="50dp"
-      android:text="(DEBUG) PLACE FARM FROM DATABASE" />
+      android:text="(DEBUG) PLACE FARM FROM DATABASE"
+      android:visibility="gone" />
+
+  <Button
+      android:id="@+id/debugRandomFarm"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="10dp"
+      android:layout_marginTop="100dp"
+      android:text="(DEBUG) PLACE FARM RANDOM"
+      android:visibility="gone" />
 
 </RelativeLayout>

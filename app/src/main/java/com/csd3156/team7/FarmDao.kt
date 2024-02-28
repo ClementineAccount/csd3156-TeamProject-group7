@@ -18,8 +18,6 @@ interface FarmDao {
     @Query("DELETE FROM farmTable")
     suspend fun deleteAllFarm()
 
-
-
     @Query("SELECT * FROM farmTable LIMIT 1")
     fun getFirstFarm(): LiveData<FarmItem>
 }
