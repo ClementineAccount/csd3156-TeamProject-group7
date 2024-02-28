@@ -16,3 +16,6 @@ local.properties
 .cxx/
 app/src/main/res/values/api_key.xml
 .idea/workspace.xml
+.idea/workspace.xml
+.idea/workspace.xml
+.idea/deploymentTargetDropDown.xml

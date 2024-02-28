@@ -5,6 +5,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
@@ -54,7 +55,7 @@ public class FarmService : Service() {
 
     //TODO: This actual function
     private fun startIncrementFarm(){
-        handler = Handler()
+        handler = Handler(Looper.getMainLooper())
         incrementTaskFarm = object : Runnable {
             override fun run() {
                 //UPDATE PRYAMID
@@ -80,7 +81,7 @@ public class FarmService : Service() {
     }
 
     private fun startIncrementTask() {
-        handler = Handler()
+        handler = Handler(Looper.getMainLooper())
         incrementTask = object : Runnable {
             override fun run() {
                 // Increment localCount
