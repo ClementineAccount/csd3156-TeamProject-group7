@@ -28,6 +28,8 @@ public class FarmService : Service() {
     lateinit var playerDao : PlayerDao
     lateinit var shopRepository : ShopItemRepository
     lateinit var itemDao: ShopItemDao
+    private var pryamidGrowthTimeSeconds : Long = 1L
+    private var pryamidGrowthRate : Int = 5
 
     override fun onCreate() {
         super.onCreate()
@@ -40,6 +42,7 @@ public class FarmService : Service() {
         val shopDatabase = ShopItemDatabase.getDatabase(application)
         itemDao = shopDatabase.shopItemDao()
         shopRepository = ShopItemRepository(itemDao, playerDao)
+
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -54,29 +57,22 @@ public class FarmService : Service() {
         handler = Handler()
         incrementTaskFarm = object : Runnable {
             override fun run() {
+                //UPDATE PRYAMID
+                    GlobalScope.launch(Dispatchers.IO)
+                    {
+                        var pyramidItem = shopRepository.getItemByName("Pyramid")
 
-                //TODO: Loop through all farm shapes (or hardcode the three)
-                //TODO: Increment based off number of farms
+                        //TODO: Increment it here
+                        //TODO: Increment by formula that takes into account the farm
+                        //TODO: Set it back
+                        var updateCount = shopRepository.getItemQuantity(pyramidItem.itemId)
+                        updateCount += pryamidGrowthRate
 
-                //TODO: Possible race condition? Since the Shop might sell it too...
-                //TODO: Get local cube count from database
-
-                GlobalScope.launch(Dispatchers.IO) {
-                    var pyramidItem = shopRepository.getItemByName("Pyramid")
-
-                    //TODO: Increment it here
-                    //TODO: Increment by formula that takes into account the farm
-                    //TODO: Set it back
-                    var updateCount = shopRepository.getItemQuantity(pyramidItem.itemId)
-                    updateCount += 1
-
-                    Log.d("FarmService", "pyramidItem Quantity: ${updateCount}")
-                    shopRepository.updateQuantity(pyramidItem.itemId, updateCount)
-                    pyramidItem = shopRepository.getItemByName("Pyramid")
-                }
-                // Schedule the task again after 3 seconds (adjust the delay as needed)
-                handler?.postDelayed(this, 3000) // 3000 milliseconds = 3 seconds
-                //Log.d("FarmService", "localCount: $localCount")
+                        Log.d("FarmService", "pyramidItem Quantity: ${updateCount}")
+                        shopRepository.updateQuantity(pyramidItem.itemId, updateCount)
+                        pyramidItem = shopRepository.getItemByName("Pyramid")
+                    }
+                handler?.postDelayed(this, pryamidGrowthTimeSeconds * 1000)
             }
         }
         // Start the task immediately

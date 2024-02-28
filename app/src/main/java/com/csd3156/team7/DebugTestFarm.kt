@@ -22,18 +22,29 @@ class DebugTestFarm : AppCompatActivity(), CoroutineScope by MainScope() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_debug_test_farm)
-
         playerViewModel = ViewModelProvider(this)[PlayerInventoryViewModel::class.java]
+
+        runBlocking {
+            val job = launch {
+                playerViewModel.farmRepository.delete()
+                addFarmDefault()
+            }
+            job.join()
+        }
+
+
+
 
         val addCubeFarmButton = findViewById<Button>(R.id.debugAddCubeFarm)
         addCubeFarmButton.setOnClickListener {
             //1 cube every 3 seconds
-            val newFarm = FarmItem(name = "My Cube Test Farm", lat = 0.0, long =  0.0, alt = 0.0,
+            val newFarm = FarmItem(name = "My Pyramid Test Farm", lat = 0.0, long =  0.0, alt = 0.0,
                 qx_set = 0.0f,
                 qy_set = 0.0f,
                 qz_set = 0.0f,
                 qw_set = 0.0f,
                 growthTimeSet = 3.0f,
+                shape = "Pyramid",
                 rate = 1.0f)
 
             runBlocking {
@@ -54,6 +65,27 @@ class DebugTestFarm : AppCompatActivity(), CoroutineScope by MainScope() {
                 Log.d("BUTTONS", "User tapped the buttonShop")
                 openShopScene()
             }
+    }
+
+
+    public fun addFarmDefault() {
+        //1 cube every 3 seconds
+        val newFarm = FarmItem(name = "My Pyramid Test Farm", lat = 0.0, long =  0.0, alt = 0.0,
+            qx_set = 0.0f,
+            qy_set = 0.0f,
+            qz_set = 0.0f,
+            qw_set = 0.0f,
+            growthTimeSet = 3.0f,
+            shape = "Pyramid",
+            rate = 1.0f)
+
+        runBlocking {
+            val job = launch {
+                addFarm(newFarm)
+            }
+            job.join()
+            printAllFarmItem(playerViewModel.allFarm)
+        }
     }
 
 

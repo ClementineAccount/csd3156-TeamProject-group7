@@ -86,7 +86,10 @@ class HelloArActivity : AppCompatActivity() {
 
   val instantPlacementSettings = InstantPlacementSettings()
   val depthSettings = DepthSettings()
+
   lateinit var playerViewModel: PlayerInventoryViewModel
+
+
   private val LOCATION_PERMISSION_REQUEST_CODE = 100
   public lateinit var earth : Earth
   lateinit var cameraGeospatialPose : GeospatialPose
