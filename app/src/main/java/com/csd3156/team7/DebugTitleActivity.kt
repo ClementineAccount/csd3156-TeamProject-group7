@@ -24,14 +24,19 @@ class DebugTitleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         setContentView(R.layout.activity_debug_title)
-        Log.d("MusicService", "onCreate")
+
+        Log.d("DebugTitleActivity", "onCreate")
+        Log.d("MusicService", "DebugTitleActivity->onCreate")
         Intent(this, MusicService::class.java).also { intent ->
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
             //startService(intent)
-            Log.d("MusicService", "startService")
+            Log.d("MusicService", "DebugTitleActivity->bindService")
+            Log.d("DebugTitleActivity", "bindService")
 
         }
+
 
         findViewById<Button>(R.id.buttonAR)
             .setOnClickListener {
@@ -91,11 +96,16 @@ class DebugTitleActivity : AppCompatActivity() {
             musicService = binder.getService()
             isBound = true
             musicService?.playMusic(R.raw.background_music_0)
-            Log.d("MusicService", "onServiceConnected")
+            Log.d("MusicService", "DebugTitleActivity->onServiceConnected")
+
+            Log.d("DebugTitleActivity", "onServiceConnected")
+
         }
 
-        override fun onServiceDisconnected(arg0: ComponentName) {
-            Log.d("MusicService", "onServiceDisconnected")
+        override fun onServiceDisconnected(arg0: ComponentName?) {
+            Log.d("MusicService", "DebugTitleActivity->onServiceDisconnected")
+
+            Log.d("DebugTitleActivity", "onServiceDisconnected")
             isBound = false
 
         }
@@ -105,8 +115,13 @@ class DebugTitleActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d("MusicService", "DebugTitleActivity->onDestroy")
+        Log.d("DebugTitleActivity", "onDestroy")
+
         if (isBound) {
-            Log.d("MusicService", "onDestroy")
+            Log.d("MusicService", "DebugTitleActivity->unbindService")
+
+            Log.d("DebugTitleActivity", "unbindService")
             //musicService?.stopMusic()
             unbindService(connection)
 

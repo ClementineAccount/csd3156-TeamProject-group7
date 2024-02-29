@@ -88,11 +88,12 @@ class ShopActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("ShopActivity", "onStart")
+        Log.d("ShopActivity", "onCreate")
+        Log.d("MusicService", "ShopActivity->onCreate")
         Intent(this, MusicService::class.java).also { intent ->
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
             //startService(intent)
-            Log.d("ShopActivity", "bindService")
+            Log.d("MusicService", "ShopActivity->bindService")
 
         }
         setContentView(R.layout.shop)
@@ -269,10 +270,13 @@ class ShopActivity : AppCompatActivity() {
             musicService = binder.getService()
             isBound = true
             musicService?.playMusic(R.raw.background_music_1)
+            Log.d("MusicService", "ShopActivity->onServiceConnected")
             Log.d("ShopActivity", "onServiceConnected")
         }
 
-        override fun onServiceDisconnected(arg0: ComponentName) {
+        override fun onServiceDisconnected(arg0: ComponentName?) {
+            Log.d("MusicService", "ShopActivity->onServiceDisconnected")
+
             Log.d("ShopActivity", "onServiceDisconnected")
             isBound = false
             //musicService?.stopService(intent)
@@ -293,8 +297,10 @@ class ShopActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d("MusicService", "ShopActivity->onDestroy")
         Log.d("ShopActivity", "onDestroy")
         if (isBound) {
+            Log.d("MusicService", "ShopActivity->unbindService")
             Log.d("ShopActivity", "unbindService")
             //musicService?.stopMusic()
             unbindService(connection)

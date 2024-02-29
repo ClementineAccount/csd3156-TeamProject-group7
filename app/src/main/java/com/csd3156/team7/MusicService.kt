@@ -15,6 +15,8 @@ class MusicService : Service() {
     private var mediaPlayer: MediaPlayer? = null
 
     inner class MusicBinder : Binder() {
+
+
         fun getService(): MusicService = this@MusicService
     }
 
@@ -27,7 +29,7 @@ class MusicService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        //mediaPlayer?.stop()
+        mediaPlayer?.stop()
         mediaPlayer?.release()
         mediaPlayer = null
     }
@@ -37,26 +39,25 @@ class MusicService : Service() {
     }
 
     fun playMusic(trackResId: Int) {
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        Log.d("MusicService", "Attempting to play music")
+        stopMusic()
+        Log.d("MusicService", "Attempting to play $trackResId")
 
         mediaPlayer = MediaPlayer.create(this,trackResId).apply {
             isLooping = true
             setVolume(1f, 1f)
             start()
-            Log.d("MusicService", "Music playback started")
+            Log.d("MusicService", "$trackResId playback started $trackResId")
         }
 
 
-        if (!mediaPlayer!!.isPlaying) {
-            mediaPlayer?.start()
-            Log.d("MusicService", "Music playback started")
-        }
-        else
-        {
-            Log.d("MusicService", "Music is already playing")
-        }
+//        if (!mediaPlayer!!.isPlaying) {
+//            mediaPlayer?.start()
+//            Log.d("MusicService", "Music playback started")
+//        }
+//        else
+//        {
+//            Log.d("MusicService", "Music is already playing")
+//        }
     }
 
     fun pauseMusic() {
@@ -68,9 +69,11 @@ class MusicService : Service() {
 
     fun stopMusic() {
 
-            mediaPlayer?.stop()
-            mediaPlayer?.release() // Release resources
-            mediaPlayer = null // Ensure the MediaPlayer is recreated next time
+        Log.d("MusicService", "Attempting to stop music")
+
+        mediaPlayer?.stop()
+        mediaPlayer?.release() // Release resources
+        mediaPlayer = null // Ensure the MediaPlayer is recreated next time
 
     }
 

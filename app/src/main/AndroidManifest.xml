@@ -80,7 +80,13 @@
         <activity
             android:name="com.csd3156.team7.MapsActivity"
             android:exported="true"
-            android:label="@string/title_activity_maps" />
+            android:label="@string/title_activity_maps"
+            android:parentActivityName="com.csd3156.team7.DebugTitleActivity"
+            android:screenOrientation="locked">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.csd3156.team7.DebugTitleActivity" />
+        </activity>
         <activity
             android:name=".HelloArActivity"
             android:configChanges="orientation|screenSize"
