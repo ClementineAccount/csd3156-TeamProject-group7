@@ -29,10 +29,12 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NavUtils
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -519,5 +521,24 @@ class HelloArActivity : AppCompatActivity() {
 
       isBound = false
     }
+  }
+
+  override fun onBackPressed() {
+    // Use NavUtils to navigate up to the parent activity as specified in the AndroidManifest
+    NavUtils.navigateUpFromSameTask(this)
+  }
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    // Handle action bar item clicks here.
+    when (item.itemId) {
+      android.R.id.home -> {
+        // This ID represents the Home or Up button. In the case of this activity,
+        // the Up button is shown. Use NavUtils to allow users to navigate up one level in the application structure.
+        // When pressing Up from this activity, the implementation of navigating to the parent activity
+        // should ensure that the back button returns the user to the home screen.
+        onBackPressed()
+        return true
+      }
+    }
+    return super.onOptionsItemSelected(item)
   }
 }
