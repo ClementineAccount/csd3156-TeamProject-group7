@@ -26,6 +26,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -35,7 +36,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.csd3156.team7.FarmItem
+import com.csd3156.team7.MapsActivity
 import com.csd3156.team7.PlayerInventoryViewModel
+import com.csd3156.team7.ShopActivity
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.ar.core.Anchor
@@ -242,10 +245,21 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
     depthSettings.onCreate(this)
     instantPlacementSettings.onCreate(this)
 
+    val shopButton = findViewById<Button>(R.id.buttonShop)
+    val MapButton = findViewById<Button>(R.id.buttonMap)
     val nfcButton = findViewById<Button>(R.id.NFCButton)
+
     nfcButton.setOnClickListener {
       val Intent = Intent(this, NFCActivity::class.java)
       startActivity(Intent);
+    }
+    MapButton.setOnClickListener {
+     val Intent = Intent(this, MapsActivity::class.java)
+     startActivity(Intent);
+    }
+    shopButton.setOnClickListener {
+     val Intent = Intent(this, ShopActivity::class.java)
+     startActivity(Intent);
     }
 
     val clearDatabaseDebugButton = findViewById<Button>(R.id.clearFarm)
