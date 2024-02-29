@@ -11,24 +11,14 @@ import com.google.ar.core.examples.kotlin.helloar.R
 
 class MusicService : Service() {
 
-    private val binder = LocalBinder()
+    private val binder = MusicBinder()
     private var mediaPlayer: MediaPlayer? = null
 
-    inner class LocalBinder : Binder() {
+    inner class MusicBinder : Binder() {
         fun getService(): MusicService = this@MusicService
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        mediaPlayer = MediaPlayer.create(this, R.raw.background_music).apply {
-            isLooping = true
-            setVolume(1f, 1f)
-        }
-        mediaPlayer?.setOnErrorListener { mp, what, extra ->
-            Log.e("MediaPlayer Error", "What: $what, Extra: $extra")
-            true // True if the method handled the error
-        }
-    }
+
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         mediaPlayer?.start()
@@ -37,7 +27,7 @@ class MusicService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer?.stop()
+        //mediaPlayer?.stop()
         mediaPlayer?.release()
         mediaPlayer = null
     }
@@ -46,14 +36,19 @@ class MusicService : Service() {
         return binder
     }
 
-    fun playMusic() {
+    fun playMusic(trackResId: Int) {
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
         Log.d("MusicService", "Attempting to play music")
-        if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(this, R.raw.background_music).apply {
-                isLooping = true
-                setVolume(1f, 1f)
-            }
+
+        mediaPlayer = MediaPlayer.create(this,trackResId).apply {
+            isLooping = true
+            setVolume(1f, 1f)
+            start()
+            Log.d("MusicService", "Music playback started")
         }
+
+
         if (!mediaPlayer!!.isPlaying) {
             mediaPlayer?.start()
             Log.d("MusicService", "Music playback started")
@@ -67,10 +62,22 @@ class MusicService : Service() {
     fun pauseMusic() {
         if (mediaPlayer?.isPlaying == true) {
             mediaPlayer?.pause()
+
         }
+    }
+
+    fun stopMusic() {
+
+            mediaPlayer?.stop()
+            mediaPlayer?.release() // Release resources
+            mediaPlayer = null // Ensure the MediaPlayer is recreated next time
+
     }
 
 
 
-    // Add any additional methods here to control playback, such as play, pause, etc.
+
+
+
+        // Add any additional methods here to control playback, such as play, pause, etc.
 }

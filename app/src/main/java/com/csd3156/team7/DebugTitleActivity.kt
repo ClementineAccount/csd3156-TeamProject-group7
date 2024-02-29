@@ -1,7 +1,13 @@
 package com.csd3156.team7
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
+import android.media.MediaPlayer
+import android.os.Binder
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
@@ -9,9 +15,23 @@ import com.google.ar.core.examples.kotlin.helloar.HelloArActivity
 import com.google.ar.core.examples.kotlin.helloar.R
 
 class DebugTitleActivity : AppCompatActivity() {
+
+
+    private lateinit var musicService: MusicService
+    private var isBound = false
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_debug_title)
+        Log.d("MusicService", "onCreate")
+        Intent(this, MusicService::class.java).also { intent ->
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+            //startService(intent)
+            Log.d("MusicService", "startService")
+
+        }
 
         findViewById<Button>(R.id.buttonAR)
             .setOnClickListener {
@@ -62,5 +82,35 @@ class DebugTitleActivity : AppCompatActivity() {
         Log.d("DEBUG TITLE", "openShopScene() function called")
         val intent = Intent(this, ShopActivity::class.java)
         startActivity(intent)
+    }
+
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as MusicService.MusicBinder
+            musicService = binder.getService()
+            isBound = true
+            musicService?.playMusic(R.raw.background_music_0)
+            Log.d("MusicService", "onServiceConnected")
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            Log.d("MusicService", "onServiceDisconnected")
+            isBound = false
+
+        }
+    }
+
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isBound) {
+            Log.d("MusicService", "onDestroy")
+            //musicService?.stopMusic()
+            unbindService(connection)
+
+            isBound = false
+        }
     }
 }

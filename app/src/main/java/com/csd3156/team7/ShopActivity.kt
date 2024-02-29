@@ -37,7 +37,7 @@ class ShopActivity : AppCompatActivity() {
     private var inventoryList: MutableList<ShopItem> = mutableListOf()
     private val startingCurrency = 2000
     private var player: Player = Player("Test", startingCurrency)
-    private var musicService: MusicService? = null
+    private lateinit var musicService: MusicService
     private var isBound = false
 
 
@@ -83,9 +83,18 @@ class ShopActivity : AppCompatActivity() {
         }
     }
 
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("ShopActivity", "onStart")
+        Intent(this, MusicService::class.java).also { intent ->
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+            //startService(intent)
+            Log.d("ShopActivity", "bindService")
+
+        }
         setContentView(R.layout.shop)
         if (supportActionBar != null) {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -232,6 +241,8 @@ class ShopActivity : AppCompatActivity() {
 
 
 
+
+
     override fun onBackPressed() {
         // Use NavUtils to navigate up to the parent activity as specified in the AndroidManifest
         NavUtils.navigateUpFromSameTask(this)
@@ -254,31 +265,40 @@ class ShopActivity : AppCompatActivity() {
     private val connection = object : ServiceConnection {
 
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            val binder = service as MusicService.LocalBinder
+            val binder = service as MusicService.MusicBinder
             musicService = binder.getService()
             isBound = true
-            musicService?.playMusic()
+            musicService?.playMusic(R.raw.background_music_1)
+            Log.d("ShopActivity", "onServiceConnected")
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
+            Log.d("ShopActivity", "onServiceDisconnected")
             isBound = false
+            //musicService?.stopService(intent)
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        Intent(this, MusicService::class.java).also { intent ->
-            startService(intent)
-            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+//    override fun onStart() {
+//        super.onStart()
+////        Log.d("MusicService", "onStart")
+////        Intent(this, MusicService::class.java).also { intent ->
+////            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+////            startService(intent)
+////            Log.d("MusicService", "startService")
+////
+////        }
+//
+//    }
 
-        }
-
-    }
-
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("ShopActivity", "onDestroy")
         if (isBound) {
+            Log.d("ShopActivity", "unbindService")
+            //musicService?.stopMusic()
             unbindService(connection)
+
             isBound = false
         }
     }
