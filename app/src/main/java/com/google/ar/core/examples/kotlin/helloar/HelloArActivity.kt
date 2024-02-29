@@ -269,7 +269,7 @@ class HelloArActivity : AppCompatActivity() {
               println("Farm ID: ${farm.uid}")
               println("Farm Name: ${farm.farmName}")
               println("Farm latitude: ${farm.latitude}")
-              println("Farm longitude: ${farm.longitude}")
+              println("Farm longtitude: ${farm.longtitude}")
               println("Farm Altitude: ${farm.altitude}")
               println("Farm qx: ${farm.qx}")
               println("Farm qy: ${farm.qy}")
@@ -282,7 +282,7 @@ class HelloArActivity : AppCompatActivity() {
 
               // Test only first farm
               // TODO: Test if place all the farms
-              val anchor : Anchor = earth.createAnchor(farm.latitude, farm.longitude, cameraGeospatialPose.altitude,
+              val anchor : Anchor = earth.createAnchor(farm.latitude, farm.longtitude, cameraGeospatialPose.altitude,
                 farm.qx, farm.qy, farm.qz, farm.qw)
 
               // TODO: Handle exception if farm is empty
@@ -347,7 +347,7 @@ class HelloArActivity : AppCompatActivity() {
             println("Farm ID: ${farm.uid}")
             println("Farm Name: ${farm.farmName}")
             println("Farm latitude: ${farm.latitude}")
-            println("Farm longitude: ${farm.longitude}")
+            println("Farm longtitude: ${farm.longtitude}")
             println("Farm Altitude: ${farm.altitude}")
             //farmList.add(newEntity)
           }

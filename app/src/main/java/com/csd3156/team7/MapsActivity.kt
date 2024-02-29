@@ -22,6 +22,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.csd3156.team7.PlayerInventoryDatabase.Companion.getDatabase
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -42,6 +43,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private val farms: MutableList<Location> = mutableListOf()
+    private lateinit var farmDao: FarmDao
     private lateinit var farmRepository: FarmListRepository
     private var farmRadius: Double = 100.0
     private var selectedFarmIndex: Int = -1
@@ -51,7 +53,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var strokeColor: Int = Color.argb(255, 0, 0, 0)
     private var defaultStrokeColor: Int = Color.argb(255, 206, 189, 173)
     private val fillColor: Int = Color.argb(255, 101,254,8)
-    private val ZOOM = 16f
+    private val zoomFarm = 16f
     private val zoomSpeed = 800
 
     companion object {
@@ -59,10 +61,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val DEFAULT_ZOOM = 15f
     }
 
+    private val handler = android.os.Handler()
+    private val refreshRunnable = object : Runnable {
+        override fun run() {
+            refreshMap()
+            handler.postDelayed(this, 2000) // Refresh every 5 seconds (adjust as needed)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        handler.post(refreshRunnable)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -72,7 +83,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         scrollView = findViewById(R.id.scrollView)
         farmNamesTextView = findViewById(R.id.farmNamesTextView)
+        farmDao = getDatabase(this).farmDao()
         farmRepository = FarmListRepository(getDatabase(this).farmDao())
+
+        lifecycleScope.launchWhenCreated {
+            try {
+                farmRepository.alLFarms.collect { farmItems ->
+                    farms.addAll(farmItems.map { farmItem ->
+                        Location("").apply {
+                            latitude = farmItem.latitude
+                            longitude = farmItem.longtitude
+                        }
+                    })
+
+                    refreshMap()
+                    updateFarmNames()
+                }
+            } catch (e: Exception) {
+                Log.e("MapsActivity", "Error in collecting farm data: ${e.message}")
+            }
+        }
 
         val showFarmsButton = findViewById<Button>(R.id.showFarmsButton)
         showFarmsButton.setOnClickListener { onShowFarmsClick() }
@@ -87,23 +117,34 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+
+    override fun onDestroy() {
+        handler.removeCallbacks(refreshRunnable)
+        super.onDestroy()
+    }
+
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
             mMap.isMyLocationEnabled = true
         } else {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 REQUEST_LOCATION_PERMISSION
             )
         }
 
+        refreshMap()
+        updateFarmNames()
+
         mMap.setOnMapClickListener { latLng ->
-            for ((index, farmLocation) in farms.withIndex()) {
+            farms.forEach { farmLocation ->
                 val farmLatLng = LatLng(farmLocation.latitude, farmLocation.longitude)
                 val distance = calculateDistance(latLng, farmLatLng)
 
@@ -114,6 +155,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     return@setOnMapClickListener
                 }
             }
+
             addFarm(latLng.latitude, latLng.longitude)
             refreshMap()
             updateFarmNames()
@@ -144,43 +186,53 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun refreshMap() {
         try {
-            mMap.clear()
+            mMap.let { map ->
+                map.clear()
 
-            for ((index, farmLocation) in farms.withIndex()) {
-                val location = LatLng(farmLocation.latitude, farmLocation.longitude)
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    for ((index, farmLocation) in farms.withIndex()) {
+                        val location = LatLng(farmLocation.latitude, farmLocation.longitude)
 
-                val userLocation = mMap.myLocation
-                val distance = calculateDistance(
-                    LatLng(userLocation.latitude, userLocation.longitude),
-                    LatLng(farmLocation.latitude, farmLocation.longitude)
-                )
+                        val distance = if (map.myLocation != null) {
+                            calculateDistance(
+                                LatLng(map.myLocation.latitude, map.myLocation.longitude),
+                                location
+                            )
+                        } else {
+                            0f
+                        }
 
-                if (distance <= farmRadius) {
-                    strokeColor = fillColor
-                } else {
-                    strokeColor = defaultStrokeColor
+                        strokeColor = if (distance <= farmRadius) {
+                            fillColor
+                        } else {
+                            defaultStrokeColor
+                        }
+
+                        val circleOptions = CircleOptions()
+                            .center(location)
+                            .radius(farmRadius)
+                            .strokeColor(strokeColor)
+                            .fillColor(fillColor)
+
+                        map.addCircle(circleOptions)
+
+                        val paint = Paint().apply {
+                            color = Color.BLACK
+                            textSize = 20f
+                        }
+
+                        val textBitmap = createTextBitmap("Farm ${index + 1}", paint)
+                        map.addGroundOverlay(
+                            GroundOverlayOptions()
+                                .image(BitmapDescriptorFactory.fromBitmap(textBitmap))
+                                .position(location, farmRadius.toFloat() * 5)
+                        )
+                    }
                 }
-
-                val circleOptions = CircleOptions()
-                    .center(location)
-                    .radius(farmRadius)
-                    .strokeColor(strokeColor)
-                    .fillColor(fillColor)
-
-                mMap.addCircle(circleOptions)
-
-                // Draw text directly on the map
-                val paint = Paint().apply {
-                    color = Color.BLACK
-                    textSize = 20f
-                }
-
-                val textBitmap = createTextBitmap("Farm ${index + 1}", paint)
-                mMap.addGroundOverlay(
-                    GroundOverlayOptions()
-                        .image(BitmapDescriptorFactory.fromBitmap(textBitmap))
-                        .position(location, farmRadius.toFloat() * 5)
-                )
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -213,7 +265,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun deleteFarm(latLng: LatLng) {
         for ((index, farmLocation) in farms.withIndex()) {
             val farmLatLng = LatLng(farmLocation.latitude, farmLocation.longitude)
-            if (areLocationsEqual(latLng, farmLatLng)) {
+            if (latLng.areEqual(farmLatLng)) {
                 farms.removeAt(index)
                 selectedFarmIndex = -1
                 return
@@ -229,8 +281,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun updateFarmNames() {
-        val farmNames = farms.mapIndexed { index, _ -> "Farm ${index + 1}" }.toTypedArray()
-
+        val farmNames = List(farms.size) { index -> "Farm ${index + 1}" }.toTypedArray()
         val builder = SpannableStringBuilder()
         farmNames.forEachIndexed { index, farmName ->
             builder.append(farmName)
@@ -253,7 +304,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         if (index in farms.indices) {
             selectedFarmIndex = index
             val selectedFarmLatLng = LatLng(farms[index].latitude, farms[index].longitude)
-            moveCameraToSelectedFarm(selectedFarmLatLng, ZOOM)
+            moveCameraToSelectedFarm(selectedFarmLatLng, zoomFarm)
         }
     }
 
@@ -268,7 +319,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun moveCameraToLastKnownLocation() {
         if (ContextCompat.checkSelfPermission(
                 this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             val fusedLocationClient: FusedLocationProviderClient =
@@ -279,6 +330,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     location?.let {
                         val userLocation = LatLng(it.latitude, it.longitude)
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, DEFAULT_ZOOM))
+                        Log.d("MapsActivity", "User - Latitude: ${it.latitude}, Longitude: ${it.longitude}")
                     }
                 }
         }
@@ -328,9 +380,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         return result[0]
     }
 
-    private fun areLocationsEqual(location1: LatLng, location2: LatLng): Boolean {
-        val epsilon = 1e-5
-        return Math.abs(location1.latitude - location2.latitude) < epsilon &&
-                Math.abs(location1.longitude - location2.longitude) < epsilon
+    fun LatLng.areEqual(other: LatLng, epsilon: Double = 1e-5): Boolean {
+        return kotlin.math.abs(this.latitude - other.latitude) < epsilon &&
+                kotlin.math.abs(this.longitude - other.longitude) < epsilon
     }
 }
