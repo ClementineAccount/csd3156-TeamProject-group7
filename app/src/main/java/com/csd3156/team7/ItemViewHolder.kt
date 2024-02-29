@@ -150,6 +150,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
                 ShopActivity.playerViewModel.playerCurrencyObject.currency += item.price * item.quantity
                 ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
+
                 // null bug?
                 Log.d(
                     "ItemViewHolder",
@@ -172,7 +173,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         {
 
             ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.creditsToResearch
-
+            ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
             ShopActivity.playerViewModel.updateItemResearchState(item.itemId, true)
 
         }

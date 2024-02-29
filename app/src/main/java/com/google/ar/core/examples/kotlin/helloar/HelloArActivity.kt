@@ -41,6 +41,7 @@ import androidx.lifecycle.lifecycleScope
 import com.csd3156.team7.FarmItem
 import com.csd3156.team7.MusicService
 import com.csd3156.team7.PlayerInventoryViewModel
+import com.csd3156.team7.ShopActivity
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.ar.core.Anchor
@@ -281,8 +282,14 @@ class HelloArActivity : AppCompatActivity() {
 
     val nfcButton = findViewById<Button>(R.id.NFCButton)
     nfcButton.setOnClickListener {
-      val Intent = Intent(this, NFCActivity::class.java)
-      startActivity(Intent);
+      val intent = Intent(this, NFCActivity::class.java)
+      startActivity(intent);
+    }
+
+    val shopButton = findViewById<Button>(R.id.shop_button)
+    shopButton.setOnClickListener {
+      val intent = Intent(this, ShopActivity::class.java)
+      startActivity(intent);
     }
 
     val clearDatabaseDebugButton = findViewById<Button>(R.id.clearFarm)
@@ -373,6 +380,8 @@ class HelloArActivity : AppCompatActivity() {
     }
     // Start the task immediately
     handler?.post(addCollectableTask!!)
+
+
   }
 
 

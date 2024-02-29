@@ -18,21 +18,20 @@
 
     <TextView
         android:id="@+id/weatherTextView"
-        android:layout_width="256dp"
+        android:layout_width="235dp"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="16sp"
         android:background="#F4B6B6"
-        />
+        android:text=""
+        android:textSize="16sp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="535dp">
+        android:layout_height="506dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewInventoryList"
             android:layout_width="match_parent"
-            android:layout_height="539dp" />
+            android:layout_height="505dp" />
 
     </RelativeLayout>
 

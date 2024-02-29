@@ -62,6 +62,9 @@ class ShopActivity : AppCompatActivity() {
 
         lateinit var playerViewModel: PlayerShopViewModel
         var weatherCondition: String = ""
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        var nightTime: Boolean = LocalTime.now().hour < 6 || LocalTime.now().hour > 18
     }
 
     fun setCurrencyText(currency : Int) {
@@ -82,8 +85,6 @@ class ShopActivity : AppCompatActivity() {
                 "Produces 15 per 1 second", 15, false,2000, Color.BLUE))
         }
     }
-
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -145,20 +146,27 @@ class ShopActivity : AppCompatActivity() {
         if (firstLaunch) {
             addDefaultItems()
             getSharedPreferences("Player", MODE_PRIVATE).edit().putBoolean("FirstLaunch", false).apply()
+            getSharedPreferences("Player", MODE_PRIVATE).edit().putInt("Currency", startingCurrency).apply()
         }
 
-        playerViewModel.currentPlayerCurrency.observe(this)
-        {
-            Log.d("ShopActivity", "Currency: $it")
-            if (it == 0) { player.currentCurrency = startingCurrency; }
-            else {
-                player.currentCurrency = it
-                playerViewModel.playerCurrencyObject.currency = it
-            }
-
+        // scope to make sure the view model is not null
+        lifecycleScope.launch {
+            val currency = getSharedPreferences("Player", MODE_PRIVATE).getInt("Currency", startingCurrency)
+            Log.d("ShopActivity", "Start Currency: $currency")
+            player.currentCurrency = currency
+            playerViewModel.playerCurrencyObject.currency = currency
             setCurrencyText(player.currentCurrency)
         }
 
+//        playerViewModel.currentPlayerCurrency.observe(this) {
+//            Log.d("ShopActivity", "Currency: $it")
+//            if (it == 0) { player.currentCurrency = startingCurrency; }
+//            else {
+//                player.currentCurrency = it
+//                playerViewModel.playerCurrencyObject.currency = it
+//            }
+//            setCurrencyText(player.currentCurrency)
+//        }
 
         // copy viewModel data to this inventory list
         playerViewModel.allItems.observe(this)
@@ -212,6 +220,8 @@ class ShopActivity : AppCompatActivity() {
                                     .substring(0,weatherTextView.text.length - 11)
                             }
                         }
+
+                        nightTime = timeNow.hour < 6 || timeNow.hour > 18
                     }
                 }
                 else {
@@ -284,18 +294,6 @@ class ShopActivity : AppCompatActivity() {
         }
     }
 
-//    override fun onStart() {
-//        super.onStart()
-////        Log.d("MusicService", "onStart")
-////        Intent(this, MusicService::class.java).also { intent ->
-////            bindService(intent, connection, Context.BIND_AUTO_CREATE)
-////            startService(intent)
-////            Log.d("MusicService", "startService")
-////
-////        }
-//
-//    }
-
     override fun onDestroy() {
         super.onDestroy()
         Log.d("MusicService", "ShopActivity->onDestroy")
@@ -308,6 +306,10 @@ class ShopActivity : AppCompatActivity() {
 
             isBound = false
         }
+
+        // set the currency to the shared preferences
+        getSharedPreferences("Player", MODE_PRIVATE).edit().putInt("Currency", playerViewModel.playerCurrencyObject.currency).apply()
+        Log.d("ShopActivity", "Currency: ${playerViewModel.playerCurrencyObject.currency}")
     }
 
 
