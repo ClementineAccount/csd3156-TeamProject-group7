@@ -64,7 +64,8 @@ class ShopActivity : AppCompatActivity() {
         var weatherCondition: String = ""
 
         @RequiresApi(Build.VERSION_CODES.O)
-        var nightTime: Boolean = LocalTime.now().hour < 6 || LocalTime.now().hour > 18
+        var nightTime: Boolean = LocalTime.now().hour < 6 || LocalTime.now().hour > 18 &&
+            LocalTime.now().second == 0
     }
 
     fun setCurrencyText(currency : Int) {
@@ -202,16 +203,17 @@ class ShopActivity : AppCompatActivity() {
                     // parse the time milliseconds away & into a string with the format "HH:mm:ss"
                     val timeNowString = timeNow.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                     Log.d("ShopActivity", "Current Time: $timeNowString")
+
+                    // update the weather, night/day time every 60 seconds
                     Handler().postDelayed(this, 60000)
 
-                    // update the weather every 60 seconds
                     lifecycleScope.launch {
                         weatherCondition = playerViewModel.getWeather("q").current.condition.text
                         weatherTextView.text = weatherCondition
 
                         if (weatherCondition.uppercase().contains("CLOUDY")) {
                             if (!weatherTextView.text.contains("x2 Prices")) {
-                                weatherTextView.append(" (x2 Prices)")
+                                weatherTextView.append("\n(x2 Prices)")
                             }
                         }
                         else {
@@ -222,6 +224,13 @@ class ShopActivity : AppCompatActivity() {
                         }
 
                         nightTime = timeNow.hour < 6 || timeNow.hour > 18
+                        val nightTimeTextView: TextView = findViewById(R.id.timeTextView)
+                        if (nightTime) {
+                            nightTimeTextView.text = "Night (x2 Selling)"
+                        }
+                        else {
+                            nightTimeTextView.text = "Day"
+                        }
                     }
                 }
                 else {

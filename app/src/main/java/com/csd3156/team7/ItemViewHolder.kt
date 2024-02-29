@@ -21,6 +21,7 @@ import android.view.LayoutInflater
 import android.view.WindowManager
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.text.toUpperCase
 import com.csd3156.team7.ShopListAdaptor.Companion.selectedFarmName
 import com.google.ar.core.examples.kotlin.helloar.NFCActivity
@@ -30,6 +31,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun bind(item: ShopItem, position: Int, isSelected: Boolean, onItemSelected: (Int) -> Unit)
     {
         binding.itemName.text = item.name
@@ -120,7 +122,6 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
                 ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
-                // null bug?
                 Log.d(
                     "ItemViewHolder",
                     "Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}"
@@ -147,14 +148,16 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
                 // Sell all items at once. (as intended)
                 ShopActivity.playerViewModel.updateItemQuantity(item.itemId, 0 )
 
-                ShopActivity.playerViewModel.playerCurrencyObject.currency += item.price * item.quantity
+                // Double the selling price if it's night time.
+                val nightTimeModifier = when (ShopActivity.nightTime) { true -> 2 false -> 1 }
+                ShopActivity.playerViewModel.playerCurrencyObject.currency +=
+                    item.price * item.quantity * nightTimeModifier
+
                 ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
 
-                // null bug?
                 Log.d(
-                    "ItemViewHolder",
-                    "Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}"
+                    "ItemViewHolder","Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}"
                 )
             }
 
