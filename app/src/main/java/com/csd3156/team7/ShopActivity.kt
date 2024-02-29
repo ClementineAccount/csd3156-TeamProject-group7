@@ -93,6 +93,7 @@ class ShopActivity : AppCompatActivity() {
         Intent(this, MusicService::class.java).also { intent ->
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
             //startService(intent)
+            Log.d("ShopActivity", "bindService")
             Log.d("MusicService", "ShopActivity->bindService")
 
         }
