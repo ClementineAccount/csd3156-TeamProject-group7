@@ -321,5 +321,36 @@ class ShopActivity : AppCompatActivity() {
         Log.d("ShopActivity", "Currency: ${playerViewModel.playerCurrencyObject.currency}")
     }
 
+//    override fun onStop() {
+//        super.onStop()
+//        Log.d("MusicService", "ShopActivity->onStop")
+//        Log.d("ShopActivity", "onStop")
+//        if (isBound) {
+//            Log.d("MusicService", "ShopActivity->unbindService")
+//            Log.d("ShopActivity", "unbindService")
+//            //musicService?.stopMusic()
+//            unbindService(connection)
+//
+//            isBound = false
+//        }
+//
+//        // set the currency to the shared preferences
+//
+//    }
+
+    override fun onPause() {
+        super.onPause()
+        if (isBound) {
+            musicService.pauseMusic() // Assuming you have a method like this in your service
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isBound) {
+            musicService.playMusic(R.raw.background_music_1) // Assuming you have a method like this in your service
+        }
+    }
+
 
 }

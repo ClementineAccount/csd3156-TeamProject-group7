@@ -147,6 +147,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onDestroy() {
         handler.removeCallbacks(refreshRunnable)
         super.onDestroy()
+        Log.d("MusicService", "MapsActivity->onDestroy")
+
+        Log.d("MapsActivity", "onDestroy")
+        if (isBound) {
+            Log.d("MusicService", "MapsActivity->unbindService")
+            Log.d("MapsActivity", "unbindService")
+            //musicService?.stopMusic()
+            unbindService(connection)
+
+            isBound = false
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -450,18 +461,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("MusicService", "MapsActivity->onDestroy")
 
-        Log.d("MapsActivity", "onDestroy")
+
+    override fun onPause() {
+        super.onPause()
         if (isBound) {
-            Log.d("MusicService", "MapsActivity->unbindService")
-            Log.d("MapsActivity", "unbindService")
-            //musicService?.stopMusic()
-            unbindService(connection)
-
-            isBound = false
+            musicService.pauseMusic() // Assuming you have a method like this in your service
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        if (isBound) {
+            musicService.playMusic(R.raw.background_music_2) // Assuming you have a method like this in your service
+        }
+    }
+
+
 }
