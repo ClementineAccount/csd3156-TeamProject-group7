@@ -42,5 +42,4 @@
     <string name="filename">data.txt</string>
     <string name="nfc_activity_title">NFC Scanner</string>
     <string name="how_to_play_use_credit_to_buy_shapes_plant_shape_to_get_more_shape">How To Play:\nUse credit to buy shapes, plant shape to get more shape.\n\nUse Shape and credits to get more shapes.Shape prices change all the time.</string>
-    <string translatable="false" name="GoogleCloudApiKey">AIzaSyA555ZrDarF796sQ2NO6yXnl6o0HlvKwoI</string>
 </resources>

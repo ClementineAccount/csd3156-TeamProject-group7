@@ -159,15 +159,11 @@ class ShopActivity : AppCompatActivity() {
             setCurrencyText(player.currentCurrency)
         }
 
-//        playerViewModel.currentPlayerCurrency.observe(this) {
-//            Log.d("ShopActivity", "Currency: $it")
-//            if (it == 0) { player.currentCurrency = startingCurrency; }
-//            else {
-//                player.currentCurrency = it
-//                playerViewModel.playerCurrencyObject.currency = it
-//            }
-//            setCurrencyText(player.currentCurrency)
-//        }
+        val time = LocalTime.now().plusHours(8)
+        nightTime = time.hour < 6 || time.hour > 18
+        val nightTimeTextView: TextView = findViewById(R.id.timeTextView)
+        if (nightTime) { nightTimeTextView.text = "Night (x2 Selling)" }
+        else { nightTimeTextView.text = "Day" }
 
         // copy viewModel data to this inventory list
         playerViewModel.allItems.observe(this)
@@ -198,14 +194,18 @@ class ShopActivity : AppCompatActivity() {
         val runnable = object : Runnable {
             override fun run() {
                 val timeNow = LocalTime.now().plusHours(8)
+                Log.d("ShopActivity", "Time: $timeNow")
+                nightTime = timeNow.hour < 6 || timeNow.hour > 18
+                val nightTimeTextView: TextView = findViewById(R.id.timeTextView)
+                if (nightTime) { nightTimeTextView.text = "Night (x2 Selling)" }
+                else { nightTimeTextView.text = "Day" }
+
+
                 // display the current time only if seconds is 0
                 if (timeNow.second == 0) {
                     // parse the time milliseconds away & into a string with the format "HH:mm:ss"
                     val timeNowString = timeNow.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                     Log.d("ShopActivity", "Current Time: $timeNowString")
-
-                    // update the weather, night/day time every 60 seconds
-                    Handler().postDelayed(this, 60000)
 
                     lifecycleScope.launch {
                         weatherCondition = playerViewModel.getWeather("q").current.condition.text
@@ -232,6 +232,10 @@ class ShopActivity : AppCompatActivity() {
                             nightTimeTextView.text = "Day"
                         }
                     }
+
+                    // update the weather, night/day time every 60 seconds
+                    Handler().postDelayed(this, 60000)
+
                 }
                 else {
                     val delay = 60 - timeNow.second
@@ -239,8 +243,6 @@ class ShopActivity : AppCompatActivity() {
                 }
             }
         }
-
-        Handler().postDelayed(runnable, 10000)
 
         if (savedInstanceState != null) {
             val savedList = savedInstanceState.getParcelableArrayList<ShopItem>("SAVED_ITEMS")
