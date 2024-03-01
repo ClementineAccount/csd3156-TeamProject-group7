@@ -5,5 +5,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="teal">#FF008577</color>
     <color name="dark_teal">#FF00584C</color>
+    <color name="selectedColor">#BE8400</color>
 
 </resources>

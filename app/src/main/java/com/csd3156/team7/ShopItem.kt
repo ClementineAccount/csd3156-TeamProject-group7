@@ -14,11 +14,10 @@ data class ShopItem(
     val imageResourceId: Int,
     var quantity: Int,
     val description: String,
-    val price: Int,
+    var price: Int,
     var researched: Boolean,
     val researchCreditRequirement: Int = 0,
     var color : Int
-
     ) : Parcelable
 {
     @PrimaryKey(autoGenerate = true)

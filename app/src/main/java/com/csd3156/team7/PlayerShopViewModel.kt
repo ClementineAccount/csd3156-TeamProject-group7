@@ -6,6 +6,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.csd3156.team7.Weather.Weather
+import com.csd3156.team7.Weather.WeatherResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -94,8 +96,22 @@ class PlayerShopViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun updateItemPrice(id : Int, price : Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            shopRepository.updatePrice(id,price)
+        }
+    }
 
+    fun getColorComponents(colorInt: Int): Triple<Int, Int, Int> {
+        val red = (colorInt shr 16) and 0xff
+        val green = (colorInt shr 8) and 0xff
+        val blue = colorInt and 0xff
+        return Triple(red, green, blue)
+    }
 
+    suspend fun getWeather(q : String): WeatherResponse {
+        return shopRepository.getWeather(q)
+    }
 
     private class DeleteTableAsyncTask(private val dao: PlayerDao) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg params: Void): Void? { dao.deleteTable(); return null }

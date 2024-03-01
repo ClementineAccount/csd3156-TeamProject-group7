@@ -16,27 +16,40 @@
 package com.google.ar.core.examples.kotlin.helloar
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import android.view.View
+import android.view.MenuItem
 import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NavUtils
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.csd3156.team7.FarmItem
+import com.csd3156.team7.MapsActivity
+import com.csd3156.team7.MusicService
 import com.csd3156.team7.PlayerInventoryViewModel
+import com.csd3156.team7.PlayerShopViewModel
+import com.csd3156.team7.ShopActivity
+import com.csd3156.team7.SoundEffectsManager
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.ar.core.Anchor
@@ -84,7 +97,7 @@ class MyLocationListener(private val context: Context, private val locationCallb
 }
 
 
-class HelloArActivity : AppCompatActivity() {
+class HelloArActivity : AppCompatActivity(), TapInterface {
   companion object {
     private const val TAG = "HelloArActivity"
   }
@@ -97,7 +110,7 @@ class HelloArActivity : AppCompatActivity() {
   val depthSettings = DepthSettings()
 
   lateinit var playerViewModel: PlayerInventoryViewModel
-
+  lateinit var shopViewModel: PlayerShopViewModel
 
   private val LOCATION_PERMISSION_REQUEST_CODE = 100
   public lateinit var earth : Earth
@@ -113,6 +126,13 @@ class HelloArActivity : AppCompatActivity() {
   private var collectableRunNumberMaxCount : Int = 5
   private var currentCollectableRunCount : Int = 0
 
+  private lateinit var musicService: MusicService
+
+
+  private var isBound = false
+  public var currentShapeFarm : String = "Cube"
+
+  public var startCollecting : Boolean = false
 
   private fun checkPermission(permission: String, requestCode: Int) {
     if (ContextCompat.checkSelfPermission(this@HelloArActivity, permission) == PackageManager.PERMISSION_DENIED) {
@@ -127,8 +147,8 @@ class HelloArActivity : AppCompatActivity() {
   public fun displayMinigameEndMessage()
   {
     //I rushing stuff at like 10.47pm on 28/2/2024 I don't have time to make this make sense
-    val message: String = "End of the minigame! Tap again to collect more!"
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    //val message: String = "End of the minigame! Tap again to collect more!"
+    //Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
   }
 
 
@@ -216,6 +236,15 @@ class HelloArActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    Log.d("HelloArActivity", "onCreate")
+    Log.d("MusicService", "HelloArActivity->onCreate")
+    Intent(this, MusicService::class.java).also { intent ->
+      bindService(intent, connection, Context.BIND_AUTO_CREATE)
+      //startService(intent)
+      Log.d("MusicService", "HelloArActivity->bindService")
+      Log.d("HelloArActivity", "bindService")
+
+    }
     // Setup ARCore session lifecycle helper and configuration.
     arCoreSessionHelper = ARCoreSessionLifecycleHelper(this)
     // If Session creation or Session.resume() fails, display a message and log detailed
@@ -239,6 +268,8 @@ class HelloArActivity : AppCompatActivity() {
     arCoreSessionHelper.beforeSessionResume = ::configureSession
     lifecycle.addObserver(arCoreSessionHelper)
 
+
+    shopViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
     playerViewModel = ViewModelProvider(this)[PlayerInventoryViewModel::class.java]
 
     checkPermission(
@@ -249,7 +280,7 @@ class HelloArActivity : AppCompatActivity() {
       LOCATION_PERMISSION_REQUEST_CODE)
 
     // Set up the Hello AR renderer.
-    renderer = HelloArRenderer(this)
+    renderer = HelloArRenderer(this,this)
     lifecycle.addObserver(renderer)
 
     // Set up Hello AR UI.
@@ -263,10 +294,32 @@ class HelloArActivity : AppCompatActivity() {
     depthSettings.onCreate(this)
     instantPlacementSettings.onCreate(this)
 
+    val shopButton = findViewById<Button>(R.id.buttonShop)
+    val MapButton = findViewById<Button>(R.id.buttonMap)
     val nfcButton = findViewById<Button>(R.id.NFCButton)
+
+    val startCollectButton = findViewById<Button>(R.id.buttonCollect)
+
     nfcButton.setOnClickListener {
-      val Intent = Intent(this, NFCActivity::class.java)
-      startActivity(Intent);
+      val intent = Intent(this, NFCActivity::class.java)
+      startActivity(intent);
+    }
+
+    shopButton.setOnClickListener {
+      val intent = Intent(this, ShopActivity::class.java)
+      startActivity(intent);
+    }
+    MapButton.setOnClickListener {
+     val Intent = Intent(this, MapsActivity::class.java)
+     startActivity(Intent);
+    }
+
+    startCollectButton.setOnClickListener {
+      if (!startCollecting && renderer.isAnchorEmpty())
+      {
+        startCollecting = true
+        startCollectButton.visibility = View.INVISIBLE
+      }
     }
 
     val clearDatabaseDebugButton = findViewById<Button>(R.id.clearFarm)
@@ -322,7 +375,7 @@ class HelloArActivity : AppCompatActivity() {
         lifecycleScope.launch {
 
           // Don't create it for the last loop iteration (bad user experience)
-          if (currentCollectableRunCount < collectableRunNumberMaxCount - 1)
+          if (startCollecting && !renderer.isAnchorEmpty() && currentCollectableRunCount < collectableRunNumberMaxCount - 1)
           {
 
             var maxX : Float = 1.25f
@@ -335,13 +388,12 @@ class HelloArActivity : AppCompatActivity() {
             var offsetZ : Float = random.nextFloat() * (maxZ - minZ) + minZ
 
 
-
             renderer.createCollectable(offsetX, 0.0f, offsetZ)
           }
         }
-        currentCollectableRunCount += 1
-        if (currentCollectableRunCount < collectableRunNumberMaxCount)
+        if (currentCollectableRunCount < collectableRunNumberMaxCount && startCollecting && !renderer.isAnchorEmpty())
         {
+          currentCollectableRunCount += 1
           handler?.postDelayed(this, collectableRateSeconds * 1000)
         }
         else
@@ -351,12 +403,15 @@ class HelloArActivity : AppCompatActivity() {
           //TODO: Remove the anchor after the thing stop spawning...
           renderer.removeAnchors()
           renderer.removeCollectables()
-
+          startCollecting = false
+          startCollectButton.visibility = View.VISIBLE
         }
       }
     }
     // Start the task immediately
     handler?.post(addCollectableTask!!)
+
+
   }
 
 
@@ -367,7 +422,7 @@ class HelloArActivity : AppCompatActivity() {
     lifecycleScope.launch {
       withContext(Dispatchers.Main) {
         // Perform UI-related operations here, such as showing a Toast
-        Toast.makeText(applicationContext, "COLLECT THE SHAPES!", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(applicationContext, "COLLECT THE SHAPES!", Toast.LENGTH_SHORT).show()
       }
     }
 
@@ -461,4 +516,106 @@ class HelloArActivity : AppCompatActivity() {
     super.onWindowFocusChanged(hasFocus)
     FullScreenHelper.setFullScreenOnWindowFocusChanged(this, hasFocus)
   }
+
+  override fun onObjectTapped(farmId: Int) {
+    runOnUiThread {
+      val overlayText: TextView = findViewById(R.id.incrementValueText)
+      overlayText.text = "+1"
+      overlayText.visibility = View.VISIBLE
+
+      GlobalScope.launch(Dispatchers.IO)
+      {
+        // Add the value to the database when collected
+        // TODO: Account for the different shape (it is based off the farm)
+        // For now just do Cube
+
+        var collectItem = shopViewModel.shopRepository.getItemByName("Cube")
+
+        //TODO: Increment it here
+        //TODO: Increment by formula that takes into account the farm
+        //TODO: Set it back
+        var updateCount = shopViewModel.shopRepository.getItemQuantity(collectItem.itemId)
+        updateCount += 1
+
+        Log.d("FarmService", "collectItem Quantity: ${updateCount}")
+        shopViewModel.shopRepository.updateQuantity(collectItem.itemId, updateCount)
+        collectItem = shopViewModel.shopRepository.getItemByName("Cube")
+      }
+
+      // Handler to post a delayed task
+      overlayText.postDelayed({
+        overlayText.visibility = View.INVISIBLE // or View.GONE if you want to remove the space it takes up as well
+      }, 500) // Delay in milliseconds (1000ms = 1s)
+    }
+
+  }
+
+
+  private val connection = object : ServiceConnection {
+
+    override fun onServiceConnected(className: ComponentName, service: IBinder) {
+      val binder = service as MusicService.MusicBinder
+      musicService = binder.getService()
+      isBound = true
+      musicService?.playMusic(R.raw.background_music_3)
+      Log.d("MusicService", "HelloArActivity->onServiceConnected")
+      Log.d("HelloArActivity", "onServiceConnected")
+    }
+
+    override fun onServiceDisconnected(arg0: ComponentName?) {
+      Log.d("MusicService", "HelloArActivity->onServiceDisconnected")
+
+      Log.d("HelloArActivity", "onServiceDisconnected")
+      isBound = false
+      //musicService?.stopService(intent)
+    }
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    Log.d("MusicService", "HelloArActivity->onDestroy")
+    Log.d("HelloArActivity", "onDestroy")
+    if (isBound) {
+      Log.d("MusicService", "HelloArActivity->unbindService")
+      Log.d("HelloArActivity", "unbindService")
+      //musicService?.stopMusic()
+      unbindService(connection)
+
+      isBound = false
+    }
+  }
+
+  override fun onBackPressed() {
+    // Use NavUtils to navigate up to the parent activity as specified in the AndroidManifest
+    NavUtils.navigateUpFromSameTask(this)
+  }
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    // Handle action bar item clicks here.
+    when (item.itemId) {
+      android.R.id.home -> {
+        // This ID represents the Home or Up button. In the case of this activity,
+        // the Up button is shown. Use NavUtils to allow users to navigate up one level in the application structure.
+        // When pressing Up from this activity, the implementation of navigating to the parent activity
+        // should ensure that the back button returns the user to the home screen.
+        onBackPressed()
+        return true
+      }
+    }
+    return super.onOptionsItemSelected(item)
+  }
+
+  override fun onPause() {
+    super.onPause()
+    if (isBound) {
+      musicService.pauseMusic() // Assuming you have a method like this in your service
+    }
+  }
+
+  override fun onResume() {
+    super.onResume()
+    if (isBound) {
+      musicService.playMusic(R.raw.background_music_1) // Assuming you have a method like this in your service
+    }
+  }
+
 }
