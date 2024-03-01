@@ -237,7 +237,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         val groundOverlayOptions = GroundOverlayOptions()
                             .image(BitmapDescriptorFactory.fromBitmap(textBitmap))
                             .position(location, farmRadius.toFloat() * 5)
-
+                            .zIndex(1f)
                         groundOverlayOptionsList.add(groundOverlayOptions)
                     }
 
