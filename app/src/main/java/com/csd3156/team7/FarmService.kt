@@ -29,8 +29,16 @@ public class FarmService : Service() {
     lateinit var playerDao : PlayerDao
     lateinit var shopRepository : ShopItemRepository
     lateinit var itemDao: ShopItemDao
+
+
     private var pryamidGrowthTimeSeconds : Long = 1L
     private var pryamidGrowthRate : Int = 5
+
+    private var cubeGrowthTimeSeconds : Long = 1L
+    private var cubeGrowthRate : Int = 10
+
+    private var sphereGrowthTimeSeconds : Long = 1L
+    private var sphereGrowthRate : Int = 15
 
     override fun onCreate() {
         super.onCreate()
@@ -61,17 +69,51 @@ public class FarmService : Service() {
                 //UPDATE PRYAMID
                     GlobalScope.launch(Dispatchers.IO)
                     {
-                        var pyramidItem = shopRepository.getItemByName("Pyramid")
 
-                        //TODO: Increment it here
-                        //TODO: Increment by formula that takes into account the farm
-                        //TODO: Set it back
-                        var updateCount = shopRepository.getItemQuantity(pyramidItem.itemId)
-                        updateCount += pryamidGrowthRate
+                        if (MapsActivity.isFarmWithin)
+                        {
+                            if (MapsActivity.farmShape == "Pyramid")
+                            {
+                                var pyramidItem = shopRepository.getItemByName("Pyramid")
 
-                        Log.d("FarmService", "pyramidItem Quantity: ${updateCount}")
-                        shopRepository.updateQuantity(pyramidItem.itemId, updateCount)
-                        pyramidItem = shopRepository.getItemByName("Pyramid")
+                                //TODO: Increment it here
+                                //TODO: Increment by formula that takes into account the farm
+                                //TODO: Set it back
+                                var updateCount = shopRepository.getItemQuantity(pyramidItem.itemId)
+                                updateCount += pryamidGrowthRate
+
+                                //Log.d("FarmService", "pyramidItem Quantity: ${updateCount}")
+                                shopRepository.updateQuantity(pyramidItem.itemId, updateCount)
+                                pyramidItem = shopRepository.getItemByName("Pyramid")
+                            }
+                            else if (MapsActivity.farmShape == "Cube")
+                            {
+                                var pyramidItem = shopRepository.getItemByName("Cube")
+
+                                //TODO: Increment it here
+                                //TODO: Increment by formula that takes into account the farm
+                                //TODO: Set it back
+                                var updateCount = shopRepository.getItemQuantity(pyramidItem.itemId)
+                                updateCount += pryamidGrowthRate
+
+                                //Log.d("FarmService", "pyramidItem Quantity: ${updateCount}")
+                                shopRepository.updateQuantity(pyramidItem.itemId, updateCount)
+                                pyramidItem = shopRepository.getItemByName("Cube")
+                            }
+                            else if (MapsActivity.farmShape == "Sphere") {
+                                var pyramidItem = shopRepository.getItemByName("Sphere")
+
+                                //TODO: Increment it here
+                                //TODO: Increment by formula that takes into account the farm
+                                //TODO: Set it back
+                                var updateCount = shopRepository.getItemQuantity(pyramidItem.itemId)
+                                updateCount += pryamidGrowthRate
+
+                                //Log.d("FarmService", "pyramidItem Quantity: ${updateCount}")
+                                shopRepository.updateQuantity(pyramidItem.itemId, updateCount)
+                                pyramidItem = shopRepository.getItemByName("Sphere")
+                            }
+                        }
                     }
                 handler?.postDelayed(this, pryamidGrowthTimeSeconds * 1000)
             }

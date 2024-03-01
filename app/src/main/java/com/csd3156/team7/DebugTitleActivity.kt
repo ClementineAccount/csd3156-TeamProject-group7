@@ -56,7 +56,7 @@ class DebugTitleActivity : AppCompatActivity() {
                 openShopScene()
         }
 
-        //startFarmActivity()
+        startFarmActivity()
 
     }
 
