@@ -66,10 +66,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val DEFAULT_ZOOM = 15f
     }
 
+    private val handler = android.os.Handler()
+    private val refreshRunnable = object : Runnable {
+        override fun run() {
+            refreshMap()
+            handler.postDelayed(this, 1000) // Refresh every 5 seconds (adjust as needed)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        handler.post(refreshRunnable)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -117,6 +126,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * installed Google Play services and returned to the app.
      */
 
+    override fun onDestroy() {
+        handler.removeCallbacks(refreshRunnable)
+        super.onDestroy()
+    }
+    
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
@@ -231,7 +245,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         val groundOverlayOptions = GroundOverlayOptions()
                             .image(BitmapDescriptorFactory.fromBitmap(textBitmap))
                             .position(location, farmRadius.toFloat() * 5)
-                            .zIndex(1f)
 
                         groundOverlayOptionsList.add(groundOverlayOptions)
                     }
