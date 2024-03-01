@@ -144,10 +144,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * installed Google Play services and returned to the app.
      */
 
-    override fun onDestroy() {
-        handler.removeCallbacks(refreshRunnable)
-        super.onDestroy()
-    }
+//    override fun onDestroy() {
+//        handler.removeCallbacks(refreshRunnable)
+//        super.onDestroy()
+//    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
