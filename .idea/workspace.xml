@@ -47,7 +47,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="63fb922e-c2ea-4e8d-b793-0c239ba65f0e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/HelloArActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/HelloArActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/SoundEffectsManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/SoundEffectsManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/HelloArRenderer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/HelloArRenderer.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +59,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\green\.android\avd\Pixel_7_Pro_API_TiramisuPrivacySandbox_1.avd]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[R5CWA0VK64L]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -129,10 +131,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Global\Projects\School\CSD3156 - Mobile and Cloud\Team Project\csd3156-TeamProject-group7\TeamGame7\app\src\main\res\raw" />
       <recent name="C:\Users\green\Documents\GitHub\csd3156-TeamProject-group7\app\src\main\res\raw" />
     </key>
   </component>
-  <component name="RunManager" selected="Android App.DebugTitleActivity">
+  <component name="RunManager" selected="Android App.DebugTitleActivity (1)">
     <configuration name="DebugTestFarm" type="AndroidRunConfigurationType" factoryName="Android App" temporary="true">
       <module name="csd3156-TeamProject-group7.app.main" />
       <option name="DEPLOY" value="true" />
@@ -470,8 +473,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Android App.DebugTitleActivity" />
         <item itemvalue="Android App.DebugTitleActivity (1)" />
+        <item itemvalue="Android App.DebugTitleActivity" />
         <item itemvalue="Android App.ShopActivity" />
         <item itemvalue="Android App.DebugTestFarm" />
         <item itemvalue="Android App.MapsActivity" />
