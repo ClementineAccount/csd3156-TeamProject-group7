@@ -26,6 +26,7 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+        // Inflate the item view and create a new ItemViewHolder
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.shop_item, parent, false)
 
@@ -38,9 +39,11 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+        // Bind the data to the ViewHolder
         val item = dataSource[position]
         holder.bind(item,position, selectedPosition == position)
         {
+            // Handle item selection
             newPosition ->
             if (selectedPosition != newPosition) {
                 val oldPosition = selectedPosition
@@ -56,21 +59,16 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
     }
 
     fun setItems(items: List<ShopItem>) {
+        // Update the data source and notify the adapter
         dataSource = items
         notifyDataSetChanged()
     }
 
     fun getColorComponents(colorInt: Int): Triple<Int, Int, Int> {
+        // Extract RGB components from color integer
         val red = (colorInt shr 16) and 0xff
         val green = (colorInt shr 8) and 0xff
         val blue = colorInt and 0xff
         return Triple(red, green, blue)
     }
-
-
-
-
-
-
-
 }

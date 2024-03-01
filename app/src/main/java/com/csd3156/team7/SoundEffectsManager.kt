@@ -5,8 +5,10 @@ import android.media.SoundPool
 import com.google.ar.core.examples.kotlin.helloar.R
 import kotlin.random.Random
 class SoundEffectsManager(context: Context) {
+    // SoundPool for managing sound effects
     private val soundPool: SoundPool = SoundPool.Builder().setMaxStreams(10).build() // Adjust max streams as needed
 
+    // Map to store sound effects with their corresponding names
     private val soundEffectsMap: MutableMap<String, Int> = mutableMapOf()
 //    private var soundEffectsMap: Map<String, Int> = mapOf(
 //        "drop1" to soundPool.load(context, R.raw.drop1, 1),
@@ -14,6 +16,7 @@ class SoundEffectsManager(context: Context) {
 //        // Add more sound effects as needed
 //    )
 
+    // Initialize the SoundEffectsManager
     init {
         // Load sound effects into the map
         soundEffectsMap["drop1"] = soundPool.load(context, R.raw.drop1, 1)
@@ -24,12 +27,14 @@ class SoundEffectsManager(context: Context) {
         // Add more sound effects as needed
     }
 
+    // Function to play a specific sound effect by name
     fun playSound(effectName: String) {
         soundEffectsMap[effectName]?.let { soundId ->
             soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f)
         }
     }
 
+    // Function to play a random sound effect from the available ones
     fun playRandomSound() {
         val soundIds = soundEffectsMap.values.toList()
         if (soundIds.isNotEmpty()) {

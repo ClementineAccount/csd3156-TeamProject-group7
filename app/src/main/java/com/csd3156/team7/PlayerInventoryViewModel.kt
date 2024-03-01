@@ -14,6 +14,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+// ViewModel for managing player inventory-related data
 class PlayerInventoryViewModel(application: Application) : AndroidViewModel(application) {
     private val dao: PlayerDao
     private val farmDao: FarmDao
@@ -24,17 +25,20 @@ class PlayerInventoryViewModel(application: Application) : AndroidViewModel(appl
 
     lateinit var allFarm :LiveData<List<FarmItem>>
 
+    // Coroutine function to insert a farm item
     suspend fun insert(farm: FarmItem): Long {
         return farmRepository.insertFarmItemAndGetUid(farm)
     }
 
+    // Coroutine function to delete all farm items
     fun deleteAllFarm() = viewModelScope.launch {
         farmRepository.delete()
     }
 
+    // Coroutine function to get the first farm item
     fun getFirstFarm() = farmRepository.GetFirstFarm()
 
-
+    // Initialize ViewModel
     init {
         val database = PlayerInventoryDatabase.getDatabase(application)
         dao = database.playerDao()
@@ -44,18 +48,24 @@ class PlayerInventoryViewModel(application: Application) : AndroidViewModel(appl
         currentPlayerCurrency = repository.getPlayerCurrency().asLiveData()
     }
 
+    // Coroutine function to set player currency
     fun setPlayerCurrency(newCurrency: Int) {viewModelScope.launch(Dispatchers.IO) {repository.setPlayerCurrency(newCurrency)}}
 
+    // Coroutine function to insert player
     fun insertPlayer(value: Player) { InsertAsyncTask(dao).execute(value) }
 
+    // Coroutine function to delete all farm items associated with a player
     fun deleteAllFarm(value: Player) { dao.delete(value) }
 
+    // Coroutine function to delete the player table
     fun deleteTable() { DeleteTableAsyncTask(dao).execute() }
 
+    // AsyncTask to delete the player table
     private class DeleteTableAsyncTask(private val dao: PlayerDao) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg params: Void): Void? { dao.deleteTable(); return null }
     }
 
+    // AsyncTask to insert player
     private class InsertAsyncTask(dao: PlayerDao) : AsyncTask<Player, Void, Void>() {
         @Deprecated("Deprecated in Java", ReplaceWith("null"))
         public override fun doInBackground(vararg params: Player): Void? {
@@ -65,6 +75,7 @@ class PlayerInventoryViewModel(application: Application) : AndroidViewModel(appl
     }
 
 //     If you need to pass dependencies, consider using a Factory define ViewModel factory in a companion object
+    // Companion object to provide a ViewModelFactory for dependency injection
     companion object {
         val Factory : ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -76,7 +87,7 @@ class PlayerInventoryViewModel(application: Application) : AndroidViewModel(appl
                 val application = checkNotNull(extras[APPLICATION_KEY])
                 // Create a SavedStateHandle for this ViewModel from extras
                 val savedStateHandle = extras.createSavedStateHandle()
-
+                // Return an instance of PlayerInventoryViewModel
                 return PlayerInventoryViewModel(
                     application) as T
             }

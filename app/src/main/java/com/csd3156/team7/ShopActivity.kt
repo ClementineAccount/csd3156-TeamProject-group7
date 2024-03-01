@@ -68,11 +68,13 @@ class ShopActivity : AppCompatActivity() {
             LocalTime.now().second == 0
     }
 
+    // Function to update the currency TextView
     fun setCurrencyText(currency : Int) {
         val currencyTextView: TextView = findViewById(R.id.shop_currency)
         currencyTextView.text = "CREDIT: $currency"
     }
 
+    // Function to add default items to the shop
     fun addDefaultItems() {
 
 //        playerViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
@@ -107,7 +109,7 @@ class ShopActivity : AppCompatActivity() {
         playerViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
 
         lifecycleScope.launch {
-
+                // Fetch weather information from the API
                 // Assuming you have a valid API key and the necessary permissions set up
                 val response = WeatherServiceClient.create().getWeather("Singapore", 1.3521, 103.8198)
                 if (response.isSuccessful) {
@@ -143,6 +145,7 @@ class ShopActivity : AppCompatActivity() {
         val greenColor =  Color.parseColor(greenColorHex)
         val blueColor = Color.parseColor(blueColorHex)
 
+        // Check if it's the first launch and add default items
         val firstLaunch : Boolean = getSharedPreferences("Player", MODE_PRIVATE).getBoolean("FirstLaunch", true)
         if (firstLaunch) {
             addDefaultItems()
@@ -152,6 +155,7 @@ class ShopActivity : AppCompatActivity() {
 
         // scope to make sure the view model is not null
         lifecycleScope.launch {
+            // Retrieve the current currency from shared preferences
             val currency = getSharedPreferences("Player", MODE_PRIVATE).getInt("Currency", startingCurrency)
             Log.d("ShopActivity", "Start Currency: $currency")
             player.currentCurrency = currency
@@ -159,6 +163,7 @@ class ShopActivity : AppCompatActivity() {
             setCurrencyText(player.currentCurrency)
         }
 
+        // Calculate night or day time and display it
         val time = LocalTime.now().plusHours(8)
         nightTime = time.hour < 6 || time.hour > 18
         val nightTimeTextView: TextView = findViewById(R.id.timeTextView)
@@ -168,7 +173,7 @@ class ShopActivity : AppCompatActivity() {
         // copy viewModel data to this inventory list
         playerViewModel.allItems.observe(this)
         {
-            
+            // Update the inventory list from the ViewModel
             inventoryList = it.toMutableList() // the inventory list is updated
             (viewAdaptor as ShopListAdaptor).setItems(inventoryList)
 

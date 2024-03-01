@@ -8,6 +8,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+// Define the ShopItem entity for Room database
 @Entity(tableName = "itemTable")
 data class ShopItem(
     val name: String,
@@ -20,9 +21,11 @@ data class ShopItem(
     var color : Int
     ) : Parcelable
 {
+    // Auto-generated primary key for the entity
     @PrimaryKey(autoGenerate = true)
     var itemId = 0
 
+    // Additional column information for Room database
     @ColumnInfo(name = "itemName")
     var itemName = name
 
@@ -45,11 +48,12 @@ data class ShopItem(
     var itemColor = color
 
 
-
+    // Implementation of Parcelable interface
     override fun describeContents(): Int {
         return 0
     }
 
+    // Write object state to a parcel (serialization)
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun writeToParcel(dest: Parcel, flags: Int) {
 
@@ -60,6 +64,7 @@ data class ShopItem(
         dest.writeInt(creditsToResearch)
     }
 
+    // Parcelable companion object for deserialization
     companion object CREATOR : Parcelable.Creator<ShopItem> {
         @RequiresApi(Build.VERSION_CODES.Q)
         override fun createFromParcel(parcel: Parcel): ShopItem {
@@ -74,6 +79,7 @@ data class ShopItem(
             return ShopItem(name,imageResourceId, quantity, description, price, researched, creditsToResearch, color)
         }
 
+        // Parcelable array creation
         override fun newArray(size: Int): Array<ShopItem?> {
             return arrayOfNulls(size)
         }

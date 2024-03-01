@@ -9,11 +9,17 @@ import android.os.IBinder
 import android.util.Log
 import com.google.ar.core.examples.kotlin.helloar.R
 
+/**
+ * Service class responsible for managing background music playback.
+ */
 class MusicService : Service() {
 
     private val binder = MusicBinder()
     private var mediaPlayer: MediaPlayer? = null
 
+    /**
+     * Binder class to provide a reference to the MusicService.
+     */
     inner class MusicBinder : Binder() {
 
 
@@ -38,6 +44,11 @@ class MusicService : Service() {
         return binder
     }
 
+    /**
+     * Start playing the specified music track.
+     *
+     * @param trackResId The resource ID of the music track to play.
+     */
     fun playMusic(trackResId: Int) {
         stopMusic()
         Log.d("MusicService", "Attempting to play $trackResId")
@@ -59,7 +70,9 @@ class MusicService : Service() {
 //            Log.d("MusicService", "Music is already playing")
 //        }
     }
-
+    /**
+     * Pause the currently playing music.
+     */
     fun pauseMusic() {
         if (mediaPlayer?.isPlaying == true) {
             mediaPlayer?.pause()
@@ -67,6 +80,9 @@ class MusicService : Service() {
         }
     }
 
+    /**
+     * Stop the currently playing music.
+     */
     fun stopMusic() {
 
         Log.d("MusicService", "Attempting to stop music")

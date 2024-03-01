@@ -12,29 +12,34 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 
+// Repository for managing player-related data using DataStore
 class PlayerRepository(private val context: Context)
 {
+    // DataStore for player preferences
     private val Context.dataStore by preferencesDataStore(name = "PlayerCurrency")
 
     companion object {
         private val PLAYER_CURRENCY = intPreferencesKey("PlayerCurrency")
     }
 
+    // Get the player's currency as a Flow
     fun getPlayerCurrency(): Flow<Int> {
         return context.dataStore.data.catch { exception ->
             if (exception is IOException) {
+                // Log error in case of IOException
                 Log.e("Exception", "Error - getPlayerCurrency")
                 emit(emptyPreferences())
             } else {
                 throw exception
             }
         }.map { preferences ->
+            // Map preferences to player currency
             val playerCurrency = preferences[PLAYER_CURRENCY] ?: 0
             playerCurrency
         }
     }
 
-
+    // Set the player's currency
     suspend fun setPlayerCurrency(newCurrency : Int) {
         context.dataStore.edit { preferences ->
             preferences[PLAYER_CURRENCY] = newCurrency
