@@ -52,9 +52,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var isMapStyleEnabled = true
     private lateinit var scrollView: ScrollView
     private lateinit var farmNamesTextView: TextView
-    private var strokeColor: Int = Color.argb(255, 0, 0, 0)
     private var defaultStrokeColor: Int = Color.argb(255, 206, 189, 173)
-    private val fillColor: Int = Color.argb(255, 101,254,8)
+    private val defaultFillColor: Int = Color.argb(255, 101,254,8)
     private val zoomFarm = 16f
     private val zoomSpeed = 800
 
@@ -98,6 +97,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         Location("").apply {
                             latitude = farmItem.latitude
                             longitude = farmItem.longtitude
+                            Log.d("MapsActivity", "Retrieved Farm - Latitude: $latitude, Longitude: $longitude")
                         }
                     })
 
@@ -225,8 +225,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                 CircleOptions()
                                     .center(location)
                                     .radius(farmRadius * animatedValue)
-                                    .strokeColor(if (isWithinRadius) fillColor else defaultStrokeColor)
-                                    .fillColor(fillColor)
+                                    .strokeColor(if (isWithinRadius) Color.argb(255, 0, 0, 255) else defaultStrokeColor)
+                                    .fillColor(if (isWithinRadius) defaultStrokeColor else defaultFillColor)
                             )
                         }
 
