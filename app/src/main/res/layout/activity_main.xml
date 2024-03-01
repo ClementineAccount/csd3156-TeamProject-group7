@@ -131,7 +131,8 @@
       android:layout_marginStart="54dp"
       android:layout_marginTop="49dp"
       android:background="#A8A8A8"
-      android:orientation="horizontal">
+      android:orientation="horizontal"
+      android:visibility="gone">
 
     <TextView
         android:id="@+id/shapeUI"
@@ -141,7 +142,8 @@
         android:gravity="center"
         android:text="100
 "
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:visibility="gone" />
   </LinearLayout>
 
 

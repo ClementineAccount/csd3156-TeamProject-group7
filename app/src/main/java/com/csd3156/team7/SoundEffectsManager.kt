@@ -14,6 +14,8 @@ class SoundEffectsManager(context: Context) {
 //        // Add more sound effects as needed
 //    )
 
+    var collectSoundID : Int = 0
+
     init {
         // Load sound effects into the map
         soundEffectsMap["drop1"] = soundPool.load(context, R.raw.drop1, 1)
@@ -21,6 +23,9 @@ class SoundEffectsManager(context: Context) {
         soundEffectsMap["drop3"] = soundPool.load(context, R.raw.drop3, 1)
         soundEffectsMap["drop4"] = soundPool.load(context, R.raw.drop4, 1)
         soundEffectsMap["drop5"] = soundPool.load(context, R.raw.drop5, 1)
+
+
+        collectSoundID = soundPool.load(context, R.raw.collect, 1)
         // Add more sound effects as needed
     }
 
@@ -29,6 +34,12 @@ class SoundEffectsManager(context: Context) {
             soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f)
         }
     }
+
+    fun playCollectSound()
+    {
+        soundPool.play(collectSoundID, 1.0f, 1.0f, 0, 0, 1.0f)
+    }
+
 
     fun playRandomSound() {
         val soundIds = soundEffectsMap.values.toList()
