@@ -50,11 +50,11 @@ class DebugTitleActivity : AppCompatActivity() {
                 openMapScene()
             }
 
-//        findViewById<Button>(R.id.buttonShop)
-//            .setOnClickListener {
-//                Log.d("BUTTONS", "User tapped the buttonShop")
-//                openShopScene()
-//        }
+        findViewById<Button>(R.id.buttonShop)
+            .setOnClickListener {
+                Log.d("BUTTONS", "User tapped the buttonShop")
+                openShopScene()
+        }
 
         //startFarmActivity()
 
