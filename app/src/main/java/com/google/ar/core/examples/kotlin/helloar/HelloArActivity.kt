@@ -336,11 +336,11 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
         GlobalScope.launch(Dispatchers.IO)
         {
           //Just alternate them
-          if (currentShapeFarm == "Pyramid")
+          if (currentShapeFarm == "Pyramid" && shopViewModel.shopRepository.getItemByName("Cube").researched)
           {
             currentShapeFarm = "Cube"
           }
-          else if (currentShapeFarm == "Cube")
+          else if (currentShapeFarm == "Cube" && shopViewModel.shopRepository.getItemByName("Sphere").researched)
           {
             currentShapeFarm = "Sphere"
           }

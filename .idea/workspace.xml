@@ -47,12 +47,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="63fb922e-c2ea-4e8d-b793-0c239ba65f0e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetDropDown.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetDropDown.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/FarmListRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/FarmListRepository.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/HelloArActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/HelloArActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/HelloArRenderer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/HelloArRenderer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -494,5 +490,21 @@
       <updated>1709019638694</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/HelloArActivity.kt</url>
+          <line>340</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/google/ar/core/examples/kotlin/helloar/HelloArActivity.kt</url>
+          <line>338</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
