@@ -8,6 +8,12 @@
       <entry key="DebugTitleActivity">
         <State />
       </entry>
+      <entry key="MapsActivity">
+        <State />
+      </entry>
+      <entry key="ShopActivity">
+        <State />
+      </entry>
     </value>
   </component>
 </project>

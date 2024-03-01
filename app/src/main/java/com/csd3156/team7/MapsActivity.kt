@@ -1,6 +1,10 @@
 package com.csd3156.team7
 
 import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -10,17 +14,20 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.location.Location
 import android.os.Bundle
+import android.os.IBinder
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NavUtils
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.csd3156.team7.PlayerInventoryDatabase.Companion.getDatabase
@@ -56,6 +63,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val zoomFarm = 16f
     private val zoomSpeed = 800
 
+    private lateinit var musicService: MusicService
+    private var isBound = false
+
+
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 1
         private const val DEFAULT_ZOOM = 15f
@@ -71,8 +82,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        if (supportActionBar != null) {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
+
+        Log.d("MusicService", "MapsActivity->onCreate")
+        Intent(this, MusicService::class.java).also { intent ->
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+            //startService(intent)
+            Log.d("MapsActivity", "bindService")
+            Log.d("MusicService", "MapsActivity->bindService")
+
+        }
+
         handler.post(refreshRunnable)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -118,10 +144,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * installed Google Play services and returned to the app.
      */
 
-    override fun onDestroy() {
-        handler.removeCallbacks(refreshRunnable)
-        super.onDestroy()
-    }
+//    override fun onDestroy() {
+//        handler.removeCallbacks(refreshRunnable)
+//        super.onDestroy()
+//    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -383,5 +409,61 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     fun LatLng.areEqual(other: LatLng, epsilon: Double = 1e-5): Boolean {
         return kotlin.math.abs(this.latitude - other.latitude) < epsilon &&
                 kotlin.math.abs(this.longitude - other.longitude) < epsilon
+    }
+
+    override fun onBackPressed() {
+        // Use NavUtils to navigate up to the parent activity as specified in the AndroidManifest
+        NavUtils.navigateUpFromSameTask(this)
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here.
+        when (item.itemId) {
+            android.R.id.home -> {
+                // This ID represents the Home or Up button. In the case of this activity,
+                // the Up button is shown. Use NavUtils to allow users to navigate up one level in the application structure.
+                // When pressing Up from this activity, the implementation of navigating to the parent activity
+                // should ensure that the back button returns the user to the home screen.
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as MusicService.MusicBinder
+            musicService = binder.getService()
+            isBound = true
+            musicService?.playMusic(R.raw.background_music_2)
+            Log.d("MusicService", "MapsActivity->onServiceConnected")
+
+            Log.d("MapsActivity", "onServiceConnected")
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName?) {
+            Log.d("MusicService", "MapsActivity->onServiceDisconnected")
+            Log.d("MapsActivity", "onServiceDisconnected")
+            isBound = false
+            //musicService?.stopService(intent)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(refreshRunnable)
+
+        Log.d("MusicService", "MapsActivity->onDestroy")
+
+        Log.d("MapsActivity", "onDestroy")
+        if (isBound) {
+            Log.d("MusicService", "MapsActivity->unbindService")
+            Log.d("MapsActivity", "unbindService")
+            //musicService?.stopMusic()
+            unbindService(connection)
+
+            isBound = false
+        }
     }
 }

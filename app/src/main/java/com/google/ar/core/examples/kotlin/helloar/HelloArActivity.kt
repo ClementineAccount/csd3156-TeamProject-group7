@@ -16,27 +16,34 @@
 package com.google.ar.core.examples.kotlin.helloar
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NavUtils
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.csd3156.team7.FarmItem
+import com.csd3156.team7.MusicService
 import com.csd3156.team7.PlayerInventoryViewModel
+import com.csd3156.team7.ShopActivity
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.ar.core.Anchor
@@ -112,6 +119,9 @@ class HelloArActivity : AppCompatActivity() {
   // By default don't run first...
   private var collectableRunNumberMaxCount : Int = 5
   private var currentCollectableRunCount : Int = 0
+
+  private lateinit var musicService: MusicService
+  private var isBound = false
 
 
   private fun checkPermission(permission: String, requestCode: Int) {
@@ -216,6 +226,15 @@ class HelloArActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    Log.d("HelloArActivity", "onCreate")
+    Log.d("MusicService", "HelloArActivity->onCreate")
+    Intent(this, MusicService::class.java).also { intent ->
+      bindService(intent, connection, Context.BIND_AUTO_CREATE)
+      //startService(intent)
+      Log.d("MusicService", "HelloArActivity->bindService")
+      Log.d("HelloArActivity", "bindService")
+
+    }
     // Setup ARCore session lifecycle helper and configuration.
     arCoreSessionHelper = ARCoreSessionLifecycleHelper(this)
     // If Session creation or Session.resume() fails, display a message and log detailed
@@ -265,8 +284,14 @@ class HelloArActivity : AppCompatActivity() {
 
     val nfcButton = findViewById<Button>(R.id.NFCButton)
     nfcButton.setOnClickListener {
-      val Intent = Intent(this, NFCActivity::class.java)
-      startActivity(Intent);
+      val intent = Intent(this, NFCActivity::class.java)
+      startActivity(intent);
+    }
+
+    val shopButton = findViewById<Button>(R.id.shop_button)
+    shopButton.setOnClickListener {
+      val intent = Intent(this, ShopActivity::class.java)
+      startActivity(intent);
     }
 
     val clearDatabaseDebugButton = findViewById<Button>(R.id.clearFarm)
@@ -357,6 +382,8 @@ class HelloArActivity : AppCompatActivity() {
     }
     // Start the task immediately
     handler?.post(addCollectableTask!!)
+
+
   }
 
 
@@ -460,5 +487,58 @@ class HelloArActivity : AppCompatActivity() {
   override fun onWindowFocusChanged(hasFocus: Boolean) {
     super.onWindowFocusChanged(hasFocus)
     FullScreenHelper.setFullScreenOnWindowFocusChanged(this, hasFocus)
+  }
+
+  private val connection = object : ServiceConnection {
+
+    override fun onServiceConnected(className: ComponentName, service: IBinder) {
+      val binder = service as MusicService.MusicBinder
+      musicService = binder.getService()
+      isBound = true
+      musicService?.playMusic(R.raw.background_music_3)
+      Log.d("MusicService", "HelloArActivity->onServiceConnected")
+      Log.d("HelloArActivity", "onServiceConnected")
+    }
+
+    override fun onServiceDisconnected(arg0: ComponentName?) {
+      Log.d("MusicService", "HelloArActivity->onServiceDisconnected")
+
+      Log.d("HelloArActivity", "onServiceDisconnected")
+      isBound = false
+      //musicService?.stopService(intent)
+    }
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    Log.d("MusicService", "HelloArActivity->onDestroy")
+    Log.d("HelloArActivity", "onDestroy")
+    if (isBound) {
+      Log.d("MusicService", "HelloArActivity->unbindService")
+      Log.d("HelloArActivity", "unbindService")
+      //musicService?.stopMusic()
+      unbindService(connection)
+
+      isBound = false
+    }
+  }
+
+  override fun onBackPressed() {
+    // Use NavUtils to navigate up to the parent activity as specified in the AndroidManifest
+    NavUtils.navigateUpFromSameTask(this)
+  }
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    // Handle action bar item clicks here.
+    when (item.itemId) {
+      android.R.id.home -> {
+        // This ID represents the Home or Up button. In the case of this activity,
+        // the Up button is shown. Use NavUtils to allow users to navigate up one level in the application structure.
+        // When pressing Up from this activity, the implementation of navigating to the parent activity
+        // should ensure that the back button returns the user to the home screen.
+        onBackPressed()
+        return true
+      }
+    }
+    return super.onOptionsItemSelected(item)
   }
 }
