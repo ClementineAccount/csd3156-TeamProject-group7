@@ -52,7 +52,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         }
         else
         {
-            selectedFarmName = ""
+            //selectedFarmName = ""
         }
 
         binding.selectButton.setOnClickListener{

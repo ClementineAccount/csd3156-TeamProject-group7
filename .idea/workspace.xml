@@ -52,13 +52,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="63fb922e-c2ea-4e8d-b793-0c239ba65f0e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetDropDown.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetDropDown.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/DebugTestFarm.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/DebugTestFarm.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/FarmListRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/FarmListRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/FarmService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/FarmService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/DebugTitleActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/DebugTitleActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ItemViewHolder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ItemViewHolder.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/MapsActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/MapsActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_debug_test_farm.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_debug_test_farm.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopListAdaptor.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ShopListAdaptor.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +66,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[R5CWA0VK64L]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\Clem\.android\avd\Pixel_3a_API_34_extension_level_7_x86_64.avd]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -499,5 +497,26 @@
       <updated>1709019638694</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/MapsActivity.kt</url>
+          <line>219</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/MapsActivity.kt</url>
+          <line>352</line>
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ItemViewHolder.kt</url>
+          <line>54</line>
+          <option name="timeStamp" value="31" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

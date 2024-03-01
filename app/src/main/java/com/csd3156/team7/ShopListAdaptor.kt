@@ -22,7 +22,7 @@ class ShopListAdaptor(var shopActivity: ShopActivity, private var dataSource: Li
     companion object{
             lateinit var shopListAdaptor : ShopListAdaptor
             var selectedID : Int = 0
-            var selectedFarmName : String = ""
+            var selectedFarmName : String = "Pyramid"
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {

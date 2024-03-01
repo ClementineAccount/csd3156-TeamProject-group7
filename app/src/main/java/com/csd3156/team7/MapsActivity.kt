@@ -349,7 +349,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun addFarm(latitude: Double, longitude: Double) {
         val newFarmItem = FarmItem(
             lat = latitude,
-            long = longitude
+            long = longitude,
+            shape = ShopListAdaptor.selectedFarmName
         )
 
 
