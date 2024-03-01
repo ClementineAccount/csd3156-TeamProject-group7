@@ -227,9 +227,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                         val textBitmap = createTextBitmap("Farm ${index + 1}", paint)
 
+
                         val groundOverlayOptions = GroundOverlayOptions()
                             .image(BitmapDescriptorFactory.fromBitmap(textBitmap))
                             .position(location, farmRadius.toFloat() * 5)
+                            .zIndex(1f)
 
                         groundOverlayOptionsList.add(groundOverlayOptions)
                     }
@@ -258,6 +260,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val xOffset = 125f
         val yOffset = 15f
         canvas.drawText(text, xOffset, yOffset, paint)
+        Log.d("MapsActivity",text)
 
         return bitmap
     }
