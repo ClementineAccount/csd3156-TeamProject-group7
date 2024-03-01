@@ -127,6 +127,9 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
 
   // Virtual object (ARCore pawn)
   lateinit var virtualObjectMesh: Mesh
+  lateinit var virtualObjectMeshCube : Mesh
+  lateinit var virtualObjectMeshPyramid : Mesh
+
   lateinit var virtualObjectShader: Shader
   lateinit var virtualObjectAlbedoTexture: Texture
   lateinit var virtualObjectAlbedoInstantPlacementTexture: Texture
@@ -269,6 +272,8 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
           Texture.ColorFormat.LINEAR
         )*/
       virtualObjectMesh = Mesh.createFromAsset(render, "models/TestCube.obj")
+      virtualObjectMeshCube = Mesh.createFromAsset(render, "models/TestCube.obj")
+      virtualObjectMeshPyramid = Mesh.createFromAsset(render, "models/TestTriangle.obj")
       virtualObjectShader =
         Shader.createFromAssets(
             render,
@@ -478,7 +483,22 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
                 virtualObjectAlbedoTexture
               }
             virtualObjectShader.setTexture("u_AlbedoTexture", texture)
-            render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+
+            if (activity.currentShapeFarm == "Cube")
+            {
+              render.draw(virtualObjectMeshCube, virtualObjectShader, virtualSceneFramebuffer)
+            }
+            else if (activity.currentShapeFarm == "Pyramid")
+            {
+              render.draw(virtualObjectMeshPyramid, virtualObjectShader, virtualSceneFramebuffer)
+            }
+            else
+            {
+              // Fallback
+              render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+            }
+
+            //render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
           }
         }
 
@@ -626,6 +646,8 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
     )
   }
 
+
+  //DONT USE THIS FUNCTION ITS BROKEN
   private fun renderCollectables(anchor: Anchor, trackable: Trackable)
   {
     //val collectableListCloned = collectableList.toMutableList()
@@ -650,7 +672,21 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
           virtualObjectAlbedoTexture
         }
       virtualObjectShader.setTexture("u_AlbedoTexture", texture)
-      render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+
+
+      if (activity.currentShapeFarm == "Cube")
+      {
+        render.draw(virtualObjectMeshCube, virtualObjectShader, virtualSceneFramebuffer)
+      }
+      else if (activity.currentShapeFarm == "Pyramid")
+      {
+        render.draw(virtualObjectMeshPyramid, virtualObjectShader, virtualSceneFramebuffer)
+      }
+      else
+      {
+        // Fallback
+        render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+      }
     }
   }
 

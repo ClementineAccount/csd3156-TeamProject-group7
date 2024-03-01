@@ -128,11 +128,11 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
 
   private lateinit var musicService: MusicService
 
-
   private var isBound = false
-  public var currentShapeFarm : String = "Cube"
-
+  public var currentShapeFarm : String = "Pyramid"
   public var startCollecting : Boolean = false
+
+
 
   private fun checkPermission(permission: String, requestCode: Int) {
     if (ContextCompat.checkSelfPermission(this@HelloArActivity, permission) == PackageManager.PERMISSION_DENIED) {
