@@ -1,6 +1,8 @@
 package com.csd3156.team7
 
 import android.Manifest
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -11,6 +13,8 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
@@ -61,19 +65,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val DEFAULT_ZOOM = 15f
     }
 
-    private val handler = android.os.Handler()
-    private val refreshRunnable = object : Runnable {
-        override fun run() {
-            refreshMap()
-            handler.postDelayed(this, 1000) // Refresh every 5 seconds (adjust as needed)
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        handler.post(refreshRunnable)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -117,11 +112,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-
-    override fun onDestroy() {
-        handler.removeCallbacks(refreshRunnable)
-        super.onDestroy()
-    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -186,9 +176,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun refreshMap() {
         try {
-            mMap.let { map ->
-                map.clear()
+            val circleOptionsList = mutableListOf<CircleOptions>()
+            val groundOverlayOptionsList = mutableListOf<GroundOverlayOptions>()
 
+            mMap.let { map ->
                 if (ContextCompat.checkSelfPermission(
                         this,
                         Manifest.permission.ACCESS_FINE_LOCATION
@@ -207,24 +198,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
 
                         val isWithinRadius = distance <= farmRadius
+                        val scale = if (isWithinRadius) 1.5f else 1f
+                        val duration = 1000L
+                        val valueAnimator = ValueAnimator.ofFloat(1f, scale)
+                        valueAnimator.duration = duration
+                        valueAnimator.addUpdateListener { animation ->
+                            val animatedValue = animation.animatedValue as Float
 
-                        val circleOptions = CircleOptions()
-                            .center(location)
-                            .radius(farmRadius)
-                            .strokeColor(if (isWithinRadius) fillColor else defaultStrokeColor)
-                            .fillColor(fillColor)
-
-                        val circle = map.addCircle(circleOptions)
-
-                        if (isWithinRadius) {
-                            val animator = ValueAnimator.ofFloat(farmRadius.toFloat(), farmRadius.toFloat() * 1.5f)
-                            animator.duration = 3000
-                            animator.addUpdateListener { valueAnimator ->
-                                val animatedRadius = valueAnimator.animatedValue as Float
-                                circle.radius = animatedRadius.toDouble()
-                            }
-                            animator.start()
+                            map.addCircle(
+                                CircleOptions()
+                                    .center(location)
+                                    .radius(farmRadius * animatedValue)
+                                    .strokeColor(if (isWithinRadius) fillColor else defaultStrokeColor)
+                                    .fillColor(fillColor)
+                            )
                         }
+
+                        valueAnimator.start()
 
                         val paint = Paint().apply {
                             color = Color.BLACK
@@ -233,11 +223,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                         val textBitmap = createTextBitmap("Farm ${index + 1}", paint)
 
-                        map.addGroundOverlay(
-                            GroundOverlayOptions()
-                                .image(BitmapDescriptorFactory.fromBitmap(textBitmap))
-                                .position(location, farmRadius.toFloat() * 5)
-                        )
+                        val groundOverlayOptions = GroundOverlayOptions()
+                            .image(BitmapDescriptorFactory.fromBitmap(textBitmap))
+                            .position(location, farmRadius.toFloat() * 5)
+
+                        groundOverlayOptionsList.add(groundOverlayOptions)
+                    }
+
+                    map.clear()
+
+                    for (groundOverlayOptions in groundOverlayOptionsList) {
+                        map.addGroundOverlay(groundOverlayOptions)
                     }
                 }
             }
