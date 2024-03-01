@@ -2,10 +2,10 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="DebugTitleActivity">
+      <entry key="DebugTestFarm">
         <State />
       </entry>
-      <entry key="ShopActivity">
+      <entry key="DebugTitleActivity">
         <State />
       </entry>
     </value>
