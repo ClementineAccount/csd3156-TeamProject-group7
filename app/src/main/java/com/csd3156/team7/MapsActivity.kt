@@ -1,6 +1,7 @@
 package com.csd3156.team7
 
 import android.Manifest
+import android.animation.ValueAnimator
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -44,6 +45,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.ar.core.examples.kotlin.helloar.R
 import com.google.ar.core.examples.kotlin.helloar.databinding.ActivityMapsBinding
+import kotlinx.coroutines.launch
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -57,9 +59,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var isMapStyleEnabled = true
     private lateinit var scrollView: ScrollView
     private lateinit var farmNamesTextView: TextView
-    private var strokeColor: Int = Color.argb(255, 0, 0, 0)
     private var defaultStrokeColor: Int = Color.argb(255, 206, 189, 173)
-    private val fillColor: Int = Color.argb(255, 101,254,8)
+    private val defaultFillColor: Int = Color.argb(255, 101,254,8)
     private val zoomFarm = 16f
     private val zoomSpeed = 800
 
@@ -115,10 +116,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         lifecycleScope.launchWhenCreated {
             try {
                 farmRepository.alLFarms.collect { farmItems ->
+                    // Clear the existing farms list before adding new ones
+                    farms.clear()
+
                     farms.addAll(farmItems.map { farmItem ->
                         Location("").apply {
                             latitude = farmItem.latitude
                             longitude = farmItem.longtitude
+                            Log.d("MapsActivity", "Retrieved Farm - Latitude: $latitude, Longitude: $longitude")
                         }
                     })
 
@@ -132,6 +137,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val showFarmsButton = findViewById<Button>(R.id.showFarmsButton)
         showFarmsButton.setOnClickListener { onShowFarmsClick() }
+        
     }
 
     /**
@@ -223,9 +229,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun refreshMap() {
         try {
-            mMap.let { map ->
-                map.clear()
+            val circleOptionsList = mutableListOf<CircleOptions>()
+            val groundOverlayOptionsList = mutableListOf<GroundOverlayOptions>()
 
+            mMap.let { map ->
                 if (ContextCompat.checkSelfPermission(
                         this,
                         Manifest.permission.ACCESS_FINE_LOCATION
@@ -243,19 +250,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             0f
                         }
 
-                        strokeColor = if (distance <= farmRadius) {
-                            fillColor
-                        } else {
-                            defaultStrokeColor
+                        val isWithinRadius = distance <= farmRadius
+                        val scale = if (isWithinRadius) 1.5f else 1f
+                        val duration = 1000L
+                        val valueAnimator = ValueAnimator.ofFloat(1f, scale)
+                        valueAnimator.duration = duration
+                        valueAnimator.addUpdateListener { animation ->
+                            val animatedValue = animation.animatedValue as Float
+
+                            map.addCircle(
+                                CircleOptions()
+                                    .center(location)
+                                    .radius(farmRadius * animatedValue)
+                                    .strokeColor(if (isWithinRadius) Color.argb(255, 0, 0, 255) else defaultStrokeColor)
+                                    .fillColor(if (isWithinRadius) Color.argb(255, 0, 0, 255)  else defaultFillColor)
+                            )
                         }
 
-                        val circleOptions = CircleOptions()
-                            .center(location)
-                            .radius(farmRadius)
-                            .strokeColor(strokeColor)
-                            .fillColor(fillColor)
-
-                        map.addCircle(circleOptions)
+                        valueAnimator.start()
 
                         val paint = Paint().apply {
                             color = Color.BLACK
@@ -263,11 +275,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
 
                         val textBitmap = createTextBitmap("Farm ${index + 1}", paint)
-                        map.addGroundOverlay(
-                            GroundOverlayOptions()
-                                .image(BitmapDescriptorFactory.fromBitmap(textBitmap))
-                                .position(location, farmRadius.toFloat() * 5)
-                        )
+
+                        val groundOverlayOptions = GroundOverlayOptions()
+                            .image(BitmapDescriptorFactory.fromBitmap(textBitmap))
+                            .position(location, farmRadius.toFloat() * 5)
+                            .zIndex(1f)
+                        groundOverlayOptionsList.add(groundOverlayOptions)
+                    }
+
+                    map.clear()
+
+                    for (groundOverlayOptions in groundOverlayOptionsList) {
+                        map.addGroundOverlay(groundOverlayOptions)
                     }
                 }
             }
@@ -293,10 +312,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun addFarm(latitude: Double, longitude: Double) {
-        val farmLocation = Location("")
-        farmLocation.latitude = latitude
-        farmLocation.longitude = longitude
-        farms.add(farmLocation)
+        val newFarmItem = FarmItem(
+            lat = latitude,
+            long = longitude
+        )
+
+        lifecycleScope.launch {
+            try {
+                farmRepository.insert(newFarmItem)
+                Log.d("MapsActivity", "Farm added to database successfully")
+                refreshMap()
+                updateFarmNames()
+            } catch (e: Exception) {
+                Log.e("MapsActivity", "Error adding farm to database: ${e.message}")
+            }
+        }
     }
 
     private fun deleteFarm(latLng: LatLng) {

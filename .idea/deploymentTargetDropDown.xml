@@ -11,6 +11,9 @@
       <entry key="ShopActivity">
         <State />
       </entry>
+      <entry key="MapsActivity">
+        <State />
+      </entry>
     </value>
   </component>
 </project>
