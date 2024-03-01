@@ -44,6 +44,7 @@ import com.csd3156.team7.FarmItem
 import com.csd3156.team7.MusicService
 import com.csd3156.team7.PlayerInventoryViewModel
 import com.csd3156.team7.ShopActivity
+import com.csd3156.team7.SoundEffectsManager
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.ar.core.Anchor
@@ -121,6 +122,8 @@ class HelloArActivity : AppCompatActivity() {
   private var currentCollectableRunCount : Int = 0
 
   private lateinit var musicService: MusicService
+
+
   private var isBound = false
 
 

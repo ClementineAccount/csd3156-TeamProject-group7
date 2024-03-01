@@ -60,6 +60,7 @@ import java.util.Random
 import kotlin.math.sqrt
 
 import android.widget.Toast
+import com.csd3156.team7.SoundEffectsManager
 
 // Create this with the anchor stuff
 // TODO: Also add the shape here that it will represent
@@ -135,6 +136,8 @@ class HelloArRenderer(val activity: HelloArActivity) :
   private val gpsAnchors = mutableListOf<Anchor>()
 
   private var mediaPlayer: MediaPlayer? = null
+
+  private var soundEffectsManager: SoundEffectsManager = SoundEffectsManager(activity.applicationContext)
   private val audioResources = arrayOf(
     R.raw.drop1,
     R.raw.drop2,
@@ -892,16 +895,18 @@ class HelloArRenderer(val activity: HelloArActivity) :
     activity.view.snackbarHelper.showError(activity, errorMessage)
 
   private fun playObjectPlacedSound() {
-    val randomIndex = Random().nextInt(audioResources.size)
-    val audioResource = audioResources[randomIndex]
+//    val randomIndex = Random().nextInt(audioResources.size)
+//    val audioResource = audioResources[randomIndex]
 
-    mediaPlayer?.release()
+    soundEffectsManager.playRandomSound()
 
-    mediaPlayer = MediaPlayer.create(activity.applicationContext, audioResource)
-    mediaPlayer?.setOnCompletionListener {
-      it.release()
-    }
-    mediaPlayer?.start()
+//    mediaPlayer?.release()
+//
+//    mediaPlayer = MediaPlayer.create(activity.applicationContext, audioResource)
+//    mediaPlayer?.setOnCompletionListener {
+//      it.release()
+//    }
+//    mediaPlayer?.start()
   }
 }
 
