@@ -384,7 +384,7 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
           activity.getString(R.string.searching_planes)
         camera.trackingState == TrackingState.PAUSED ->
           TrackingStateHelper.getTrackingFailureReasonString(camera)
-        session.hasTrackingPlane() && wrappedAnchors.isEmpty() ->
+        session.hasTrackingPlane() && wrappedAnchors.isEmpty() && activity.startCollecting ->
           activity.getString(R.string.waiting_taps)
         session.hasTrackingPlane() && wrappedAnchors.isNotEmpty() -> null
         else -> activity.getString(R.string.searching_planes)
@@ -758,7 +758,6 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
           addHit = false
           //listener.onObjectTapped(1)
           Log.d("Debug Hit Detection", "Hit Detected at: ${farmData.uid}")
-
         }
       }
 
@@ -768,7 +767,7 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
 
         //farm data not relevant anymore btw
         //Only allow one anchor at a time.
-        // TODO: Remove the anchor whenever we leace the activity
+        // TODO: Remove the anchor whenever we leave the activity
         if (wrappedAnchors.isEmpty())
         {
           wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable, FarmData(0)))
@@ -883,6 +882,11 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
     // as snackbarHelper would need some kind of timer thing and its just... I don't have time now
     //activity.applicationContext.Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     activity.displayMinigameEndMessage()
+  }
+
+  public fun isAnchorEmpty() : Boolean
+  {
+    return wrappedAnchors.isEmpty()
   }
 
   public fun removeCollectables()

@@ -127,10 +127,9 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
 
   private lateinit var musicService: MusicService
   private var isBound = false
-
-
   public var currentShapeFarm : String = "Cube"
 
+  public var startCollecting : Boolean = false
 
   private fun checkPermission(permission: String, requestCode: Int) {
     if (ContextCompat.checkSelfPermission(this@HelloArActivity, permission) == PackageManager.PERMISSION_DENIED) {
@@ -145,8 +144,8 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
   public fun displayMinigameEndMessage()
   {
     //I rushing stuff at like 10.47pm on 28/2/2024 I don't have time to make this make sense
-    val message: String = "End of the minigame! Tap again to collect more!"
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    //val message: String = "End of the minigame! Tap again to collect more!"
+    //Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
   }
 
 
@@ -296,6 +295,8 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
     val MapButton = findViewById<Button>(R.id.buttonMap)
     val nfcButton = findViewById<Button>(R.id.NFCButton)
 
+    val startCollectButton = findViewById<Button>(R.id.buttonCollect)
+
     nfcButton.setOnClickListener {
       val intent = Intent(this, NFCActivity::class.java)
       startActivity(intent);
@@ -308,6 +309,14 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
     MapButton.setOnClickListener {
      val Intent = Intent(this, MapsActivity::class.java)
      startActivity(Intent);
+    }
+
+    startCollectButton.setOnClickListener {
+      if (!startCollecting && renderer.isAnchorEmpty())
+      {
+        startCollecting = true
+        startCollectButton.visibility = View.INVISIBLE
+      }
     }
 
     val clearDatabaseDebugButton = findViewById<Button>(R.id.clearFarm)
@@ -363,7 +372,7 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
         lifecycleScope.launch {
 
           // Don't create it for the last loop iteration (bad user experience)
-          if (currentCollectableRunCount < collectableRunNumberMaxCount - 1)
+          if (startCollecting && !renderer.isAnchorEmpty() && currentCollectableRunCount < collectableRunNumberMaxCount - 1)
           {
 
             var maxX : Float = 1.25f
@@ -379,9 +388,9 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
             renderer.createCollectable(offsetX, 0.0f, offsetZ)
           }
         }
-        currentCollectableRunCount += 1
-        if (currentCollectableRunCount < collectableRunNumberMaxCount)
+        if (currentCollectableRunCount < collectableRunNumberMaxCount && startCollecting && !renderer.isAnchorEmpty())
         {
+          currentCollectableRunCount += 1
           handler?.postDelayed(this, collectableRateSeconds * 1000)
         }
         else
@@ -391,7 +400,8 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
           //TODO: Remove the anchor after the thing stop spawning...
           renderer.removeAnchors()
           renderer.removeCollectables()
-
+          startCollecting = false
+          startCollectButton.visibility = View.VISIBLE
         }
       }
     }
@@ -409,7 +419,7 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
     lifecycleScope.launch {
       withContext(Dispatchers.Main) {
         // Perform UI-related operations here, such as showing a Toast
-        Toast.makeText(applicationContext, "COLLECT THE SHAPES!", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(applicationContext, "COLLECT THE SHAPES!", Toast.LENGTH_SHORT).show()
       }
     }
 
