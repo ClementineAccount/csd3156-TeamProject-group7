@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.ar.core.examples.kotlin.helloar.R
 import com.google.ar.core.examples.kotlin.helloar.databinding.ActivityMapsBinding
+import kotlinx.coroutines.launch
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -90,6 +91,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         lifecycleScope.launchWhenCreated {
             try {
                 farmRepository.alLFarms.collect { farmItems ->
+                    // Clear the existing farms list before adding new ones
+                    farms.clear()
+
                     farms.addAll(farmItems.map { farmItem ->
                         Location("").apply {
                             latitude = farmItem.latitude
@@ -297,10 +301,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun addFarm(latitude: Double, longitude: Double) {
-        val farmLocation = Location("")
-        farmLocation.latitude = latitude
-        farmLocation.longitude = longitude
-        farms.add(farmLocation)
+        val newFarmItem = FarmItem(
+            lat = latitude,
+            long = longitude
+        )
+
+        lifecycleScope.launch {
+            try {
+                farmRepository.insert(newFarmItem)
+                Log.d("MapsActivity", "Farm added to database successfully")
+                refreshMap()
+                updateFarmNames()
+            } catch (e: Exception) {
+                Log.e("MapsActivity", "Error adding farm to database: ${e.message}")
+            }
+        }
     }
 
     private fun deleteFarm(latLng: LatLng) {
