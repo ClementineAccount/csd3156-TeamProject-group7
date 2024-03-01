@@ -8,6 +8,11 @@ This is the repo for Team CSD3156's Group 7.
 - Tau Yong Hui - 2001037
 - Wee Chong - 2002834
 
+- # Run Instructions
+- Right click on 'DebugTitleActivity'
+- ![image](https://github.com/ClementineAccount/csd3156-TeamProject-group7/assets/26779639/4d3d4d4f-c4bf-4df6-a393-d30800c880d8)
+
+
 # Game Pitch
 The game concept to be pitched simple AR 'collection' game similar to [Pokemon Go](https://en.wikipedia.org/wiki/Pok%C3%A9mon_Go) but using the ['cookie clicker' concept.](https://en.wikipedia.org/wiki/Cookie_Clicker)
 
