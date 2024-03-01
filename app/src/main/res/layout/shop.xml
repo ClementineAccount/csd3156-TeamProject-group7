@@ -16,7 +16,9 @@
             android:layout_marginTop="8dp"
             android:background="#F4B6B6"
             android:text=""
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            />
 
         <TextView
             android:id="@+id/shop_currency"
@@ -33,11 +35,13 @@
 
         <TextView
             android:id="@+id/timeTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="136dp"
             android:layout_height="wrap_content"
             android:background="#B6D4F4"
-            android:text="Night (x2 sell price)"
-            android:layout_marginTop="8sp"/>
+            android:text=""
+            android:layout_marginTop="8sp"
+            android:textColor="@color/black"
+            />
     </LinearLayout>
 
     <RelativeLayout
