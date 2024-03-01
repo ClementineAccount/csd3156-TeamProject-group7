@@ -162,20 +162,23 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
             }
             else {
 
-                // Sell all items at once. (as intended)
                 ShopActivity.playerViewModel.updateItemQuantity(item.itemId, 0 )
 
                 // Double the selling price if it's night time.
-                val nightTimeModifier = when (ShopActivity.nightTime) { true -> 2 false -> 1 }
+                val nightTimeModifier = when (ShopActivity.nightTime) {
+                    true -> 2
+                    false -> 1
+                }
+
+                // Update player currency based on the sold items and night time modifier
                 ShopActivity.playerViewModel.playerCurrencyObject.currency +=
                     item.price * item.quantity * nightTimeModifier
 
+                // Update the player's currency
                 ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
 
+                Log.d("ItemViewHolder","Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}")
 
-                Log.d(
-                    "ItemViewHolder","Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}"
-                )
             }
 
         }

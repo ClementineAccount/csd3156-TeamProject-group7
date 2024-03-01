@@ -127,9 +127,15 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
 
   // Virtual object (ARCore pawn)
   lateinit var virtualObjectMesh: Mesh
+  lateinit var virtualObjectMeshCube : Mesh
+  lateinit var virtualObjectMeshPyramid : Mesh
+  lateinit var virtualObjectMeshSphere: Mesh
+
   lateinit var virtualObjectShader: Shader
   lateinit var virtualObjectAlbedoTexture: Texture
   lateinit var virtualObjectAlbedoInstantPlacementTexture: Texture
+
+  lateinit var virtualObjectCollectableShader : Shader
   lateinit var geospatialAnchorVirtualObjectShader: Shader
 
   private val wrappedAnchors = mutableListOf<WrappedAnchor>()
@@ -269,6 +275,9 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
           Texture.ColorFormat.LINEAR
         )*/
       virtualObjectMesh = Mesh.createFromAsset(render, "models/TestCube.obj")
+      virtualObjectMeshCube = Mesh.createFromAsset(render, "models/TestCube.obj")
+      virtualObjectMeshPyramid = Mesh.createFromAsset(render, "models/TestTriangle.obj")
+      virtualObjectMeshSphere = Mesh.createFromAsset(render, "models/TestSphere.obj")
       virtualObjectShader =
         Shader.createFromAssets(
             render,
@@ -281,6 +290,15 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
           .setTexture("u_Cubemap", cubemapFilter.filteredCubemapTexture)
           .setTexture("u_DfgTexture", dfgTexture)
 
+      virtualObjectCollectableShader = Shader.createFromAssets(
+        render,
+        "shaders/ar_unlit_object.vert",
+        "shaders/ar_unlit_color_object.frag",  /* defines= */
+        null
+      )
+        .setTexture("u_Texture", virtualObjectAlbedoTexture)
+
+
       geospatialAnchorVirtualObjectShader = Shader.createFromAssets(
         render,
         "shaders/ar_unlit_object.vert",
@@ -288,6 +306,8 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
         null
       )
         .setTexture("u_Texture", virtualObjectAlbedoTexture)
+
+
 
     } catch (e: IOException) {
       Log.e(TAG, "Failed to read a required asset file", e)
@@ -467,8 +487,8 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
             Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
 
             // Update shader properties and draw
-            virtualObjectShader.setMat4("u_ModelView", modelViewMatrix)
-            virtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix)
+            //virtualObjectCollectableShader.setMat4("u_ModelView", modelViewMatrix)
+            virtualObjectCollectableShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix)
             val texture =
               if ((trackable as? InstantPlacementPoint)?.trackingMethod ==
                 InstantPlacementPoint.TrackingMethod.SCREENSPACE_WITH_APPROXIMATE_DISTANCE
@@ -477,8 +497,33 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
               } else {
                 virtualObjectAlbedoTexture
               }
-            virtualObjectShader.setTexture("u_AlbedoTexture", texture)
-            render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+            //virtualObjectCollectableShader.setTexture("u_Texture", texture)
+
+            // Testing it
+            virtualObjectCollectableShader.setVec3("u_color",
+              floatArrayOf(activity.currentShapeColor.first.toFloat() / 255.0f,
+                activity.currentShapeColor.second.toFloat() / 255.0f,
+                  activity.currentShapeColor.third.toFloat() / 255.0f))
+
+            if (activity.currentShapeFarm == "Cube")
+            {
+              render.draw(virtualObjectMeshCube, virtualObjectCollectableShader, virtualSceneFramebuffer)
+            }
+            else if (activity.currentShapeFarm == "Pyramid")
+            {
+              render.draw(virtualObjectMeshPyramid, virtualObjectCollectableShader, virtualSceneFramebuffer)
+            }
+            else if (activity.currentShapeFarm == "Sphere")
+            {
+              render.draw(virtualObjectMeshSphere, virtualObjectCollectableShader, virtualSceneFramebuffer)
+            }
+            else
+            {
+              // Fallback
+              render.draw(virtualObjectMesh, virtualObjectCollectableShader, virtualSceneFramebuffer)
+            }
+
+            //render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
           }
         }
 
@@ -626,6 +671,8 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
     )
   }
 
+
+  //DONT USE THIS FUNCTION ITS BROKEN
   private fun renderCollectables(anchor: Anchor, trackable: Trackable)
   {
     //val collectableListCloned = collectableList.toMutableList()
@@ -650,7 +697,23 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
           virtualObjectAlbedoTexture
         }
       virtualObjectShader.setTexture("u_AlbedoTexture", texture)
-      render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+
+
+
+
+      if (activity.currentShapeFarm == "Cube")
+      {
+        render.draw(virtualObjectMeshCube, virtualObjectShader, virtualSceneFramebuffer)
+      }
+      else if (activity.currentShapeFarm == "Pyramid")
+      {
+        render.draw(virtualObjectMeshPyramid, virtualObjectShader, virtualSceneFramebuffer)
+      }
+      else
+      {
+        // Fallback
+        render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+      }
     }
   }
 
@@ -724,6 +787,8 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
             if (distanceMeters < collectable.radius)
             {
               listener.onObjectTapped(1)
+              soundEffectsManager.playCollectSound()
+              activity.updateShapeCount()
               Log.d("Debug Hit Detection", "Hit Detected for object!")
               iterator.remove()
             }

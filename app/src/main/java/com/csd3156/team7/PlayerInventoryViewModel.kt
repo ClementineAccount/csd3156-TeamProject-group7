@@ -34,7 +34,6 @@ class PlayerInventoryViewModel(application: Application) : AndroidViewModel(appl
 
     fun getFirstFarm() = farmRepository.GetFirstFarm()
 
-
     init {
         val database = PlayerInventoryDatabase.getDatabase(application)
         dao = database.playerDao()
