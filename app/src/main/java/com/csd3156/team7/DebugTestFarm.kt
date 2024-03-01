@@ -34,24 +34,12 @@ class DebugTestFarm : AppCompatActivity(), CoroutineScope by MainScope() {
 
         val addCubeFarmButton = findViewById<Button>(R.id.debugAddCubeFarm)
         addCubeFarmButton.setOnClickListener {
-            //1 cube every 3 seconds
-            val newFarm = FarmItem(name = "My Pyramid Test Farm", lat = 37.4219983, long = -122.084, alt = -122.083922,
-                qx_set = 0.0f,
-                qy_set = 0.0f,
-                qz_set = 0.0f,
-                qw_set = 0.0f,
-                growthTimeSet = 3.0f,
-                shape = "Pyramid",
-                rate = 1.0f)
-
             runBlocking {
                 val job = launch {
-                    addFarm(newFarm)
+                    playerViewModel.deleteAllFarm()
                 }
                 job.join()
-                printAllFarmItem(playerViewModel.allFarm)
             }
-
         }
 
         startFarmActivity()

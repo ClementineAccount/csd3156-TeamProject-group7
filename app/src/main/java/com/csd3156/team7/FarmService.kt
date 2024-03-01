@@ -39,11 +39,16 @@ public class FarmService : Service() {
     lateinit var shopRepository : ShopItemRepository
     lateinit var itemDao: ShopItemDao
 
-    // Configuration parameters for pyramid growth, including time interval and growth rate.
+
     private var pryamidGrowthTimeSeconds : Long = 1L
     private var pryamidGrowthRate : Int = 5
 
-    // Initializes the service and sets up database access objects and repositories.
+    private var cubeGrowthTimeSeconds : Long = 1L
+    private var cubeGrowthRate : Int = 10
+
+    private var sphereGrowthTimeSeconds : Long = 1L
+    private var sphereGrowthRate : Int = 15
+
     override fun onCreate() {
         super.onCreate()
         // Retrieves instances of the database and initializes DAOs and repositories.
@@ -75,15 +80,51 @@ public class FarmService : Service() {
                 // Task to fetch, update, and persist "Pyramid" item data.
                     GlobalScope.launch(Dispatchers.IO)
                     {
-                        var pyramidItem = shopRepository.getItemByName("Pyramid")
 
-                        // Placeholder for actual update logic.
-                        var updateCount = shopRepository.getItemQuantity(pyramidItem.itemId)
-                        updateCount += pryamidGrowthRate
+                        if (MapsActivity.isFarmWithin)
+                        {
+                            if (MapsActivity.farmShape == "Pyramid")
+                            {
+                                var pyramidItem = shopRepository.getItemByName("Pyramid")
 
-                        Log.d("FarmService", "pyramidItem Quantity: ${updateCount}")
-                        shopRepository.updateQuantity(pyramidItem.itemId, updateCount)
-                        pyramidItem = shopRepository.getItemByName("Pyramid")
+                                //TODO: Increment it here
+                                //TODO: Increment by formula that takes into account the farm
+                                //TODO: Set it back
+                                var updateCount = shopRepository.getItemQuantity(pyramidItem.itemId)
+                                updateCount += pryamidGrowthRate
+
+                                //Log.d("FarmService", "pyramidItem Quantity: ${updateCount}")
+                                shopRepository.updateQuantity(pyramidItem.itemId, updateCount)
+                                pyramidItem = shopRepository.getItemByName("Pyramid")
+                            }
+                            else if (MapsActivity.farmShape == "Cube")
+                            {
+                                var pyramidItem = shopRepository.getItemByName("Cube")
+
+                                //TODO: Increment it here
+                                //TODO: Increment by formula that takes into account the farm
+                                //TODO: Set it back
+                                var updateCount = shopRepository.getItemQuantity(pyramidItem.itemId)
+                                updateCount += pryamidGrowthRate
+
+                                //Log.d("FarmService", "pyramidItem Quantity: ${updateCount}")
+                                shopRepository.updateQuantity(pyramidItem.itemId, updateCount)
+                                pyramidItem = shopRepository.getItemByName("Cube")
+                            }
+                            else if (MapsActivity.farmShape == "Sphere") {
+                                var pyramidItem = shopRepository.getItemByName("Sphere")
+
+                                //TODO: Increment it here
+                                //TODO: Increment by formula that takes into account the farm
+                                //TODO: Set it back
+                                var updateCount = shopRepository.getItemQuantity(pyramidItem.itemId)
+                                updateCount += pryamidGrowthRate
+
+                                //Log.d("FarmService", "pyramidItem Quantity: ${updateCount}")
+                                shopRepository.updateQuantity(pyramidItem.itemId, updateCount)
+                                pyramidItem = shopRepository.getItemByName("Sphere")
+                            }
+                        }
                     }
 
                 // Schedules the task to run again after a specified time interval.

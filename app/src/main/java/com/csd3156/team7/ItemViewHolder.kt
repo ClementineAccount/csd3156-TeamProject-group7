@@ -58,7 +58,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         }
         else
         {
-            selectedFarmName = ""
+            //selectedFarmName = ""
         }
 
         // Sets up the select button click listener to trigger the provided selection callback.
