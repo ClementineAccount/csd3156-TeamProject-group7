@@ -1,6 +1,7 @@
 package com.csd3156.team7
 
 import android.Manifest
+import android.animation.ValueAnimator
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -50,7 +51,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var isMapStyleEnabled = true
     private lateinit var scrollView: ScrollView
     private lateinit var farmNamesTextView: TextView
-    private var strokeColor: Int = Color.argb(255, 0, 0, 0)
     private var defaultStrokeColor: Int = Color.argb(255, 206, 189, 173)
     private val fillColor: Int = Color.argb(255, 101,254,8)
     private val zoomFarm = 16f
@@ -65,7 +65,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val refreshRunnable = object : Runnable {
         override fun run() {
             refreshMap()
-            handler.postDelayed(this, 2000) // Refresh every 5 seconds (adjust as needed)
+            handler.postDelayed(this, 1000) // Refresh every 5 seconds (adjust as needed)
         }
     }
 
@@ -206,19 +206,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             0f
                         }
 
-                        strokeColor = if (distance <= farmRadius) {
-                            fillColor
-                        } else {
-                            defaultStrokeColor
-                        }
+                        val isWithinRadius = distance <= farmRadius
 
                         val circleOptions = CircleOptions()
                             .center(location)
                             .radius(farmRadius)
-                            .strokeColor(strokeColor)
+                            .strokeColor(if (isWithinRadius) fillColor else defaultStrokeColor)
                             .fillColor(fillColor)
 
-                        map.addCircle(circleOptions)
+                        val circle = map.addCircle(circleOptions)
+
+                        if (isWithinRadius) {
+                            val animator = ValueAnimator.ofFloat(farmRadius.toFloat(), farmRadius.toFloat() * 1.5f)
+                            animator.duration = 3000
+                            animator.addUpdateListener { valueAnimator ->
+                                val animatedRadius = valueAnimator.animatedValue as Float
+                                circle.radius = animatedRadius.toDouble()
+                            }
+                            animator.start()
+                        }
 
                         val paint = Paint().apply {
                             color = Color.BLACK
@@ -226,6 +232,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
 
                         val textBitmap = createTextBitmap("Farm ${index + 1}", paint)
+
                         map.addGroundOverlay(
                             GroundOverlayOptions()
                                 .image(BitmapDescriptorFactory.fromBitmap(textBitmap))
