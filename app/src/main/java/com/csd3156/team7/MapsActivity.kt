@@ -1,8 +1,6 @@
 package com.csd3156.team7
 
 import android.Manifest
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -13,8 +11,6 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.location.Location
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
@@ -42,7 +38,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.ar.core.examples.kotlin.helloar.R
 import com.google.ar.core.examples.kotlin.helloar.databinding.ActivityMapsBinding
-import kotlinx.coroutines.launch
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -56,6 +51,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var isMapStyleEnabled = true
     private lateinit var scrollView: ScrollView
     private lateinit var farmNamesTextView: TextView
+    private var strokeColor: Int = Color.argb(255, 0, 0, 0)
     private var defaultStrokeColor: Int = Color.argb(255, 206, 189, 173)
     private val fillColor: Int = Color.argb(255, 101,254,8)
     private val zoomFarm = 16f
@@ -70,7 +66,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val refreshRunnable = object : Runnable {
         override fun run() {
             refreshMap()
-            handler.postDelayed(this, 2000)
+            handler.postDelayed(this, 2000) // Refresh every 5 seconds (adjust as needed)
         }
     }
 
@@ -94,7 +90,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         lifecycleScope.launchWhenCreated {
             try {
                 farmRepository.alLFarms.collect { farmItems ->
-                    farms.clear()
                     farms.addAll(farmItems.map { farmItem ->
                         Location("").apply {
                             latitude = farmItem.latitude
@@ -196,7 +191,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val groundOverlayOptionsList = mutableListOf<GroundOverlayOptions>()
 
             mMap.let { map ->
-                map.clear()
                 if (ContextCompat.checkSelfPermission(
                         this,
                         Manifest.permission.ACCESS_FINE_LOCATION
@@ -240,13 +234,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                         val textBitmap = createTextBitmap("Farm ${index + 1}", paint)
 
-
                         val groundOverlayOptions = GroundOverlayOptions()
                             .image(BitmapDescriptorFactory.fromBitmap(textBitmap))
                             .position(location, farmRadius.toFloat() * 5)
 
                         groundOverlayOptionsList.add(groundOverlayOptions)
                     }
+
+                    map.clear()
 
                     for (groundOverlayOptions in groundOverlayOptionsList) {
                         map.addGroundOverlay(groundOverlayOptions)
@@ -270,27 +265,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val xOffset = 125f
         val yOffset = 15f
         canvas.drawText(text, xOffset, yOffset, paint)
-        Log.d("MapsActivity",text)
 
         return bitmap
     }
 
     private fun addFarm(latitude: Double, longitude: Double) {
-        val newFarmItem = FarmItem(
-            lat = latitude,
-            long = longitude
-        )
-
-        lifecycleScope.launch {
-            try {
-                farmRepository.insert(newFarmItem)
-                Log.d("MapsActivity", "Farm added to database successfully")
-                refreshMap()
-                updateFarmNames()
-            } catch (e: Exception) {
-                Log.e("MapsActivity", "Error adding farm to database: ${e.message}")
-            }
-        }
+        val farmLocation = Location("")
+        farmLocation.latitude = latitude
+        farmLocation.longitude = longitude
+        farms.add(farmLocation)
     }
 
     private fun deleteFarm(latLng: LatLng) {
