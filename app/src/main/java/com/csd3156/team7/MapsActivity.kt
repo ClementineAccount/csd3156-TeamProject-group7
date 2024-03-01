@@ -144,10 +144,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * installed Google Play services and returned to the app.
      */
 
-//    override fun onDestroy() {
-//        handler.removeCallbacks(refreshRunnable)
-//        super.onDestroy()
-//    }
+    override fun onDestroy() {
+        handler.removeCallbacks(refreshRunnable)
+        super.onDestroy()
+        Log.d("MusicService", "MapsActivity->onDestroy")
+
+        Log.d("MapsActivity", "onDestroy")
+        if (isBound) {
+            Log.d("MusicService", "MapsActivity->unbindService")
+            Log.d("MapsActivity", "unbindService")
+            //musicService?.stopMusic()
+            unbindService(connection)
+
+            isBound = false
+        }
+    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -450,20 +461,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        handler.removeCallbacks(refreshRunnable)
 
-        Log.d("MusicService", "MapsActivity->onDestroy")
 
-        Log.d("MapsActivity", "onDestroy")
+    override fun onPause() {
+        super.onPause()
         if (isBound) {
-            Log.d("MusicService", "MapsActivity->unbindService")
-            Log.d("MapsActivity", "unbindService")
-            //musicService?.stopMusic()
-            unbindService(connection)
-
-            isBound = false
+            musicService.pauseMusic() // Assuming you have a method like this in your service
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        if (isBound) {
+            musicService.playMusic(R.raw.background_music_2) // Assuming you have a method like this in your service
+        }
+    }
+
+
 }

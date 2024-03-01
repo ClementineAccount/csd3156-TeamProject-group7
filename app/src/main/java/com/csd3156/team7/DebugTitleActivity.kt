@@ -50,11 +50,11 @@ class DebugTitleActivity : AppCompatActivity() {
                 openMapScene()
             }
 
-        findViewById<Button>(R.id.buttonShop)
-            .setOnClickListener {
-                Log.d("BUTTONS", "User tapped the buttonShop")
-                openShopScene()
-        }
+//        findViewById<Button>(R.id.buttonShop)
+//            .setOnClickListener {
+//                Log.d("BUTTONS", "User tapped the buttonShop")
+//                openShopScene()
+//        }
 
         //startFarmActivity()
 
@@ -128,4 +128,19 @@ class DebugTitleActivity : AppCompatActivity() {
             isBound = false
         }
     }
+
+    override fun onPause() {
+        super.onPause()
+        if (isBound) {
+            musicService.pauseMusic() // Assuming you have a method like this in your service
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isBound) {
+            musicService.playMusic(R.raw.background_music_0) // Assuming you have a method like this in your service
+        }
+    }
+
 }
