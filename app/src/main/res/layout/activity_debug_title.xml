@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Debug Title Screen"
+            android:text="CUBE FARM"
             android:textSize="34sp" />
 
         <Space
@@ -31,19 +31,19 @@
             android:id="@+id/buttonAR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="AR SCENE" />
-
-        <Button
-            android:id="@+id/buttonMap"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="MAP SCENE" />
+            android:text="Place Farm in AR" />
 
         <Button
             android:id="@+id/buttonShop"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/shop_title" />
+
+        <Button
+            android:id="@+id/buttonMap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MAP" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
