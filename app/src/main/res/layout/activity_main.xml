@@ -36,7 +36,8 @@
       android:layout_marginEnd="25dp"
       android:layout_marginBottom="25dp"
       android:background="@android:color/transparent"
-      android:src="@drawable/ic_settings" />
+      android:src="@drawable/ic_settings"
+      tools:ignore="SpeakableTextPresentCheck" />
 
   <Button
       android:id="@+id/NFCButton"
@@ -44,9 +45,10 @@
       android:layout_height="wrap_content"
       android:layout_alignParentEnd="true"
       android:layout_alignParentBottom="true"
-      android:layout_marginEnd="162dp"
-      android:layout_marginBottom="34dp"
-      android:text="NFC" />
+      android:layout_marginEnd="25dp"
+      android:layout_marginBottom="25dp"
+      android:text="@string/nfc_activity_title"
+      android:visibility="gone" />
 
   <Button
       android:id="@+id/clearFarm"

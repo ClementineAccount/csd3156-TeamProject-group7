@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "playerDatabase")
-data class Player(var name: String, var startingCurrency: Int = 1000)
+data class Player(var name: String, var startingCurrency: Int)
 {
     @PrimaryKey(autoGenerate = true)
     var uid : Int = 0
@@ -13,6 +13,6 @@ data class Player(var name: String, var startingCurrency: Int = 1000)
     var playerName : String = name ?: "Player"
 
     @ColumnInfo(name = "currency")
-    var currentCurrency : Int = startingCurrency ?: 1000
+    var currentCurrency : Int = startingCurrency
 
 }

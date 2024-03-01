@@ -16,27 +16,36 @@
 package com.google.ar.core.examples.kotlin.helloar
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NavUtils
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.csd3156.team7.FarmItem
 import com.csd3156.team7.MapsActivity
+import com.csd3156.team7.MusicService
 import com.csd3156.team7.PlayerInventoryViewModel
 import com.csd3156.team7.ShopActivity
 import com.google.android.gms.location.LocationServices
@@ -58,6 +67,12 @@ import com.google.ar.core.exceptions.UnavailableApkTooOldException
 import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException
 import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 
 /**
@@ -99,6 +114,18 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
   public lateinit var earth : Earth
   lateinit var cameraGeospatialPose : GeospatialPose
 
+  //For spawning the collectable items at a timer
+  private var handler: Handler? = null
+  private var addCollectableTask: Runnable? = null
+  private var collectableRateSeconds : Long = 2L
+
+  // Number of times the handler called before it ends
+  // By default don't run first...
+  private var collectableRunNumberMaxCount : Int = 5
+  private var currentCollectableRunCount : Int = 0
+
+  private lateinit var musicService: MusicService
+  private var isBound = false
 
 
   private fun checkPermission(permission: String, requestCode: Int) {
@@ -111,13 +138,18 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
     }
   }
 
+  public fun displayMinigameEndMessage()
+  {
+    //I rushing stuff at like 10.47pm on 28/2/2024 I don't have time to make this make sense
+    val message: String = "End of the minigame! Tap again to collect more!"
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+  }
+
 
   // Lat = [0], Long = [1] always remember
   private fun getGPSLocation(resultList :MutableList<Double>) {
     val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
     resultList.clear()
-
-
 
     // Check if the location provider is enabled
     if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -198,6 +230,15 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    Log.d("HelloArActivity", "onCreate")
+    Log.d("MusicService", "HelloArActivity->onCreate")
+    Intent(this, MusicService::class.java).also { intent ->
+      bindService(intent, connection, Context.BIND_AUTO_CREATE)
+      //startService(intent)
+      Log.d("MusicService", "HelloArActivity->bindService")
+      Log.d("HelloArActivity", "bindService")
+
+    }
     // Setup ARCore session lifecycle helper and configuration.
     arCoreSessionHelper = ARCoreSessionLifecycleHelper(this)
     // If Session creation or Session.resume() fails, display a message and log detailed
@@ -250,15 +291,16 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
     val nfcButton = findViewById<Button>(R.id.NFCButton)
 
     nfcButton.setOnClickListener {
-      val Intent = Intent(this, NFCActivity::class.java)
-      startActivity(Intent);
+      val intent = Intent(this, NFCActivity::class.java)
+      startActivity(intent);
+    }
+
+    shopButton.setOnClickListener {
+      val intent = Intent(this, ShopActivity::class.java)
+      startActivity(intent);
     }
     MapButton.setOnClickListener {
      val Intent = Intent(this, MapsActivity::class.java)
-     startActivity(Intent);
-    }
-    shopButton.setOnClickListener {
-     val Intent = Intent(this, ShopActivity::class.java)
      startActivity(Intent);
     }
 
@@ -272,7 +314,6 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
 
     val debugFarmPlaceButton = findViewById<Button>(R.id.debugFarm)
     debugFarmPlaceButton.setOnClickListener {
-
       runOnUiThread {
         var farmList: MutableList<FarmItem> = mutableListOf()
         playerViewModel.allFarm.observe(this, Observer { farmList ->
@@ -285,7 +326,7 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
               println("Farm ID: ${farm.uid}")
               println("Farm Name: ${farm.farmName}")
               println("Farm latitude: ${farm.latitude}")
-              println("Farm longitude: ${farm.longitude}")
+              println("Farm longtitude: ${farm.longtitude}")
               println("Farm Altitude: ${farm.altitude}")
               println("Farm qx: ${farm.qx}")
               println("Farm qy: ${farm.qy}")
@@ -298,7 +339,7 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
 
               // Test only first farm
               // TODO: Test if place all the farms
-              val anchor : Anchor = earth.createAnchor(farm.latitude, farm.longitude, cameraGeospatialPose.altitude,
+              val anchor : Anchor = earth.createAnchor(farm.latitude, farm.longtitude, cameraGeospatialPose.altitude,
                 farm.qx, farm.qy, farm.qz, farm.qw)
 
               // TODO: Handle exception if farm is empty
@@ -307,18 +348,72 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
             }
           }
         })
-
-
       }
-
-
     }
+    handler = Handler(Looper.getMainLooper())
+    addCollectableTask = object : Runnable {
+      override fun run() {
+        var random : Random = Random.Default
+        lifecycleScope.launch {
+
+          // Don't create it for the last loop iteration (bad user experience)
+          if (currentCollectableRunCount < collectableRunNumberMaxCount - 1)
+          {
+
+            var maxX : Float = 1.25f
+            var minX : Float = -1.25f
+
+            var maxZ : Float = 1.0f
+            var minZ : Float = -1.0f
+
+            var offsetX : Float = random.nextFloat() * (maxX - minX) + minX
+            var offsetZ : Float = random.nextFloat() * (maxZ - minZ) + minZ
 
 
 
+            renderer.createCollectable(offsetX, 0.0f, offsetZ)
+          }
+        }
+        currentCollectableRunCount += 1
+        if (currentCollectableRunCount < collectableRunNumberMaxCount)
+        {
+          handler?.postDelayed(this, collectableRateSeconds * 1000)
+        }
+        else
+        {
+          renderer.showMinigameEndText()
+
+          //TODO: Remove the anchor after the thing stop spawning...
+          renderer.removeAnchors()
+          renderer.removeCollectables()
+
+        }
+      }
+    }
+    // Start the task immediately
+    handler?.post(addCollectableTask!!)
 
 
   }
+
+
+  //Set the current collectable run count back to 0 so the thing will spawn
+  public fun setCollectableTaskRun()
+  {
+
+    lifecycleScope.launch {
+      withContext(Dispatchers.Main) {
+        // Perform UI-related operations here, such as showing a Toast
+        Toast.makeText(applicationContext, "COLLECT THE SHAPES!", Toast.LENGTH_SHORT).show()
+      }
+    }
+
+    currentCollectableRunCount = 0
+    handler?.post(addCollectableTask!!)
+
+
+  }
+
 
   // Configure the session, using Lighting Estimation, and Depth mode.
   fun configureSession(session: Session) {
@@ -363,7 +458,7 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
             println("Farm ID: ${farm.uid}")
             println("Farm Name: ${farm.farmName}")
             println("Farm latitude: ${farm.latitude}")
-            println("Farm longitude: ${farm.longitude}")
+            println("Farm longtitude: ${farm.longtitude}")
             println("Farm Altitude: ${farm.altitude}")
             //farmList.add(newEntity)
           }
@@ -418,4 +513,56 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
   }
 
 
+  private val connection = object : ServiceConnection {
+
+    override fun onServiceConnected(className: ComponentName, service: IBinder) {
+      val binder = service as MusicService.MusicBinder
+      musicService = binder.getService()
+      isBound = true
+      musicService?.playMusic(R.raw.background_music_3)
+      Log.d("MusicService", "HelloArActivity->onServiceConnected")
+      Log.d("HelloArActivity", "onServiceConnected")
+    }
+
+    override fun onServiceDisconnected(arg0: ComponentName?) {
+      Log.d("MusicService", "HelloArActivity->onServiceDisconnected")
+
+      Log.d("HelloArActivity", "onServiceDisconnected")
+      isBound = false
+      //musicService?.stopService(intent)
+    }
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    Log.d("MusicService", "HelloArActivity->onDestroy")
+    Log.d("HelloArActivity", "onDestroy")
+    if (isBound) {
+      Log.d("MusicService", "HelloArActivity->unbindService")
+      Log.d("HelloArActivity", "unbindService")
+      //musicService?.stopMusic()
+      unbindService(connection)
+
+      isBound = false
+    }
+  }
+
+  override fun onBackPressed() {
+    // Use NavUtils to navigate up to the parent activity as specified in the AndroidManifest
+    NavUtils.navigateUpFromSameTask(this)
+  }
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    // Handle action bar item clicks here.
+    when (item.itemId) {
+      android.R.id.home -> {
+        // This ID represents the Home or Up button. In the case of this activity,
+        // the Up button is shown. Use NavUtils to allow users to navigate up one level in the application structure.
+        // When pressing Up from this activity, the implementation of navigating to the parent activity
+        // should ensure that the back button returns the user to the home screen.
+        onBackPressed()
+        return true
+      }
+    }
+    return super.onOptionsItemSelected(item)
+  }
 }

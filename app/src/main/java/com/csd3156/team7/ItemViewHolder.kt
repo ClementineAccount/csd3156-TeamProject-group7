@@ -15,11 +15,15 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.Debug
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.WindowManager
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.compose.ui.text.toUpperCase
+import com.csd3156.team7.ShopListAdaptor.Companion.selectedFarmName
 import com.google.ar.core.examples.kotlin.helloar.NFCActivity
 
 class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHolder(binding.root){
@@ -27,7 +31,8 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
 
 
-    fun bind(item: ShopItem)
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun bind(item: ShopItem, position: Int, isSelected: Boolean, onItemSelected: (Int) -> Unit)
     {
         binding.itemName.text = item.name
         binding.itemImage.setImageResource(item.imageResourceId)
@@ -38,6 +43,43 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         binding.itemDescription.text = item.description
 
         binding.itemPrice.text = "Price: ${item.price}"
+        binding.itemContainerBackground.isSelected = isSelected
+        if(binding.itemContainerBackground.isSelected)
+        {
+            selectedFarmName = item.name
+
+
+        }
+        else
+        {
+            selectedFarmName = ""
+        }
+
+        binding.selectButton.setOnClickListener{
+
+            onItemSelected(position)
+        }
+
+        Log.d("ItemViewHolder", "Weather: ${ShopActivity.weatherCondition}")
+
+
+        // If the weather condition is cloudy, double the
+        // buying (& selling) price of the item.
+        // Directly accessing the weather condition returns "".
+        CoroutineScope(Dispatchers.IO).launch {
+
+            // Keep case sensitivity in mind here.
+            if (ShopActivity.playerViewModel.getWeather("q").current.condition
+                .text.uppercase().contains("CLOUDY"))
+            {
+                binding.itemPrice.text = "Price: ${item.price * 2}"
+            }
+            else
+            {
+                binding.itemPrice.text = "Price: ${item.price}"
+            }
+
+        }
         binding.unlockButton.visibility = if (item.researched) View.GONE else View.VISIBLE
         binding.unlockButton.text = "Unlock: ${item.creditsToResearch} CREDIT"
         binding.unlockButton.setOnClickListener {
@@ -68,10 +110,18 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
                 ShopActivity.playerViewModel.updateItemQuantity(item.itemId, item.quantity + 1)
 
-                ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price
-                //ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
+                if (ShopActivity.weatherCondition.uppercase().contains("CLOUDY"))
+                {
+                    ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price * 2
+                }
+                else
+                {
+                    ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.price
+                }
 
-                // null bug?
+
+                ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
+
                 Log.d(
                     "ItemViewHolder",
                     "Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}"
@@ -98,13 +148,16 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
                 // Sell all items at once. (as intended)
                 ShopActivity.playerViewModel.updateItemQuantity(item.itemId, 0 )
 
-                ShopActivity.playerViewModel.playerCurrencyObject.currency += item.price * item.quantity
-                //ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
+                // Double the selling price if it's night time.
+                val nightTimeModifier = when (ShopActivity.nightTime) { true -> 2 false -> 1 }
+                ShopActivity.playerViewModel.playerCurrencyObject.currency +=
+                    item.price * item.quantity * nightTimeModifier
 
-                // null bug?
+                ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
+
+
                 Log.d(
-                    "ItemViewHolder",
-                    "Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}"
+                    "ItemViewHolder","Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}"
                 )
             }
 
@@ -123,7 +176,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         {
 
             ShopActivity.playerViewModel.playerCurrencyObject.currency -= item.creditsToResearch
-
+            ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
             ShopActivity.playerViewModel.updateItemResearchState(item.itemId, true)
 
         }
@@ -141,6 +194,8 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
 
     }
+
+
 
 
 

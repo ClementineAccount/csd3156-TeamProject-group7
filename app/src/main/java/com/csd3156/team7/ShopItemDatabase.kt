@@ -8,7 +8,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(entities = [ShopItem::class], version = 3, exportSchema = true)
-abstract class ShopItemDatabase : RoomDatabase()
+abstract class  ShopItemDatabase : RoomDatabase()
 {
 
 

@@ -32,13 +32,10 @@ class DebugTestFarm : AppCompatActivity(), CoroutineScope by MainScope() {
             job.join()
         }
 
-
-
-
         val addCubeFarmButton = findViewById<Button>(R.id.debugAddCubeFarm)
         addCubeFarmButton.setOnClickListener {
             //1 cube every 3 seconds
-            val newFarm = FarmItem(name = "My Pyramid Test Farm", lat = 0.0, long =  0.0, alt = 0.0,
+            val newFarm = FarmItem(name = "My Pyramid Test Farm", lat = 37.4219983, long = -122.084, alt = -122.083922,
                 qx_set = 0.0f,
                 qy_set = 0.0f,
                 qz_set = 0.0f,
@@ -59,25 +56,32 @@ class DebugTestFarm : AppCompatActivity(), CoroutineScope by MainScope() {
 
         startFarmActivity()
 
-
         findViewById<Button>(R.id.debugGoShopButton)
             .setOnClickListener {
                 Log.d("BUTTONS", "User tapped the buttonShop")
                 openShopScene()
             }
-    }
 
+        val openMapButton = findViewById<Button>(R.id.debugOpenMapButton)
+        openMapButton.setOnClickListener {
+            Log.d("BUTTONS", "User tapped the Open Map button")
+            openMapActivity()
+        }
+    }
 
     public fun addFarmDefault() {
         //1 cube every 3 seconds
-        val newFarm = FarmItem(name = "My Pyramid Test Farm", lat = 0.0, long =  0.0, alt = 0.0,
+        val newFarm = FarmItem(name = "My Pyramid Test Farm",
+            lat = 37.4220936,
+            long = 22.083922,
+            alt = 0.0,
             qx_set = 0.0f,
             qy_set = 0.0f,
             qz_set = 0.0f,
             qw_set = 0.0f,
-            growthTimeSet = 3.0f,
+            growthTimeSet = 5.0f,
             shape = "Pyramid",
-            rate = 1.0f)
+            rate = 31.0f)
 
         runBlocking {
             val job = launch {
@@ -110,6 +114,7 @@ class DebugTestFarm : AppCompatActivity(), CoroutineScope by MainScope() {
                         Log.d("DEBUG TEST FARM", "Farm ID: ${farm.uid}")
                         Log.d("DEBUG TEST FARM", "Farm Growth Time Set: ${farm.growthTime}")
                         Log.d("DEBUG TEST FARM", "Farm Growth Rate: ${farm.growthRate}")
+                        Log.d("DEBUG TEST FARM", "Farm Location - Latitude: ${farm.lat}, longtitude: ${farm.long}, atude: ${farm.alt}")
                         //farmList.add(newEntity)
                     }
                 }
@@ -129,6 +134,11 @@ class DebugTestFarm : AppCompatActivity(), CoroutineScope by MainScope() {
     {
         Log.d("DEBUG TITLE", "openShopScene() function called")
         val intent = Intent(this, ShopActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun openMapActivity() {
+        val intent = Intent(this, MapsActivity::class.java)
         startActivity(intent)
     }
 }

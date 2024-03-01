@@ -35,8 +35,8 @@ data class FarmItem(var name: String = "Test", var lat: Double = 0.0, var long: 
     @ColumnInfo(name = "latitude")
     var latitude : Double = lat
 
-    @ColumnInfo(name = "longitude")
-    var longitude : Double = long
+    @ColumnInfo(name = "longtitude")
+    var longtitude : Double = long
 
     @ColumnInfo(name = "altitude")
     var altitude : Double = alt
