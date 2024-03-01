@@ -15,15 +15,20 @@
  * limitations under the License.
  */
 precision mediump float;
-uniform sampler2D u_Texture;
 
+uniform sampler2D u_Texture;
+uniform vec3 u_color;
 in vec2 v_TexCoord;
 
 layout(location = 0) out vec4 o_FragColor;
 
+
+
 void main() {
   // Mirror texture coordinates over the X axis
   vec2 texCoord = vec2(v_TexCoord.x, 1.0 - v_TexCoord.y);
+
   o_FragColor = vec4(texture(u_Texture, texCoord).rgb, 1.0);
+  o_FragColor = o_FragColor * vec4(u_color.rgb, 1.0);
   return;
 }
