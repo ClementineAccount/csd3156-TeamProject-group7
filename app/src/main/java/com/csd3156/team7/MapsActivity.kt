@@ -226,7 +226,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                     .center(location)
                                     .radius(farmRadius * animatedValue)
                                     .strokeColor(if (isWithinRadius) Color.argb(255, 0, 0, 255) else defaultStrokeColor)
-                                    .fillColor(if (isWithinRadius) defaultStrokeColor else defaultFillColor)
+                                    .fillColor(if (isWithinRadius) Color.argb(255, 0, 0, 255)  else defaultFillColor)
                             )
                         }
 
