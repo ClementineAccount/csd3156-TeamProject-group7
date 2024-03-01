@@ -760,6 +760,7 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
             if (distanceMeters < collectable.radius)
             {
               listener.onObjectTapped(1)
+              soundEffectsManager.playCollectSound()
               Log.d("Debug Hit Detection", "Hit Detected for object!")
               iterator.remove()
             }
