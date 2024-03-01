@@ -145,30 +145,23 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
             }
             else {
 
-                try {
-                    // Sell all items at once. (as intended)
-                    ShopActivity.playerViewModel.updateItemQuantity(item.itemId, 0 )
+                ShopActivity.playerViewModel.updateItemQuantity(item.itemId, 0 )
 
-                    // Double the selling price if it's night time.
-                    val nightTimeModifier = when (ShopActivity.nightTime) {
-                        true -> 2
-                        false -> 1
-                    }
-
-                    // Update player currency based on the sold items and night time modifier
-                    ShopActivity.playerViewModel.playerCurrencyObject.currency +=
-                        item.price * item.quantity * nightTimeModifier
-
-                    // Update the player's currency
-                    ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
-
-                    Log.d("ItemViewHolder","Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}")
-
-                } catch (e: Exception) {
-                    // Handle the exception as per your application's needs
-                    Log.e("ItemViewHolder", "Error while selling items: ${e.message}", e)
-                    // You might want to show an error message to the user or perform other error handling here
+                // Double the selling price if it's night time.
+                val nightTimeModifier = when (ShopActivity.nightTime) {
+                    true -> 2
+                    false -> 1
                 }
+
+                // Update player currency based on the sold items and night time modifier
+                ShopActivity.playerViewModel.playerCurrencyObject.currency +=
+                    item.price * item.quantity * nightTimeModifier
+
+                // Update the player's currency
+                ShopActivity.playerViewModel.setPlayerCurrency(ShopActivity.playerViewModel.playerCurrencyObject.currency)
+
+                Log.d("ItemViewHolder","Currency: ${ShopActivity.playerViewModel.currentPlayerCurrency.value}")
+
             }
 
         }
