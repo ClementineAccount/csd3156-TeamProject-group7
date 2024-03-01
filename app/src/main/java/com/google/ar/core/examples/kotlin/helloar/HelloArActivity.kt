@@ -49,6 +49,7 @@ import com.csd3156.team7.MusicService
 import com.csd3156.team7.PlayerInventoryViewModel
 import com.csd3156.team7.PlayerShopViewModel
 import com.csd3156.team7.ShopActivity
+import com.csd3156.team7.ShopItem
 import com.csd3156.team7.SoundEffectsManager
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
@@ -130,10 +131,13 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
   private lateinit var musicService: MusicService
 
   private var isBound = false
-  public var currentShapeFarm : String = "Pyramid"
+  public var currentShapeFarm : String = "Sphere"
   public var startCollecting : Boolean = false
 
   lateinit var currentShapeColor : Triple<Int, Int, Int>
+
+  lateinit var shapeUI : TextView
+  lateinit var currentShapeItem : ShopItem
 
   private fun checkPermission(permission: String, requestCode: Int) {
     if (ContextCompat.checkSelfPermission(this@HelloArActivity, permission) == PackageManager.PERMISSION_DENIED) {
@@ -298,6 +302,15 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
     val MapButton = findViewById<Button>(R.id.buttonMap)
     val nfcButton = findViewById<Button>(R.id.NFCButton)
 
+    shapeUI = findViewById<TextView>(R.id.shapeUI)
+
+//    GlobalScope.launch(Dispatchers.IO)
+//    {
+//      currentShapeItem = shopViewModel.shopRepository.getItemByName(playerViewModel.farmRepository.currentFarmShape)
+//      shapeUI.text = currentShapeItem.quantity.toString()
+//    }
+
+
     val startCollectButton = findViewById<Button>(R.id.buttonCollect)
 
     nfcButton.setOnClickListener {
@@ -322,8 +335,21 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
 
         GlobalScope.launch(Dispatchers.IO)
         {
-          var currentShapeItem = shopViewModel.shopRepository.getItemByName("Pyramid")
-          //currentShapeFarm = shopViewModel.shopRepository.getItemByName("Pyramid").name
+          //Just alternate them
+          if (currentShapeFarm == "Pyramid")
+          {
+            currentShapeFarm = "Cube"
+          }
+          else if (currentShapeFarm == "Cube")
+          {
+            currentShapeFarm = "Sphere"
+          }
+          else if (currentShapeFarm == "Sphere")
+          {
+            currentShapeFarm = "Pyramid"
+          }
+
+          currentShapeItem = shopViewModel.shopRepository.getItemByName(currentShapeFarm)
           currentShapeColor = shopViewModel.getColorComponents(currentShapeItem.color)
         }
 
@@ -402,6 +428,7 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
             var offsetZ : Float = random.nextFloat() * (maxZ - minZ) + minZ
 
 
+
             renderer.createCollectable(offsetX, 0.0f, offsetZ)
           }
         }
@@ -476,6 +503,15 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
     )
   }
 
+
+  public fun updateShapeCount()
+  {
+    GlobalScope.launch(Dispatchers.IO)
+    {
+      currentShapeItem.quantity += 1
+      shopViewModel.shopRepository.updateQuantity(currentShapeItem.itemId, currentShapeItem.quantity)
+    }
+  }
 
   public fun printAllFarmItem(allEntity: LiveData<List<FarmItem>>) {
     runOnUiThread {

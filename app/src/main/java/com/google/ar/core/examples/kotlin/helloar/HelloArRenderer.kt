@@ -129,6 +129,7 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
   lateinit var virtualObjectMesh: Mesh
   lateinit var virtualObjectMeshCube : Mesh
   lateinit var virtualObjectMeshPyramid : Mesh
+  lateinit var virtualObjectMeshSphere: Mesh
 
   lateinit var virtualObjectShader: Shader
   lateinit var virtualObjectAlbedoTexture: Texture
@@ -276,6 +277,7 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
       virtualObjectMesh = Mesh.createFromAsset(render, "models/TestCube.obj")
       virtualObjectMeshCube = Mesh.createFromAsset(render, "models/TestCube.obj")
       virtualObjectMeshPyramid = Mesh.createFromAsset(render, "models/TestTriangle.obj")
+      virtualObjectMeshSphere = Mesh.createFromAsset(render, "models/TestSphere.obj")
       virtualObjectShader =
         Shader.createFromAssets(
             render,
@@ -510,6 +512,10 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
             else if (activity.currentShapeFarm == "Pyramid")
             {
               render.draw(virtualObjectMeshPyramid, virtualObjectCollectableShader, virtualSceneFramebuffer)
+            }
+            else if (activity.currentShapeFarm == "Sphere")
+            {
+              render.draw(virtualObjectMeshSphere, virtualObjectCollectableShader, virtualSceneFramebuffer)
             }
             else
             {
@@ -782,6 +788,7 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
             {
               listener.onObjectTapped(1)
               soundEffectsManager.playCollectSound()
+              activity.updateShapeCount()
               Log.d("Debug Hit Detection", "Hit Detected for object!")
               iterator.remove()
             }
