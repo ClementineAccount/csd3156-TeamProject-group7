@@ -26,14 +26,17 @@ import androidx.compose.ui.text.toUpperCase
 import com.csd3156.team7.ShopListAdaptor.Companion.selectedFarmName
 import com.google.ar.core.examples.kotlin.helloar.NFCActivity
 
+// Defines a ViewHolder class for managing individual item views within a RecyclerView, specifically for shop items.
 class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHolder(binding.root){
 
 
 
 
+    // Binds shop item data to the view, including handling item selection and button clicks.
     @RequiresApi(Build.VERSION_CODES.O)
     fun bind(item: ShopItem, position: Int, isSelected: Boolean, onItemSelected: (Int) -> Unit)
     {
+        // Sets item name, image, color, quantity, description, and price on the view.
         binding.itemName.text = item.name
         binding.itemImage.setImageResource(item.imageResourceId)
         binding.itemImage.setColorFilter(item.color)
@@ -43,10 +46,13 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         binding.itemDescription.text = item.description
 
         binding.itemPrice.text = "Price: ${item.price}"
+        // Highlights the item if it is selected.
         binding.itemContainerBackground.isSelected = isSelected
+
+        // Selects the item and potentially updates the UI based on the selection state.
         if(binding.itemContainerBackground.isSelected)
         {
-            selectedFarmName = item.name
+            selectedFarmName = item.name // Assumes selectedFarmName is a global or class-wide variable.
 
 
         }
@@ -55,24 +61,27 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
             selectedFarmName = ""
         }
 
+        // Sets up the select button click listener to trigger the provided selection callback.
         binding.selectButton.setOnClickListener{
 
             onItemSelected(position)
         }
 
+        // Logs the current weather condition as a debug message.
         Log.d("ItemViewHolder", "Weather: ${ShopActivity.weatherCondition}")
 
 
         // If the weather condition is cloudy, double the
         // buying (& selling) price of the item.
         // Directly accessing the weather condition returns "".
+        // Adjusts item price based on weather conditions asynchronously.
         CoroutineScope(Dispatchers.IO).launch {
 
             // Keep case sensitivity in mind here.
             if (ShopActivity.playerViewModel.getWeather("q").current.condition
                 .text.uppercase().contains("CLOUDY"))
             {
-                binding.itemPrice.text = "Price: ${item.price * 2}"
+                binding.itemPrice.text = "Price: ${item.price * 2}"  // Doubles the price if cloudy.
             }
             else
             {
@@ -82,11 +91,14 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         }
         binding.unlockButton.visibility = if (item.researched) View.GONE else View.VISIBLE
         binding.unlockButton.text = "Unlock: ${item.creditsToResearch} CREDIT"
+
+        // Sets up the unlock button click listener to handle item unlocking.
         binding.unlockButton.setOnClickListener {
             onUnlockAttempt(item)
         }
 
 
+        // Disables or enables the buy button based on the player's currency.
         if (ShopActivity.playerViewModel.playerCurrencyObject.currency - item.price < 0) {
             binding.buyButton.isEnabled = false
         }
@@ -94,6 +106,8 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         {
             binding.buyButton.isEnabled = true
         }
+
+        // Sets up the buy button click listener to handle item purchases.
         binding.buyButton.setOnClickListener {
 
             if (ShopActivity.playerViewModel.playerCurrencyObject.currency - item.price < 0) {
@@ -129,6 +143,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
             }
         }
 
+        // Disables or enables the sell button based on the item quantity.
         if (item.quantity == 0) {
             binding.sellButton.isEnabled = false
         }
@@ -136,6 +151,8 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
         {
             binding.sellButton.isEnabled = true
         }
+
+        // Sets up the sell button click listener to handle item sales.
         binding.sellButton.setOnClickListener {
 
             if (item.quantity == 0) {
@@ -163,6 +180,7 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
 
         }
 
+        // Sets up the change color button click listener to start the NFCActivity for color changing.
         binding.changeColorButton.setOnClickListener{
             ShopListAdaptor.selectedID = item.itemId
 
@@ -170,6 +188,8 @@ class ItemViewHolder(private val binding: ShopItemBinding):RecyclerView.ViewHold
             itemView.context.startActivity(intent)
         }
     }
+
+    // Handles the logic for attempting to unlock a shop item based on player currency and item research cost.
     fun onUnlockAttempt(item: ShopItem)
     {
         if(ShopActivity.playerViewModel.playerCurrencyObject.currency  >= item.creditsToResearch)

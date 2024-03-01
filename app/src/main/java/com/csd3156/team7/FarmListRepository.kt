@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
+// Defines a repository class for managing farm data operations. This class abstracts access to multiple data sources.
 class FarmListRepository(private val farmDao: FarmDao) {
 
     // Room executes all queries on a separate thread.
@@ -21,12 +22,16 @@ class FarmListRepository(private val farmDao: FarmDao) {
         farmDao.insert(farm)
     }
 
+    // Inserts a farm item into the database and returns its generated UID.
+    // Explicitly specifies to run this operation on the IO dispatcher for database operations.
     suspend fun insertFarmItemAndGetUid(farm: FarmItem) : Long {
         return withContext(Dispatchers.IO) {
             farmDao.insert(farm)
         }
     }
 
+    // Deletes all farm items from the database. Although Room executes suspend functions on a background thread,
+    // the @WorkerThread annotation is used as a reminder to not call this method on the main thread.
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun delete()
@@ -34,6 +39,8 @@ class FarmListRepository(private val farmDao: FarmDao) {
         farmDao.deleteAllFarm()
     }
 
+    // Retrieves the first farm item from the database. Returns LiveData, allowing the UI to observe changes.
+    // LiveData is lifecycle-aware, ensuring the UI only updates when active.
     fun GetFirstFarm(): LiveData<FarmItem> {
         return farmDao.getFirstFarm()
     }
