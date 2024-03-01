@@ -729,7 +729,6 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
               Log.d("Debug Hit Detection", "distanceMeters: ${distanceMeters}")
               Log.d("Debug Hit Detection", "tap x,y,z: ${hitPose.tx()}, ${hitPose.ty()}, ${hitPose.tz()}")
               Log.d("Debug Hit Detection", "collectable x,y,z: ${collectable.x}, ${collectable.y}, ${collectable.z}")
-
             }
           }
         }

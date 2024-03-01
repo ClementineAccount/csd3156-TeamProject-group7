@@ -47,6 +47,7 @@ import com.csd3156.team7.FarmItem
 import com.csd3156.team7.MapsActivity
 import com.csd3156.team7.MusicService
 import com.csd3156.team7.PlayerInventoryViewModel
+import com.csd3156.team7.PlayerShopViewModel
 import com.csd3156.team7.ShopActivity
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
@@ -108,7 +109,7 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
   val depthSettings = DepthSettings()
 
   lateinit var playerViewModel: PlayerInventoryViewModel
-
+  lateinit var shopViewModel: PlayerShopViewModel
 
   private val LOCATION_PERMISSION_REQUEST_CODE = 100
   public lateinit var earth : Earth
@@ -126,6 +127,9 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
 
   private lateinit var musicService: MusicService
   private var isBound = false
+
+
+  public var currentShapeFarm : String = "Cube"
 
 
   private fun checkPermission(permission: String, requestCode: Int) {
@@ -262,6 +266,8 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
     arCoreSessionHelper.beforeSessionResume = ::configureSession
     lifecycle.addObserver(arCoreSessionHelper)
 
+
+    shopViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
     playerViewModel = ViewModelProvider(this)[PlayerInventoryViewModel::class.java]
 
     checkPermission(
@@ -368,7 +374,6 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
 
             var offsetX : Float = random.nextFloat() * (maxX - minX) + minX
             var offsetZ : Float = random.nextFloat() * (maxZ - minZ) + minZ
-
 
 
             renderer.createCollectable(offsetX, 0.0f, offsetZ)
@@ -505,11 +510,31 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
       overlayText.text = "+1"
       overlayText.visibility = View.VISIBLE
 
+      GlobalScope.launch(Dispatchers.IO)
+      {
+        // Add the value to the database when collected
+        // TODO: Account for the different shape (it is based off the farm)
+        // For now just do Cube
+
+        var collectItem = shopViewModel.shopRepository.getItemByName("Cube")
+
+        //TODO: Increment it here
+        //TODO: Increment by formula that takes into account the farm
+        //TODO: Set it back
+        var updateCount = shopViewModel.shopRepository.getItemQuantity(collectItem.itemId)
+        updateCount += 1
+
+        Log.d("FarmService", "collectItem Quantity: ${updateCount}")
+        shopViewModel.shopRepository.updateQuantity(collectItem.itemId, updateCount)
+        collectItem = shopViewModel.shopRepository.getItemByName("Cube")
+      }
+
       // Handler to post a delayed task
       overlayText.postDelayed({
         overlayText.visibility = View.INVISIBLE // or View.GONE if you want to remove the space it takes up as well
       }, 500) // Delay in milliseconds (1000ms = 1s)
     }
+
   }
 
 
