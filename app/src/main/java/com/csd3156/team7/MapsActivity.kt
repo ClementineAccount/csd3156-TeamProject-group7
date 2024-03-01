@@ -70,7 +70,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val refreshRunnable = object : Runnable {
         override fun run() {
             refreshMap()
-            handler.postDelayed(this, 1000) // Refresh every 5 seconds (adjust as needed)
+            handler.postDelayed(this, 2000)
         }
     }
 
@@ -94,9 +94,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         lifecycleScope.launchWhenCreated {
             try {
                 farmRepository.alLFarms.collect { farmItems ->
-                    // Clear the existing farms list before adding new ones
                     farms.clear()
-
                     farms.addAll(farmItems.map { farmItem ->
                         Location("").apply {
                             latitude = farmItem.latitude
@@ -130,7 +128,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         handler.removeCallbacks(refreshRunnable)
         super.onDestroy()
     }
-    
+
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
@@ -198,6 +196,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val groundOverlayOptionsList = mutableListOf<GroundOverlayOptions>()
 
             mMap.let { map ->
+                map.clear()
                 if (ContextCompat.checkSelfPermission(
                         this,
                         Manifest.permission.ACCESS_FINE_LOCATION
@@ -248,8 +247,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                         groundOverlayOptionsList.add(groundOverlayOptions)
                     }
-
-                    map.clear()
 
                     for (groundOverlayOptions in groundOverlayOptionsList) {
                         map.addGroundOverlay(groundOverlayOptions)
