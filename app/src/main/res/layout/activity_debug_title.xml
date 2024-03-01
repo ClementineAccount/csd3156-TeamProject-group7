@@ -31,7 +31,7 @@
             android:id="@+id/buttonAR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Place Farm in AR" />
+            android:text="Play AR Minigame" />
 
         <Button
             android:id="@+id/buttonShop"
