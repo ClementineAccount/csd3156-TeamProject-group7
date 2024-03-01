@@ -73,6 +73,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
@@ -132,7 +133,7 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
   public var currentShapeFarm : String = "Pyramid"
   public var startCollecting : Boolean = false
 
-
+  lateinit var currentShapeColor : Triple<Int, Int, Int>
 
   private fun checkPermission(permission: String, requestCode: Int) {
     if (ContextCompat.checkSelfPermission(this@HelloArActivity, permission) == PackageManager.PERMISSION_DENIED) {
@@ -268,7 +269,6 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
     arCoreSessionHelper.beforeSessionResume = ::configureSession
     lifecycle.addObserver(arCoreSessionHelper)
 
-
     shopViewModel = ViewModelProvider(this)[PlayerShopViewModel::class.java]
     playerViewModel = ViewModelProvider(this)[PlayerInventoryViewModel::class.java]
 
@@ -319,6 +319,20 @@ class HelloArActivity : AppCompatActivity(), TapInterface {
       {
         startCollecting = true
         startCollectButton.visibility = View.INVISIBLE
+
+        GlobalScope.launch(Dispatchers.IO)
+        {
+          var currentShapeItem = shopViewModel.shopRepository.getItemByName("Pyramid")
+          //currentShapeFarm = shopViewModel.shopRepository.getItemByName("Pyramid").name
+          currentShapeColor = shopViewModel.getColorComponents(currentShapeItem.color)
+        }
+
+//        runBlocking {
+//          val job = launch {
+//
+//          }
+//          job.join()
+//        }
       }
     }
 

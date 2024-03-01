@@ -498,8 +498,10 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
             //virtualObjectCollectableShader.setTexture("u_Texture", texture)
 
             // Testing it
-            virtualObjectCollectableShader.setVec3("u_color", floatArrayOf(1.0f / 255.0f, 0.0f, 0.0f))
-
+            virtualObjectCollectableShader.setVec3("u_color",
+              floatArrayOf(activity.currentShapeColor.first.toFloat() / 255.0f,
+                activity.currentShapeColor.second.toFloat() / 255.0f,
+                  activity.currentShapeColor.third.toFloat() / 255.0f))
 
             if (activity.currentShapeFarm == "Cube")
             {
