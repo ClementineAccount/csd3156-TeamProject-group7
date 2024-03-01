@@ -52,25 +52,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private val farms: MutableList<Location> = mutableListOf()
+    private val farmShapeList : MutableList<String> = mutableListOf()
+
     private lateinit var farmDao: FarmDao
     private lateinit var farmRepository: FarmListRepository
-    private var farmRadius: Double = 100.0
+    private var farmRadius: Double = 10.0
     private var selectedFarmIndex: Int = -1
     private var isMapStyleEnabled = true
     private lateinit var scrollView: ScrollView
     private lateinit var farmNamesTextView: TextView
     private var defaultStrokeColor: Int = Color.argb(255, 206, 189, 173)
     private val defaultFillColor: Int = Color.argb(255, 101,254,8)
-    private val zoomFarm = 16f
+    private val zoomFarm = 36f
     private val zoomSpeed = 800
 
     private lateinit var musicService: MusicService
     private var isBound = false
 
 
+    public var isOneTrue : Boolean = true
+
+
+
+
+
+    //public var isWithinRadius : Boolean = false
+
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 1
-        private const val DEFAULT_ZOOM = 15f
+        private const val DEFAULT_ZOOM = 20f
+
+        public var isFarmWithin : Boolean = false
+        public var farmShape : String = "Pyramid"
     }
 
     private val handler = android.os.Handler()
@@ -125,6 +138,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             longitude = farmItem.longtitude
                             Log.d("MapsActivity", "Retrieved Farm - Latitude: $latitude, Longitude: $longitude")
                         }
+                    })
+
+                    farmShapeList.clear()
+                    farmShapeList.addAll(farmItems.map { farmItem ->
+                        farmItem.farmShape
                     })
 
                     refreshMap()
@@ -238,6 +256,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         Manifest.permission.ACCESS_FINE_LOCATION
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
+                    isOneTrue = false
                     for ((index, farmLocation) in farms.withIndex()) {
                         val location = LatLng(farmLocation.latitude, farmLocation.longitude)
 
@@ -251,6 +270,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
 
                         val isWithinRadius = distance <= farmRadius
+                        if (isWithinRadius)
+                        {
+                            // Assumption is the index is matching
+                            farmShape = farmShapeList[index]
+                            isOneTrue = true
+                        }
+
                         val scale = if (isWithinRadius) 1.5f else 1f
                         val duration = 1000L
                         val valueAnimator = ValueAnimator.ofFloat(1f, scale)
@@ -290,6 +316,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
             }
+            if (isOneTrue)
+            {
+                isFarmWithin = true
+            }
+            else
+            {
+                isFarmWithin = false
+            }
+
         } catch (e: Exception) {
             e.printStackTrace()
             Log.e("MapsActivity", "Error refreshing map: ${e.message}")
@@ -303,7 +338,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val bitmap = Bitmap.createBitmap((farmRadius * 3).toInt(), (farmRadius).toInt(), Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
-        paint.textSize = 15f
+        paint.textSize = 60f
         val xOffset = 125f
         val yOffset = 15f
         canvas.drawText(text, xOffset, yOffset, paint)
@@ -316,6 +351,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             lat = latitude,
             long = longitude
         )
+
 
         lifecycleScope.launch {
             try {
