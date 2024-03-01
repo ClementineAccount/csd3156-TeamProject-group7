@@ -44,7 +44,7 @@ class MusicService : Service() {
 
         mediaPlayer = MediaPlayer.create(this,trackResId).apply {
             isLooping = true
-            setVolume(1f, 1f)
+            setVolume(0.25f, 0.25f)
             start()
             Log.d("MusicService", "$trackResId playback started $trackResId")
         }

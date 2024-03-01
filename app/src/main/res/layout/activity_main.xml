@@ -99,9 +99,19 @@
       android:layout_height="wrap_content"
       android:layout_alignParentStart="true"
       android:layout_alignParentBottom="true"
-      android:layout_marginStart="38dp"
-      android:layout_marginBottom="34dp"
+      android:layout_marginStart="30dp"
+      android:layout_marginBottom="129dp"
       android:text="Shop" />
+
+  <Button
+      android:id="@+id/buttonCollect"
+      android:layout_width="125dp"
+      android:layout_height="60dp"
+      android:layout_alignParentEnd="true"
+      android:layout_alignParentBottom="true"
+      android:layout_marginEnd="144dp"
+      android:layout_marginBottom="124dp"
+      android:text="Start Collection!" />
 
   <Button
       android:id="@+id/buttonMap"
@@ -109,8 +119,8 @@
       android:layout_height="wrap_content"
       android:layout_alignParentEnd="true"
       android:layout_alignParentBottom="true"
-      android:layout_marginEnd="38dp"
-      android:layout_marginBottom="34dp"
+      android:layout_marginEnd="46dp"
+      android:layout_marginBottom="129dp"
       android:text="Map" />
 
   <LinearLayout
@@ -124,7 +134,7 @@
       android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/shapeUI"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="1"

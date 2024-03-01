@@ -35,13 +35,12 @@
 
         <TextView
             android:id="@+id/timeTextView"
-            android:layout_width="136dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8sp"
             android:background="#B6D4F4"
             android:text=""
-            android:layout_marginTop="8sp"
-            android:textColor="@color/black"
-            />
+            android:textColor="@color/black" />
     </LinearLayout>
 
     <RelativeLayout

@@ -60,6 +60,7 @@ import java.util.Random
 import kotlin.math.sqrt
 
 import android.widget.Toast
+import com.csd3156.team7.SoundEffectsManager
 
 // Create this with the anchor stuff
 // TODO: Also add the shape here that it will represent
@@ -135,6 +136,8 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
   private val gpsAnchors = mutableListOf<Anchor>()
 
   private var mediaPlayer: MediaPlayer? = null
+
+  private var soundEffectsManager: SoundEffectsManager = SoundEffectsManager(activity.applicationContext)
   private val audioResources = arrayOf(
     R.raw.drop1,
     R.raw.drop2,
@@ -384,7 +387,7 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
           activity.getString(R.string.searching_planes)
         camera.trackingState == TrackingState.PAUSED ->
           TrackingStateHelper.getTrackingFailureReasonString(camera)
-        session.hasTrackingPlane() && wrappedAnchors.isEmpty() ->
+        session.hasTrackingPlane() && wrappedAnchors.isEmpty() && activity.startCollecting ->
           activity.getString(R.string.waiting_taps)
         session.hasTrackingPlane() && wrappedAnchors.isNotEmpty() -> null
         else -> activity.getString(R.string.searching_planes)
@@ -729,7 +732,6 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
               Log.d("Debug Hit Detection", "distanceMeters: ${distanceMeters}")
               Log.d("Debug Hit Detection", "tap x,y,z: ${hitPose.tx()}, ${hitPose.ty()}, ${hitPose.tz()}")
               Log.d("Debug Hit Detection", "collectable x,y,z: ${collectable.x}, ${collectable.y}, ${collectable.z}")
-
             }
           }
         }
@@ -759,7 +761,6 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
           addHit = false
           //listener.onObjectTapped(1)
           Log.d("Debug Hit Detection", "Hit Detected at: ${farmData.uid}")
-
         }
       }
 
@@ -769,7 +770,7 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
 
         //farm data not relevant anymore btw
         //Only allow one anchor at a time.
-        // TODO: Remove the anchor whenever we leace the activity
+        // TODO: Remove the anchor whenever we leave the activity
         if (wrappedAnchors.isEmpty())
         {
           wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable, FarmData(0)))
@@ -886,6 +887,11 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
     activity.displayMinigameEndMessage()
   }
 
+  public fun isAnchorEmpty() : Boolean
+  {
+    return wrappedAnchors.isEmpty()
+  }
+
   public fun removeCollectables()
   {
     collectableList.clear()
@@ -895,16 +901,18 @@ class HelloArRenderer(val activity: HelloArActivity, private val listener: TapIn
     activity.view.snackbarHelper.showError(activity, errorMessage)
 
   private fun playObjectPlacedSound() {
-    val randomIndex = Random().nextInt(audioResources.size)
-    val audioResource = audioResources[randomIndex]
+//    val randomIndex = Random().nextInt(audioResources.size)
+//    val audioResource = audioResources[randomIndex]
 
-    mediaPlayer?.release()
+    soundEffectsManager.playRandomSound()
 
-    mediaPlayer = MediaPlayer.create(activity.applicationContext, audioResource)
-    mediaPlayer?.setOnCompletionListener {
-      it.release()
-    }
-    mediaPlayer?.start()
+//    mediaPlayer?.release()
+//
+//    mediaPlayer = MediaPlayer.create(activity.applicationContext, audioResource)
+//    mediaPlayer?.setOnCompletionListener {
+//      it.release()
+//    }
+//    mediaPlayer?.start()
   }
 }
 
