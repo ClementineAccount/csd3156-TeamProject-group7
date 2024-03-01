@@ -111,33 +111,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val showFarmsButton = findViewById<Button>(R.id.showFarmsButton)
         showFarmsButton.setOnClickListener { onShowFarmsClick() }
-
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            val fusedLocationClient: FusedLocationProviderClient =
-                LocationServices.getFusedLocationProviderClient(this)
-
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location ->
-                    location?.let {
-                        // Generate a random offset of 100m (0.001 degree is approximately 111m)
-                        val randomLatitudeOffset = (Math.random() - 0.5) * 0.001
-                        val randomLongitudeOffset = (Math.random() - 0.5) * 0.001
-
-                        // Calculate the new farm location
-                        val farmLatitude = it.latitude + randomLatitudeOffset
-                        val farmLongitude = it.longitude + randomLongitudeOffset
-
-                        // Add the farm at the calculated location
-                        addFarm(farmLatitude, farmLongitude)
-                        refreshMap()
-                        updateFarmNames()
-                    }
-                }
-        }
+        
     }
 
     /**
