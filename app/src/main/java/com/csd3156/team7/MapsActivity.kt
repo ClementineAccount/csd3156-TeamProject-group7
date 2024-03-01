@@ -144,10 +144,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * installed Google Play services and returned to the app.
      */
 
-    override fun onDestroy() {
-        handler.removeCallbacks(refreshRunnable)
-        super.onDestroy()
-    }
+//    override fun onDestroy() {
+//        handler.removeCallbacks(refreshRunnable)
+//        super.onDestroy()
+//    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -452,6 +452,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onDestroy() {
         super.onDestroy()
+        handler.removeCallbacks(refreshRunnable)
+
         Log.d("MusicService", "MapsActivity->onDestroy")
 
         Log.d("MapsActivity", "onDestroy")
