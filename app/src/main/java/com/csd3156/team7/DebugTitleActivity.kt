@@ -31,6 +31,8 @@ class DebugTitleActivity : AppCompatActivity() {
         // Setting the user interface layout for this Activity.
         setContentView(R.layout.activity_debug_title)
 
+        supportActionBar?.hide()
+
         // Logging for debugging purposes.
         Log.d("DebugTitleActivity", "onCreate")
         Log.d("MusicService", "DebugTitleActivity->onCreate")

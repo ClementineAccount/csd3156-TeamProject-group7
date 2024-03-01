@@ -14,7 +14,7 @@
    limitations under the License.
 -->
 <resources>
-    <string name="app_name" translatable="false">HelloAR Kotlin</string>
+    <string name="app_name" translatable="false">Shape Farm</string>
     <string name="depth_use_explanation" translatable="false">When Depth is enabled on supported devices, virtual objects adapt to the environment by blending in with the real world.</string>
     <string name="button_text_enable_depth" translatable="false">Enable</string>
     <string name="button_text_disable_depth" translatable="false">Disable</string>
@@ -32,7 +32,7 @@
 
     <string name="searching_planes" translatable="false">Searching for surfaces...</string>
     <string name="waiting_taps" translatable="false">Tap on a surface to start the collection minigame!.</string>
-    <string name="title_activity_maps">MapsActivity</string>
+    <string name="title_activity_maps">Map</string>
     <string name="farm_name">Cube</string>
     <string name="farm_description">Produces 1 every 1 second</string>
     <string name="farm_cost">Cost: 0</string>

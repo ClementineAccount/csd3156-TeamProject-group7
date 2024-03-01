@@ -52,7 +52,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="63fb922e-c2ea-4e8d-b793-0c239ba65f0e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ItemViewHolder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/csd3156/team7/ItemViewHolder.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetDropDown.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetDropDown.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_debug_title.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_debug_title.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,7 +65,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\Clem\.android\avd\Pixel_3a_API_34_extension_level_7_x86_64.avd]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[R5CR82Z549A]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -137,7 +140,7 @@
       <recent name="C:\Users\green\Documents\GitHub\csd3156-TeamProject-group7\app\src\main\res\raw" />
     </key>
   </component>
-  <component name="RunManager" selected="Android App.DebugTitleActivity (1)">
+  <component name="RunManager" selected="Android App.DebugTitleActivity">
     <configuration name="DebugTestFarm (1)" type="AndroidRunConfigurationType" factoryName="Android App" temporary="true">
       <module name="TeamGame7.app.main" />
       <option name="DEPLOY" value="true" />
@@ -475,9 +478,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Android App.DebugTitleActivity" />
         <item itemvalue="Android App.DebugTitleActivity (1)" />
         <item itemvalue="Android App.DebugTestFarm (1)" />
-        <item itemvalue="Android App.DebugTitleActivity" />
         <item itemvalue="Android App.ShopActivity" />
         <item itemvalue="Android App.DebugTestFarm" />
       </list>
