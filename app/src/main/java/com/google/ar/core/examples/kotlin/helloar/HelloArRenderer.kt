@@ -71,7 +71,7 @@ private data class CollectableObject(
 )
 
 /** Renders the HelloAR application using our example Renderer. */
-class HelloArRenderer(val activity: HelloArActivity) :
+class HelloArRenderer(val activity: HelloArActivity, private val listener: TapInterface) :
   SampleRender.Renderer, DefaultLifecycleObserver {
   companion object {
     val TAG = "HelloArRenderer"
@@ -720,6 +720,7 @@ class HelloArRenderer(val activity: HelloArActivity) :
             Log.d("Debug Hit Detection", "distanceMeters: ${distanceMeters}")
             if (distanceMeters < collectable.radius)
             {
+              listener.onObjectTapped(1)
               Log.d("Debug Hit Detection", "Hit Detected for object!")
               iterator.remove()
             }
@@ -756,7 +757,9 @@ class HelloArRenderer(val activity: HelloArActivity) :
           // I just realized I need to add to the anchor class an ID indicating which
           // farm it belongs to
           addHit = false
+          //listener.onObjectTapped(1)
           Log.d("Debug Hit Detection", "Hit Detected at: ${farmData.uid}")
+
         }
       }
 

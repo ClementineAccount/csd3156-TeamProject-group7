@@ -29,8 +29,11 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import android.view.View
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -41,6 +44,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.csd3156.team7.FarmItem
+import com.csd3156.team7.MapsActivity
 import com.csd3156.team7.MusicService
 import com.csd3156.team7.PlayerInventoryViewModel
 import com.csd3156.team7.ShopActivity
@@ -91,7 +95,7 @@ class MyLocationListener(private val context: Context, private val locationCallb
 }
 
 
-class HelloArActivity : AppCompatActivity() {
+class HelloArActivity : AppCompatActivity(), TapInterface {
   companion object {
     private const val TAG = "HelloArActivity"
   }
@@ -268,7 +272,7 @@ class HelloArActivity : AppCompatActivity() {
       LOCATION_PERMISSION_REQUEST_CODE)
 
     // Set up the Hello AR renderer.
-    renderer = HelloArRenderer(this)
+    renderer = HelloArRenderer(this,this)
     lifecycle.addObserver(renderer)
 
     // Set up Hello AR UI.
@@ -282,16 +286,22 @@ class HelloArActivity : AppCompatActivity() {
     depthSettings.onCreate(this)
     instantPlacementSettings.onCreate(this)
 
+    val shopButton = findViewById<Button>(R.id.buttonShop)
+    val MapButton = findViewById<Button>(R.id.buttonMap)
     val nfcButton = findViewById<Button>(R.id.NFCButton)
+
     nfcButton.setOnClickListener {
       val intent = Intent(this, NFCActivity::class.java)
       startActivity(intent);
     }
 
-    val shopButton = findViewById<Button>(R.id.shop_button)
     shopButton.setOnClickListener {
       val intent = Intent(this, ShopActivity::class.java)
       startActivity(intent);
+    }
+    MapButton.setOnClickListener {
+     val Intent = Intent(this, MapsActivity::class.java)
+     startActivity(Intent);
     }
 
     val clearDatabaseDebugButton = findViewById<Button>(R.id.clearFarm)
@@ -488,6 +498,20 @@ class HelloArActivity : AppCompatActivity() {
     super.onWindowFocusChanged(hasFocus)
     FullScreenHelper.setFullScreenOnWindowFocusChanged(this, hasFocus)
   }
+
+  override fun onObjectTapped(farmId: Int) {
+    runOnUiThread {
+      val overlayText: TextView = findViewById(R.id.incrementValueText)
+      overlayText.text = "+1"
+      overlayText.visibility = View.VISIBLE
+
+      // Handler to post a delayed task
+      overlayText.postDelayed({
+        overlayText.visibility = View.INVISIBLE // or View.GONE if you want to remove the space it takes up as well
+      }, 500) // Delay in milliseconds (1000ms = 1s)
+    }
+  }
+
 
   private val connection = object : ServiceConnection {
 
