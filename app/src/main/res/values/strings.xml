@@ -31,7 +31,7 @@
     </string-array>
 
     <string name="searching_planes" translatable="false">Searching for surfaces...</string>
-    <string name="waiting_taps" translatable="false">Tap on a surface to place an object.</string>
+    <string name="waiting_taps" translatable="false">Tap on a surface to start the collection minigame!.</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="farm_name">Cube</string>
     <string name="farm_description">Produces 1 every 1 second</string>
